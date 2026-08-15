@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>비공개 기록</title>
+
+<!-- Pretendard 웹폰트 -->
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
+
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        fontFamily: {
+          sans: ['Pretendard', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        },
+        colors: {
+          warm: {
+            bg: '#FDFCF8',
+            card: '#FFFFFF',
+          },
+          ember: {
+            DEFAULT: '#F97316',
+            light: '#FDBA74',
+            dark: '#C2410C',
+          },
+          sky: {
+            DEFAULT: '#0EA5E9',
+          },
+          ink: {
+            900: '#2A2521',
+            700: '#4A423C',
+            500: '#8A8078',
+          },
+        },
+        boxShadow: {
+          soft: '0 10px 40px -12px rgba(42, 37, 33, 0.12)',
+          card: '0 8px 30px -8px rgba(42, 37, 33, 0.10)',
+        },
+      },
+    },
+  };
+</script>
+
+<style>
+  html { scroll-behavior: smooth; }
+  body { font-family: 'Pretendard', ui-sans-serif, system-ui, sans-serif; background-color: #FDFCF8; color: #2A2521; }
+
+  /* 촛불 깜빡임 - 시그니처 모션 */
+  @keyframes flicker {
+    0%, 100% { opacity: 1; transform: translateY(0) scale(1); }
+    45% { opacity: 0.75; transform: translateY(1px) scale(0.97); }
+    55% { opacity: 0.9; transform: translateY(-1px) scale(1.02); }
+  }
+  .flame-flicker { animation: flicker 2.6s ease-in-out infinite; transform-origin: center bottom; }
+
+  @keyframes bob {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(8px); }
+  }
+  .bob { animation: bob 2.2s ease-in-out infinite; }
+
+  @keyframes glow-drift {
+    0%, 100% { transform: translate(0,0) scale(1); }
+    50% { transform: translate(14px,-10px) scale(1.08); }
+  }
+  .glow-drift { animation: glow-drift 9s ease-in-out infinite; }
+  .glow-drift-slow { animation: glow-drift 13s ease-in-out infinite; }
+
+  /* 스크롤 리빌 */
+  .reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.9s ease, transform 0.9s ease; }
+  .reveal.in-view { opacity: 1; transform: translateY(0); }
+
+  ::selection { background-color: #FDBA74; color: #2A2521; }
+
+  /* 포스트잇 살짝 기울임 */
+  .postit:nth-child(odd) { transform: rotate(-1.4deg); }
+  .postit:nth-child(even) { transform: rotate(1.2deg); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .flame-flicker, .bob, .glow-drift, .glow-drift-slow { animation: none !important; }
+    .reveal { transition: none; opacity: 1; transform: none; }
+  }
+
+  /* 전체보기 오버레이 내 상세 모달 */
+  #ovrptModal, #ovltrModal { opacity: 0; transition: opacity 0.25s ease; }
+  #ovrptModal.modal-open, #ovltrModal.modal-open { opacity: 1; }
+  #ovrptModal.modal-open #ovrptModalPanel,
+  #ovltrModal.modal-open #ovltrModalPanel { transform: translateY(0); opacity: 1; }
+  #ovrptModalPanel, #ovltrModalPanel { transform: translateY(16px); opacity: 0; transition: transform 0.3s ease, opacity 0.3s ease; }
+  #ovrptModalBody img, #ovltrModalBody img { cursor: zoom-in; }
+</style>
+
+<!-- Google Analytics (GA4) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-QTM6P3B9BK"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-QTM6P3B9BK');
+</script>
+</head>
+<body class="bg-warm-bg text-ink-900 antialiased">
+
+<header class="sticky top-0 z-50 bg-white/70 backdrop-blur-md border-b border-ink-900/5">
+  <div class="max-w-3xl mx-auto px-6 h-16 flex items-center justify-between">
+    <a href="index.html" class="flex items-center gap-2 text-sm text-ink-500 hover:text-ink-900 transition-colors">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+      홈으로
+    </a>
+    <span class="text-xs text-ink-400 tracking-wide">비공개 · 나만 보는 페이지</span>
+  </div>
+</header>
+
+<section class="pt-16 pb-24 px-6">
+  <div class="max-w-2xl mx-auto">
+
+    <div class="text-center mb-16 reveal in-view">
+      <div class="flex justify-center mb-6">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" class="flame-flicker">
+          <path d="M12 2C12 2 6 8.5 6 14a6 6 0 0012 0c0-2.2-1-4-2.2-5.6.2 1.4-.4 2.6-1.3 3-.3-2.6-1.7-5-2.5-9.4z" fill="#F97316"/>
+        </svg>
+      </div>
+      <p class="text-ember text-xs font-bold tracking-[0.25em] uppercase mb-3">Private Notes</p>
+      <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-ink-900">비공개 기록</h1>
+      <p class="mt-4 text-sm text-ink-400">이 페이지는 메뉴 어디에도 연결되어 있지 않아요. 이 주소를 아는 사람만 볼 수 있어요.</p>
+    </div>
+
+    <div class="space-y-8">
+
+      <article class="reveal bg-white rounded-3xl shadow-card p-8 sm:p-10">
+        <span class="text-[11px] font-semibold text-sky tracking-wide uppercase">2026.08.16</span>
+        <h2 class="mt-2 mb-6 font-bold text-xl sm:text-2xl leading-snug text-ink-900">홈페이지 만드는 감동의 시간</h2>
+        <div class="text-[15px] text-ink-600 leading-relaxed">
+          <p class="mb-3 italic text-ink-400">아직 내용을 안 채워주셨어요 — 이 자리에 남기고 싶은 글을 저한테 보내주시면 여기에 그대로 넣어드릴게요.</p>
+        </div>
+      </article>
+
+    </div>
+
+  </div>
+</section>
+
+</body>
+</html>
