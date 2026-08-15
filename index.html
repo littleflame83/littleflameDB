@@ -372,12 +372,12 @@
       프놈펜의 소식을 전해드립니다.
     </p>
 
-    <form id="subscribeForm" class="mt-9 flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
-      <input id="subscribeEmail" type="email" required placeholder="이메일 주소를 입력해주세요"
-        class="w-full flex-1 px-5 py-3.5 rounded-full border border-ink-900/10 bg-white text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-ember/50" />
-      <button type="submit" class="shrink-0 bg-ember hover:bg-ember-dark text-white font-semibold text-sm px-7 py-3.5 rounded-full shadow-soft transition-colors">구독하기</button>
-    </form>
-    <p id="subscribeMsg" class="mt-4 text-sm text-sky font-medium hidden">구독해주셔서 감사합니다. 곧 첫 편지를 보내드릴게요. 🕯️</p>
+    <a href="https://page.stibee.com/subscriptions/511617" target="_blank" rel="noopener"
+      class="mt-9 inline-flex items-center gap-2 bg-ember hover:bg-ember-dark text-white font-semibold text-sm px-8 py-4 rounded-full shadow-soft transition-colors">
+      기도편지 구독하기
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 6l6 6-6 6"/></svg>
+    </a>
+    <p class="mt-4 text-xs text-ink-400">새 창에서 이메일 주소를 입력하시면 구독이 완료돼요.</p>
   </div>
 </section>
 
@@ -1613,14 +1613,7 @@
     guestHiddenForm.submit();
   });
 
-  // 기도편지 구독 (클라이언트 측 미리보기 - 실제 배포 시 서버/이메일 연동 필요)
-  const subscribeForm = document.getElementById('subscribeForm');
-  const subscribeMsg = document.getElementById('subscribeMsg');
-  subscribeForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-    subscribeMsg.classList.remove('hidden');
-    subscribeForm.reset();
-  });
+  // 기도편지 구독 — 스티비 구독 페이지로 직접 연결 (버튼 링크만 있으면 됨, 별도 JS 불필요)
 
   // 선교리포트 / 기도편지 전체보기 오버레이
   const ALL_OVERLAYS = ['reportsOverlay', 'lettersOverlay', 'supportOverlay', 'aboutOverlay', 'galleryOverlay'];
