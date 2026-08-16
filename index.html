@@ -253,6 +253,19 @@
 
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-7 lg:gap-8">
       <article class="reveal group bg-warm-card rounded-3xl overflow-hidden shadow-card hover:shadow-soft transition-shadow duration-300">
+        <button type="button" onclick="openDetail('ovcam', 3)" class="block w-full text-left">
+          <div class="aspect-[4/3] overflow-hidden">
+            <img src="images/img-wd1.jpg" alt="NPIC, 그리고 WD 센터에서의 생활" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+          </div>
+          <div class="p-6">
+            <span class="text-[11px] font-semibold text-ember tracking-wide uppercase">2008.06.07</span>
+            <h3 class="mt-2 font-bold text-lg leading-snug text-ink-900">🏡 NPIC, 그리고 WD 센터에서의 생활</h3>
+            <p class="mt-2 text-sm text-ink-500 leading-relaxed">현지 학생들과 함께 동고동락하며 땀 흘렸던 WD(World Development) 센터. 무더위와 벌레와 싸워야 했지만, 돌아보면 모든 것이 은혜였던 그 시절의 숙소 생활을 나눕니다.</p>
+          </div>
+        </button>
+      </article>
+
+      <article class="reveal group bg-warm-card rounded-3xl overflow-hidden shadow-card hover:shadow-soft transition-shadow duration-300">
         <button type="button" onclick="openDetail('ovcam', 2)" class="block w-full text-left">
           <div class="aspect-[4/3] overflow-hidden">
             <img src="images/img-npic1.jpg" alt="NPIC에서의 시간들" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
@@ -261,19 +274,6 @@
             <span class="text-[11px] font-semibold text-ember tracking-wide uppercase">2008.06.01</span>
             <h3 class="mt-2 font-bold text-lg leading-snug text-ink-900">🏫 NPIC에서의 시간들</h3>
             <p class="mt-2 text-sm text-ink-500 leading-relaxed">기계과 조교로 섬기며 땀 흘렸던 캄보디아 국립 기술 대학(NPIC)의 풍경과, 평생 잊지 못할 캄보디아 친구들과의 풋풋한 추억을 꺼내어 봅니다.</p>
-          </div>
-        </button>
-      </article>
-
-      <article class="reveal group bg-warm-card rounded-3xl overflow-hidden shadow-card hover:shadow-soft transition-shadow duration-300">
-        <button type="button" onclick="openDetail('ovcam', 0)" class="block w-full text-left">
-          <div class="aspect-[4/3] overflow-hidden">
-            <img src="images/img-durian1.jpg" alt="두리안, 10$의 기쁨" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-          </div>
-          <div class="p-6">
-            <span class="text-[11px] font-semibold text-ember tracking-wide uppercase">2008.05.07</span>
-            <h3 class="mt-2 font-bold text-lg leading-snug text-ink-900">🍈 두리안, 10$의 기쁨</h3>
-            <p class="mt-2 text-sm text-ink-500 leading-relaxed">캄보디아 단기선교 3개월 차, 낯선 과일 '두리안'을 통해 진정한 '만원의 행복'과 나눔의 기쁨을 깊이 깨달았던 그날의 일기를 나눕니다.</p>
           </div>
         </button>
       </article>
@@ -1523,6 +1523,17 @@
 
     <div class="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-7 lg:gap-8">
 
+      <button type="button" data-ovcam="3" class="ovcam-card reveal group text-left bg-warm-card rounded-3xl overflow-hidden shadow-card hover:shadow-soft transition-shadow duration-300">
+        <div class="aspect-[4/3] overflow-hidden">
+          <img src="images/img-wd1.jpg" alt="NPIC, 그리고 WD 센터에서의 생활" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+        </div>
+        <div class="p-6">
+          <span class="text-[11px] font-semibold text-ember tracking-wide uppercase">2008.06.07</span>
+          <h3 class="mt-2 font-bold text-lg leading-snug text-ink-900">🏡 NPIC, 그리고 WD 센터에서의 생활</h3>
+          <p class="mt-2 text-sm text-ink-500 leading-relaxed">현지 학생들과 함께 동고동락하며 땀 흘렸던 WD(World Development) 센터. 무더위와 벌레와 싸워야 했지만, 돌아보면 모든 것이 은혜였던 그 시절의 숙소 생활을 나눕니다.</p>
+        </div>
+      </button>
+
       <button type="button" data-ovcam="2" class="ovcam-card reveal group text-left bg-warm-card rounded-3xl overflow-hidden shadow-card hover:shadow-soft transition-shadow duration-300">
         <div class="aspect-[4/3] overflow-hidden">
           <img src="images/img-npic1.jpg" alt="NPIC에서의 시간들" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
@@ -1594,6 +1605,40 @@
     <p class="mb-3 text-ink-600 leading-relaxed">개헤엄은 보너스샷 🐶💦</p>
 
     <div class="aspect-[16/10] rounded-2xl overflow-hidden my-6"><img src="images/img-baptism6.jpg" alt="바다에서 개헤엄 치는 모습" class="w-full h-full object-cover" /></div>
+  </div>
+</template>
+
+<template id="ovcam-tmpl-3">
+  <span class="text-[11px] font-semibold text-ember tracking-wide uppercase">2008년 6월 7일</span>
+  <h2 class="mt-2 mb-6 font-bold text-2xl sm:text-3xl leading-snug text-ink-900">🏡 NPIC, 그리고 WD 센터에서의 생활</h2>
+  <div class="text-[15px]">
+    <p class="mb-5 text-ink-900 font-medium italic leading-relaxed">💡 2008년 6월 7일의 기록 — 현지 학생들과 함께 동고동락하며 땀 흘렸던 WD(World Development) 센터. 무더위와 벌레와 싸워야 했지만, 돌아보면 모든 것이 은혜였던 그 시절의 숙소 생활을 나눕니다.</p>
+
+    <p class="mt-7 mb-2 font-bold text-ink-900 text-[15px]">🛖 나의 보금자리, WD 센터</p>
+    <p class="mb-3 text-ink-600 leading-relaxed">NPIC 정문 길 건너에는 WD(World Development) 센터가 자리 잡고 있습니다. 저는 그곳에서 학생들과 함께 먹고, 자고, 부대끼며 생활했습니다.</p>
+    <p class="mb-3 text-ink-600 leading-relaxed">제가 처음 이곳에 발을 디뎠던 2008년 2월에만 해도, 왼쪽 편에 다 지어진 건물 하나밖에 없는 소박한 모습이었습니다.</p>
+
+    <div class="aspect-[16/10] rounded-2xl overflow-hidden my-6"><img src="images/img-wd1.jpg" alt="2008년 2월 당시의 WD 센터 건물 모습" class="w-full h-full object-cover" /></div>
+
+    <p class="mt-7 mb-2 font-bold text-ink-900 text-[15px]">🍲 잊을 수 없는 마더의 밥상과 저녁 모임</p>
+    <p class="mb-3 text-ink-600 leading-relaxed">그곳에는 NPIC 대학생 4명(형제 3명, 자매 1명)과 숙소를 살뜰히 관리해 주시는 '파더'네 가족이 함께 지내고 있었습니다. 특히 '마더'가 정성껏 만들어주시는 현지식 음식은 제 입맛에 딱 맞을 정도로 정말 맛있었습니다!</p>
+
+    <div class="aspect-[16/10] rounded-2xl overflow-hidden my-6"><img src="images/img-wd2.jpg" alt="학생들과 파더네 가족 자녀들이 함께 모여 즐거웠던 저녁 모임" class="w-full h-full object-cover" /></div>
+
+    <p class="mt-7 mb-2 font-bold text-ink-900 text-[15px]">🏗️ 나와 함께 자라난 센터 건물</p>
+    <p class="mb-3 text-ink-600 leading-relaxed">제가 머무는 기간 동안 센터는 쉼 없이 공사를 진행했습니다. 시간이 흘러 저의 1년 사역이 마쳐질 때쯤엔 어느덧 뼈대를 갖춘 콘크리트 공사가 무사히 마무리되어 있었죠. 건물이 자라나는 모습을 곁에서 지켜보는 것도 참 남다른 기분이었습니다.</p>
+
+    <div class="aspect-[16/10] rounded-2xl overflow-hidden my-6"><img src="images/img-wd3.jpg" alt="콘크리트 공사가 한창 마무리되어 가던 WD 센터 전경" class="w-full h-full object-cover" /></div>
+
+    <p class="mt-7 mb-2 font-bold text-ink-900 text-[15px]">🛏️ 벌레, 그리고 멈춰버린 선풍기와의 사투</p>
+    <p class="mb-3 text-ink-600 leading-relaxed">제 방에는 책상 하나, 침대 하나, 그리고 방 옆에 딸린 화장실이 있었습니다.</p>
+    <p class="mb-3 text-ink-600 leading-relaxed">캄보디아의 특성상 벌레가 워낙 많아서 2~3일에 한 번씩은 꼭 바닥을 쓸어내고 닦아내야만 했습니다.</p>
+
+    <div class="aspect-[16/10] rounded-2xl overflow-hidden my-6"><img src="images/img-wd4.jpg" alt="소박한 책상과 침대가 놓여 있던 내 방" class="w-full h-full object-cover" /></div>
+
+    <p class="mb-3 text-ink-600 leading-relaxed">가장 견디기 힘들었던 건 역시 캄보디아의 무더위였습니다. 침대 위에 천장형 팬 선풍기가 달려 있었지만 야속하게도 너무 느리게 돌았고, 그마저도 전기가 끊기는 날이면 아예 멈춰버리곤 했습니다…</p>
+    <p class="mb-3 text-ink-600 leading-relaxed">정말이지 숨이 턱턱 막히는 더위에 자다가 깬 적이 한두 번이 아니었습니다. 🥵</p>
+    <p class="mb-3 text-ink-600 leading-relaxed">몸은 참 고생스러웠지만, 지금 다시 그 시절을 생각해보면 참으로 귀하고 복된 경험이었습니다. 현지인들과 가장 가까운 곳에서 살을 부대끼며 그들의 삶을 이해할 수 있었던, 제 인생에 결코 잊지 못할 소중한 시간입니다.</p>
   </div>
 </template>
 
