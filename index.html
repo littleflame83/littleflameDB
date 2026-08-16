@@ -253,6 +253,19 @@
 
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-7 lg:gap-8">
       <article class="reveal group bg-warm-card rounded-3xl overflow-hidden shadow-card hover:shadow-soft transition-shadow duration-300">
+        <button type="button" onclick="openDetail('ovcam', 6)" class="block w-full text-left">
+          <div class="aspect-[4/3] overflow-hidden">
+            <img src="images/img-wedding1.jpg" alt="캄보디아 결혼식 풍경과 깜짝 에피소드" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+          </div>
+          <div class="p-6">
+            <span class="text-[11px] font-semibold text-ember tracking-wide uppercase">2008.09</span>
+            <h3 class="mt-2 font-bold text-lg leading-snug text-ink-900">💒 캄보디아 결혼식 풍경과 깜짝 에피소드</h3>
+            <p class="mt-2 text-sm text-ink-500 leading-relaxed">한국과는 사뭇 달랐던 캄보디아 현지 결혼식의 이모저모와, 돌아오는 길에 겪은 소소하고 유쾌한 에피소드를 나눕니다.</p>
+          </div>
+        </button>
+      </article>
+
+      <article class="reveal group bg-warm-card rounded-3xl overflow-hidden shadow-card hover:shadow-soft transition-shadow duration-300">
         <button type="button" onclick="openDetail('ovcam', 5)" class="block w-full text-left">
           <div class="aspect-[4/3] overflow-hidden">
             <img src="images/img-korea1.jpg" alt="코리안 드림과 캄보디아의 풍경" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
@@ -261,19 +274,6 @@
             <span class="text-[11px] font-semibold text-ember tracking-wide uppercase">2008.07</span>
             <h3 class="mt-2 font-bold text-lg leading-snug text-ink-900">🇰🇷 코리안 드림과 캄보디아의 풍경</h3>
             <p class="mt-2 text-sm text-ink-500 leading-relaxed">한국으로 향하는 캄보디아 사람들의 간절함, 지금은 상상하기 힘든 그 시절의 낯선 풍경, 그리고 오랜 시간이 흘러 다시 마주한 상전벽해의 감동을 나눕니다.</p>
-          </div>
-        </button>
-      </article>
-
-      <article class="reveal group bg-warm-card rounded-3xl overflow-hidden shadow-card hover:shadow-soft transition-shadow duration-300">
-        <button type="button" onclick="openDetail('ovcam', 3)" class="block w-full text-left">
-          <div class="aspect-[4/3] overflow-hidden">
-            <img src="images/img-wd1.jpg" alt="NPIC, 그리고 WD 센터에서의 생활" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-          </div>
-          <div class="p-6">
-            <span class="text-[11px] font-semibold text-ember tracking-wide uppercase">2008.06.07</span>
-            <h3 class="mt-2 font-bold text-lg leading-snug text-ink-900">🏡 NPIC, 그리고 WD 센터에서의 생활</h3>
-            <p class="mt-2 text-sm text-ink-500 leading-relaxed">현지 학생들과 함께 동고동락하며 땀 흘렸던 WD(World Development) 센터. 무더위와 벌레와 싸워야 했지만, 돌아보면 모든 것이 은혜였던 그 시절의 숙소 생활을 나눕니다.</p>
           </div>
         </button>
       </article>
@@ -1523,6 +1523,17 @@
 
     <div class="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-7 lg:gap-8">
 
+      <button type="button" data-ovcam="6" class="ovcam-card reveal group text-left bg-warm-card rounded-3xl overflow-hidden shadow-card hover:shadow-soft transition-shadow duration-300">
+        <div class="aspect-[4/3] overflow-hidden">
+          <img src="images/img-wedding1.jpg" alt="캄보디아 결혼식 풍경과 깜짝 에피소드" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+        </div>
+        <div class="p-6">
+          <span class="text-[11px] font-semibold text-ember tracking-wide uppercase">2008.09</span>
+          <h3 class="mt-2 font-bold text-lg leading-snug text-ink-900">💒 캄보디아 결혼식 풍경과 깜짝 에피소드</h3>
+          <p class="mt-2 text-sm text-ink-500 leading-relaxed">한국과는 사뭇 달랐던 캄보디아 현지 결혼식의 이모저모와, 돌아오는 길에 겪은 소소하고 유쾌한 에피소드를 나눕니다.</p>
+        </div>
+      </button>
+
       <button type="button" data-ovcam="5" class="ovcam-card reveal group text-left bg-warm-card rounded-3xl overflow-hidden shadow-card hover:shadow-soft transition-shadow duration-300">
         <div class="aspect-[4/3] overflow-hidden">
           <img src="images/img-korea1.jpg" alt="코리안 드림과 캄보디아의 풍경" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
@@ -1658,6 +1669,32 @@
     <p class="mb-3 text-ink-600 leading-relaxed">개헤엄은 보너스샷 🐶💦</p>
 
     <div class="aspect-[16/10] rounded-2xl overflow-hidden my-6"><img src="images/img-baptism6.jpg" alt="바다에서 개헤엄 치는 모습" class="w-full h-full object-cover" /></div>
+  </div>
+</template>
+
+<template id="ovcam-tmpl-6">
+  <span class="text-[11px] font-semibold text-ember tracking-wide uppercase">2008년 9월</span>
+  <h2 class="mt-2 mb-6 font-bold text-2xl sm:text-3xl leading-snug text-ink-900">💒 캄보디아 결혼식 풍경과 깜짝 에피소드</h2>
+  <div class="text-[15px]">
+    <p class="mb-5 text-ink-900 font-medium italic leading-relaxed">💡 2008년 9월 어느 날의 기록 — 한국과는 사뭇 달랐던 캄보디아 현지 결혼식의 이모저모와, 돌아오는 길에 겪은 소소하고 유쾌한 에피소드를 나눕니다.</p>
+
+    <p class="mb-3 text-ink-600 leading-relaxed">캄보디아 현지 결혼식에 초대를 받아 다녀왔습니다. 직접 겪어본 캄보디아의 결혼식 날은 일반적인 일상과 비교했을 때, 크게 두 가지의 뚜렷한 차이가 있었습니다.</p>
+
+    <p class="mt-7 mb-2 font-bold text-ink-900 text-[15px]">🎪 첫째, 집 앞을 가득 채운 거대한 텐트 예식장</p>
+    <p class="mb-3 text-ink-600 leading-relaxed">가장 먼저 눈에 띄었던 것은 바로 '결혼식장'이었습니다. 캄보디아에서는 전문 예식장을 빌리는 대신, 집 앞에 커다란 텐트를 여러 개 치고 성대하게 결혼식을 올리더라고요. 친한 친구들과 함께 그 흥겨운 잔칫집에 기쁜 마음으로 참석했습니다.</p>
+
+    <div class="aspect-[16/10] rounded-2xl overflow-hidden my-6"><img src="images/img-wedding1.jpg" alt="집 앞 커다란 텐트 아래서 친구들과 함께한 결혼식 참석" class="w-full h-full object-cover" /></div>
+
+    <p class="mt-7 mb-2 font-bold text-ink-900 text-[15px]">💄 둘째, 눈부시게 아름다운 변신!</p>
+    <p class="mb-3 text-ink-600 leading-relaxed">두 번째로 놀라웠던 건 바로 하객들의 '화장'이었습니다. 결혼식에 참석하는 현지 여성분들이 평소의 수수했던 모습과는 완전히 다르게, 무척이나 화려하고 아름다운 모습으로 단장하고 등장하셔서 깜짝 놀랐습니다. 역시 아름다움을 사모하고 예쁘게 가꾸고 싶어 하는 마음은 세계 어디를 가나 똑같은 것 같습니다. 🥰</p>
+
+    <div class="aspect-[16/10] rounded-2xl overflow-hidden my-6"><img src="images/img-wedding2.jpg" alt="화려하고 아름답게 단장한 현지 여성분의 모습" class="w-full h-full object-cover" /></div>
+
+    <p class="mt-7 mb-2 font-bold text-ink-900 text-[15px]">🛠️ 돌아오는 길, 타이어 수리공(?)으로 변신</p>
+    <p class="mb-3 text-ink-600 leading-relaxed">결혼식을 즐겁게 마치고 돌아오는 길, 타고 가던 차 타이어에 뜻밖의 문제가 생겨서 급하게 길에서 수리를 해야만 했습니다.</p>
+    <p class="mb-3 text-ink-600 leading-relaxed">당황스럽고 고생스러울 수도 있는 상황이었지만, 오히려 이 순간도 재밌는 추억이겠다 싶어 커다란 수리 도구를 들고 장난스럽게 포즈를 취해봤습니다! 📸</p>
+
+    <div class="aspect-[16/10] rounded-2xl overflow-hidden my-6"><img src="images/img-wedding3.jpg" alt="타이어 수리 도구를 들고 유쾌하게 포즈를 취한 사진" class="w-full h-full object-cover" /></div>
   </div>
 </template>
 
