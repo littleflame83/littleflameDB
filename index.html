@@ -251,8 +251,21 @@
       <h2 class="text-2xl sm:text-3xl font-bold tracking-tight">캄보디아 이야기</h2>
     </div>
 
-    <div class="max-w-sm mx-auto sm:max-w-none sm:grid sm:grid-cols-1">
-      <article class="reveal group bg-warm-card rounded-3xl overflow-hidden shadow-card hover:shadow-soft transition-shadow duration-300 max-w-md mx-auto">
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-7 lg:gap-8">
+      <article class="reveal group bg-warm-card rounded-3xl overflow-hidden shadow-card hover:shadow-soft transition-shadow duration-300">
+        <button type="button" onclick="openDetail('ovcam', 2)" class="block w-full text-left">
+          <div class="aspect-[4/3] overflow-hidden">
+            <img src="images/img-npic1.jpg" alt="NPIC에서의 시간들" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+          </div>
+          <div class="p-6">
+            <span class="text-[11px] font-semibold text-ember tracking-wide uppercase">2008.06.01</span>
+            <h3 class="mt-2 font-bold text-lg leading-snug text-ink-900">🏫 NPIC에서의 시간들</h3>
+            <p class="mt-2 text-sm text-ink-500 leading-relaxed">기계과 조교로 섬기며 땀 흘렸던 캄보디아 국립 기술 대학(NPIC)의 풍경과, 평생 잊지 못할 캄보디아 친구들과의 풋풋한 추억을 꺼내어 봅니다.</p>
+          </div>
+        </button>
+      </article>
+
+      <article class="reveal group bg-warm-card rounded-3xl overflow-hidden shadow-card hover:shadow-soft transition-shadow duration-300">
         <button type="button" onclick="openDetail('ovcam', 0)" class="block w-full text-left">
           <div class="aspect-[4/3] overflow-hidden">
             <img src="images/img-durian1.jpg" alt="두리안, 10$의 기쁨" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
