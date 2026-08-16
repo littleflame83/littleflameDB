@@ -253,6 +253,19 @@
 
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-7 lg:gap-8">
       <article class="reveal group bg-warm-card rounded-3xl overflow-hidden shadow-card hover:shadow-soft transition-shadow duration-300">
+        <button type="button" onclick="openDetail('ovcam', 5)" class="block w-full text-left">
+          <div class="aspect-[4/3] overflow-hidden">
+            <img src="images/img-korea1.jpg" alt="코리안 드림과 캄보디아의 풍경" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+          </div>
+          <div class="p-6">
+            <span class="text-[11px] font-semibold text-ember tracking-wide uppercase">2008.07</span>
+            <h3 class="mt-2 font-bold text-lg leading-snug text-ink-900">🇰🇷 코리안 드림과 캄보디아의 풍경</h3>
+            <p class="mt-2 text-sm text-ink-500 leading-relaxed">한국으로 향하는 캄보디아 사람들의 간절함, 지금은 상상하기 힘든 그 시절의 낯선 풍경, 그리고 오랜 시간이 흘러 다시 마주한 상전벽해의 감동을 나눕니다.</p>
+          </div>
+        </button>
+      </article>
+
+      <article class="reveal group bg-warm-card rounded-3xl overflow-hidden shadow-card hover:shadow-soft transition-shadow duration-300">
         <button type="button" onclick="openDetail('ovcam', 3)" class="block w-full text-left">
           <div class="aspect-[4/3] overflow-hidden">
             <img src="images/img-wd1.jpg" alt="NPIC, 그리고 WD 센터에서의 생활" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
@@ -261,19 +274,6 @@
             <span class="text-[11px] font-semibold text-ember tracking-wide uppercase">2008.06.07</span>
             <h3 class="mt-2 font-bold text-lg leading-snug text-ink-900">🏡 NPIC, 그리고 WD 센터에서의 생활</h3>
             <p class="mt-2 text-sm text-ink-500 leading-relaxed">현지 학생들과 함께 동고동락하며 땀 흘렸던 WD(World Development) 센터. 무더위와 벌레와 싸워야 했지만, 돌아보면 모든 것이 은혜였던 그 시절의 숙소 생활을 나눕니다.</p>
-          </div>
-        </button>
-      </article>
-
-      <article class="reveal group bg-warm-card rounded-3xl overflow-hidden shadow-card hover:shadow-soft transition-shadow duration-300">
-        <button type="button" onclick="openDetail('ovcam', 2)" class="block w-full text-left">
-          <div class="aspect-[4/3] overflow-hidden">
-            <img src="images/img-npic1.jpg" alt="NPIC에서의 시간들" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-          </div>
-          <div class="p-6">
-            <span class="text-[11px] font-semibold text-ember tracking-wide uppercase">2008.06.01</span>
-            <h3 class="mt-2 font-bold text-lg leading-snug text-ink-900">🏫 NPIC에서의 시간들</h3>
-            <p class="mt-2 text-sm text-ink-500 leading-relaxed">기계과 조교로 섬기며 땀 흘렸던 캄보디아 국립 기술 대학(NPIC)의 풍경과, 평생 잊지 못할 캄보디아 친구들과의 풋풋한 추억을 꺼내어 봅니다.</p>
           </div>
         </button>
       </article>
@@ -1523,6 +1523,17 @@
 
     <div class="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-7 lg:gap-8">
 
+      <button type="button" data-ovcam="5" class="ovcam-card reveal group text-left bg-warm-card rounded-3xl overflow-hidden shadow-card hover:shadow-soft transition-shadow duration-300">
+        <div class="aspect-[4/3] overflow-hidden">
+          <img src="images/img-korea1.jpg" alt="코리안 드림과 캄보디아의 풍경" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+        </div>
+        <div class="p-6">
+          <span class="text-[11px] font-semibold text-ember tracking-wide uppercase">2008.07</span>
+          <h3 class="mt-2 font-bold text-lg leading-snug text-ink-900">🇰🇷 코리안 드림과 캄보디아의 풍경</h3>
+          <p class="mt-2 text-sm text-ink-500 leading-relaxed">한국으로 향하는 캄보디아 사람들의 간절함, 지금은 상상하기 힘든 그 시절의 낯선 풍경, 그리고 오랜 시간이 흘러 다시 마주한 상전벽해의 감동을 나눕니다.</p>
+        </div>
+      </button>
+
       <button type="button" data-ovcam="3" class="ovcam-card reveal group text-left bg-warm-card rounded-3xl overflow-hidden shadow-card hover:shadow-soft transition-shadow duration-300">
         <div class="aspect-[4/3] overflow-hidden">
           <img src="images/img-wd1.jpg" alt="NPIC, 그리고 WD 센터에서의 생활" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
@@ -1647,6 +1658,33 @@
     <p class="mb-3 text-ink-600 leading-relaxed">개헤엄은 보너스샷 🐶💦</p>
 
     <div class="aspect-[16/10] rounded-2xl overflow-hidden my-6"><img src="images/img-baptism6.jpg" alt="바다에서 개헤엄 치는 모습" class="w-full h-full object-cover" /></div>
+  </div>
+</template>
+
+<template id="ovcam-tmpl-5">
+  <span class="text-[11px] font-semibold text-ember tracking-wide uppercase">2008년 7월</span>
+  <h2 class="mt-2 mb-6 font-bold text-2xl sm:text-3xl leading-snug text-ink-900">🇰🇷 코리안 드림과 캄보디아의 풍경</h2>
+  <div class="text-[15px]">
+    <p class="mb-5 text-ink-900 font-medium italic leading-relaxed">💡 2008년 7월 어느 날의 기록 — 한국으로 향하는 캄보디아 사람들의 간절함, 지금은 상상하기 힘든 그 시절의 낯선 풍경, 그리고 오랜 시간이 흘러 다시 마주한 상전벽해의 감동을 나눕니다.</p>
+
+    <p class="mt-7 mb-2 font-bold text-ink-900 text-[15px]">📝 '코리안 드림'을 향한 발걸음과 안타까움</p>
+    <p class="mb-3 text-ink-600 leading-relaxed">당시 캄보디아의 많은 사람들이 한국에 가서 일하기 위해 한국어 시험을 봤습니다. 길거리에는 '한국에서 몇 년 일하면 1억을 번다'는 전단지들이 나돌았는데, 그 과장된 문구를 보면서 현지 사람들이 혹시나 헛된 기대를 품고 상처받지는 않을까 하는 안타까운 마음도 들었습니다.</p>
+    <p class="mb-3 text-ink-600 leading-relaxed">당시 제가 사역하던 NPIC(캄보디아 국립 기술 대학)에서 한국에 가기 위한 지원서를 접수했기 때문에, 모집 기간이 되면 정말 수많은 사람들이 몰려와 캠퍼스가 발 디딜 틈 없이 붐볐습니다.</p>
+
+    <div class="aspect-[16/10] rounded-2xl overflow-hidden my-6"><img src="images/img-korea1.jpg" alt="한국어 시험 지원서를 접수하기 위해 NPIC에 북적이는 사람들" class="w-full h-full object-cover" /></div>
+
+    <p class="mt-7 mb-2 font-bold text-ink-900 text-[15px]">🚙 지붕까지 사람을 실어 나르던 그 시절의 자동차</p>
+    <p class="mb-3 text-ink-600 leading-relaxed">2008~2009년도 캄보디아의 길거리에는 지금 우리의 눈으로 보면 깜짝 놀랄 만한 풍경들이 참 많았습니다.</p>
+    <p class="mb-3 text-ink-600 leading-relaxed">가장 신기했던 것 중 하나는 바로 자동차였습니다. 좁은 차 한 대에 믿기지 않을 정도로 많은 인원이 타는 것도 모자라, 아예 차 지붕 위까지 사람들이 빼곡하게 올라가 위태롭게 달리는 모습이 일상처럼 펼쳐졌습니다.</p>
+
+    <div class="grid grid-cols-2 gap-3 my-6">
+      <div class="aspect-square rounded-xl overflow-hidden"><img src="images/img-korea2.jpg" alt="차 한 대에 지붕까지 사람들이 가득 올라타 있는 풍경" class="w-full h-full object-cover" /></div>
+      <div class="aspect-square rounded-xl overflow-hidden"><img src="images/img-korea3.jpg" alt="차 한 대에 지붕까지 사람들이 가득 올라타 있는 풍경" class="w-full h-full object-cover" /></div>
+    </div>
+
+    <p class="mt-7 mb-2 font-bold text-ink-900 text-[15px]">✨ 18년의 세월이 만든 상전벽해 (2026)</p>
+    <p class="mb-3 text-ink-600 leading-relaxed">그렇게 열악하고 낯설었던 캄보디아였는데, 2026년에 다시 방문해 보니 정말 완전히 다른 나라처럼 새로워져 있었습니다.</p>
+    <p class="mb-3 text-ink-600 leading-relaxed">'상전벽해(桑田碧海)'라는 말이 이런 거구나, 하고 뼛속 깊이 느낄 정도였습니다. 눈부시게 발전한 캄보디아의 모습을 보며, 이 새롭게 변화된 땅에 부어질 하나님의 비전과 앞으로 펼쳐질 사역들에 더욱 큰 기대를 품게 됩니다.</p>
   </div>
 </template>
 
