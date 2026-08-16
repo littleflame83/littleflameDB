@@ -1872,7 +1872,11 @@
 
 <div id="ovcamModal" class="hidden fixed inset-0 z-[105] flex items-start sm:items-center justify-center p-0 sm:p-6 bg-ink-900/60 backdrop-blur-sm">
   <div id="ovcamModalPanel" class="relative bg-warm-card w-full sm:max-w-2xl sm:rounded-3xl shadow-soft h-full sm:h-auto sm:max-h-[85vh] overflow-y-auto p-7 sm:p-10">
-    <button type="button" id="ovcamModalClose" aria-label="닫기" class="absolute top-5 right-5 w-9 h-9 rounded-full bg-ink-900/5 hover:bg-ink-900/10 flex items-center justify-center transition-colors">
+    <button type="button" id="ovcamCopyLink" aria-label="공유하기" class="absolute top-5 right-16 h-9 px-3 rounded-full bg-ink-900/5 hover:bg-ink-900/10 flex items-center gap-1.5 text-xs font-semibold text-ink-700 transition-colors">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 16V4m0 0L7 9m5-5l5 5"/><path stroke-linecap="round" stroke-linejoin="round" d="M5 14v4a2 2 0 002 2h10a2 2 0 002-2v-4"/></svg>
+        <span id="ovcamCopyLinkText">공유</span>
+      </button>
+      <button type="button" id="ovcamModalClose" aria-label="닫기" class="absolute top-5 right-5 w-9 h-9 rounded-full bg-ink-900/5 hover:bg-ink-900/10 flex items-center justify-center transition-colors">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" d="M6 6l12 12M18 6L6 18"/></svg>
     </button>
     <div id="ovcamModalBody"></div>
@@ -1924,6 +1928,10 @@
 <!-- 상세보기 모달 (독립적으로 항상 사용 가능) -->
 <div id="ovrptModal" class="hidden fixed inset-0 z-[105] flex items-start sm:items-center justify-center p-0 sm:p-6 bg-ink-900/60 backdrop-blur-sm">
     <div id="ovrptModalPanel" class="relative bg-warm-card w-full sm:max-w-2xl sm:rounded-3xl shadow-soft h-full sm:h-auto sm:max-h-[85vh] overflow-y-auto p-7 sm:p-10">
+      <button type="button" id="ovrptCopyLink" aria-label="공유하기" class="absolute top-5 right-16 h-9 px-3 rounded-full bg-ink-900/5 hover:bg-ink-900/10 flex items-center gap-1.5 text-xs font-semibold text-ink-700 transition-colors">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 16V4m0 0L7 9m5-5l5 5"/><path stroke-linecap="round" stroke-linejoin="round" d="M5 14v4a2 2 0 002 2h10a2 2 0 002-2v-4"/></svg>
+        <span id="ovrptCopyLinkText">공유</span>
+      </button>
       <button type="button" id="ovrptModalClose" aria-label="닫기" class="absolute top-5 right-5 w-9 h-9 rounded-full bg-ink-900/5 hover:bg-ink-900/10 flex items-center justify-center transition-colors">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" d="M6 6l12 12M18 6L6 18"/></svg>
       </button>
@@ -1932,6 +1940,10 @@
   </div>
 <div id="ovltrModal" class="hidden fixed inset-0 z-[105] flex items-start sm:items-center justify-center p-0 sm:p-6 bg-ink-900/60 backdrop-blur-sm">
     <div id="ovltrModalPanel" class="relative bg-warm-card w-full sm:max-w-2xl sm:rounded-3xl shadow-soft h-full sm:h-auto sm:max-h-[85vh] overflow-y-auto p-7 sm:p-10">
+      <button type="button" id="ovltrCopyLink" aria-label="공유하기" class="absolute top-5 right-16 h-9 px-3 rounded-full bg-ink-900/5 hover:bg-ink-900/10 flex items-center gap-1.5 text-xs font-semibold text-ink-700 transition-colors">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 16V4m0 0L7 9m5-5l5 5"/><path stroke-linecap="round" stroke-linejoin="round" d="M5 14v4a2 2 0 002 2h10a2 2 0 002-2v-4"/></svg>
+        <span id="ovltrCopyLinkText">공유</span>
+      </button>
       <button type="button" id="ovltrModalClose" aria-label="닫기" class="absolute top-5 right-5 w-9 h-9 rounded-full bg-ink-900/5 hover:bg-ink-900/10 flex items-center justify-center transition-colors">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" d="M6 6l12 12M18 6L6 18"/></svg>
       </button>
@@ -2144,7 +2156,16 @@
   // 오버레이 상단 X 버튼은 제거함 — 상단 메인 메뉴로 이동/전환
 
   // 선교리포트 / 기도 편지 전체보기 오버레이 내부 카드 -> 상세 모달 (공용 헬퍼)
-  function openDetail(tmplPrefix, idx) {
+  // ⚙️ 이 표(카테고리별 이름/색/이동할 곳)만 한 번 정해두면,
+  //    새 글(템플릿)을 몇 개를 추가하든 아래 openDetail()이 매번 자동으로
+  //    "OOO 전체보기" 버튼을 글 맨 아래에 붙여줌 — 개별 글마다 따로 손댈 필요 없음.
+  const CATEGORY_INFO = {
+    ovrpt: { label: '가족이야기', overlay: 'reportsOverlay', color: 'rose-500' },
+    ovltr: { label: '기도편지', overlay: 'lettersOverlay', color: 'violet-500' },
+    ovcam: { label: '캄보디아 이야기', overlay: 'cambodiaOverlay', color: 'ember' },
+  };
+
+  function openDetail(tmplPrefix, idx, skipHash) {
     const modal = document.getElementById(tmplPrefix + 'Modal');
     const modalPanel = document.getElementById(tmplPrefix + 'ModalPanel');
     const modalBody = document.getElementById(tmplPrefix + 'ModalBody');
@@ -2152,10 +2173,29 @@
     if (!modal || !tmpl) return;
     modalBody.innerHTML = '';
     modalBody.appendChild(tmpl.content.cloneNode(true));
+
+    // 글 맨 아래에 해당 카테고리 "전체보기" 버튼을 자동으로 붙임 (모든 글에 항상 적용됨)
+    const info = CATEGORY_INFO[tmplPrefix];
+    if (info) {
+      const wrap = document.createElement('div');
+      wrap.className = 'mt-10 pt-8 border-t border-ink-900/10 text-center';
+      wrap.innerHTML = `
+        <a href="javascript:void(0)" onclick="closeDetail('${tmplPrefix}'); openOverlay('${info.overlay}')"
+          class="inline-flex items-center gap-2 text-sm font-semibold text-ink-900 border border-ink-900/15 hover:border-${info.color} hover:text-${info.color} px-6 py-3 rounded-full transition-colors">
+          ${info.label} 전체보기
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 6l6 6-6 6"/></svg>
+        </a>`;
+      modalBody.appendChild(wrap);
+    }
+
     modal.classList.remove('hidden');
     requestAnimationFrame(() => modal.classList.add('modal-open'));
     document.body.style.overflow = 'hidden';
     modalPanel.scrollTop = 0;
+    // 이 글만의 링크를 주소창에 반영 (공유 가능하게)
+    if (!skipHash) {
+      try { history.pushState(null, '', '#' + tmplPrefix + '-' + idx); } catch (e) {}
+    }
   }
   window.openDetail = openDetail;
 
@@ -2172,8 +2212,31 @@
     if (!anyOverlayOpen) {
       document.body.style.overflow = '';
     }
+    // 주소창의 글 링크 정리
+    try { history.pushState(null, '', location.pathname + location.search); } catch (e) {}
   }
   window.closeDetail = closeDetail;
+
+  // 글 하나만 공유하는 링크(#ovrpt-3 같은 주소)로 바로 들어왔을 때, 그 글을 자동으로 열어줌
+  function openFromHash() {
+    const hash = (location.hash || '').replace('#', '');
+    if (!hash) return;
+    const detailMatch = hash.match(/^(ovrpt|ovltr|ovcam)-(\d+)$/);
+    if (detailMatch) {
+      const prefix = detailMatch[1];
+      const idx = detailMatch[2];
+      // 해당 글이 들어있는 전체보기 창도 함께 열어서, 닫았을 때 목록으로 자연스럽게 이어지게 함
+      const overlayMap = { ovrpt: 'reportsOverlay', ovltr: 'lettersOverlay', ovcam: 'cambodiaOverlay' };
+      if (overlayMap[prefix]) openOverlay(overlayMap[prefix]);
+      openDetail(prefix, idx, true);
+      return;
+    }
+    if (ALL_OVERLAYS.includes(hash)) {
+      openOverlay(hash);
+    }
+  }
+  window.addEventListener('DOMContentLoaded', openFromHash);
+  if (document.readyState === 'complete' || document.readyState === 'interactive') openFromHash();
 
   function wireGalleryModal(cardClass, tmplPrefix, dataAttr, modalId, panelId, bodyId, closeId) {
     const modal = document.getElementById(modalId);
@@ -2187,6 +2250,44 @@
   wireGalleryModal('ovrpt-card', 'ovrpt', 'data-ovrpt', 'ovrptModal', 'ovrptModalPanel', 'ovrptModalBody', 'ovrptModalClose');
   wireGalleryModal('ovltr-card', 'ovltr', 'data-ovltr', 'ovltrModal', 'ovltrModalPanel', 'ovltrModalBody', 'ovltrModalClose');
   wireGalleryModal('ovcam-card', 'ovcam', 'data-ovcam', 'ovcamModal', 'ovcamModalPanel', 'ovcamModalBody', 'ovcamModalClose');
+
+  // 지금 보고 있는 글을 공유하는 버튼 (선교리포트/기도편지/캄보디아이야기 공용)
+  // 폰이면 카카오톡 등으로 바로 보낼 수 있는 공유창을 띄우고, 지원 안 하는 환경(PC 등)에서는 링크만 복사함
+  ['ovrpt', 'ovltr', 'ovcam'].forEach(prefix => {
+    const btn = document.getElementById(prefix + 'CopyLink');
+    const label = document.getElementById(prefix + 'CopyLinkText');
+    if (!btn) return;
+    btn.addEventListener('click', async () => {
+      const bodyEl = document.getElementById(prefix + 'ModalBody');
+      const titleEl = bodyEl ? bodyEl.querySelector('h2') : null;
+      const shareTitle = titleEl ? titleEl.textContent.trim() : document.title;
+
+      if (navigator.share) {
+        try {
+          await navigator.share({ title: shareTitle, url: location.href });
+          return; // 공유창에서 실제로 보냈든 취소했든, 별도 안내 문구는 안 띄움
+        } catch (e) {
+          // 사용자가 공유창을 취소한 경우 등 — 아무 것도 안 함
+          return;
+        }
+      }
+
+      // navigator.share를 지원하지 않는 환경(PC 등) — 링크 복사로 대신함
+      try {
+        await navigator.clipboard.writeText(location.href);
+      } catch (e) {
+        const t = document.createElement('textarea');
+        t.value = location.href;
+        document.body.appendChild(t);
+        t.select();
+        document.execCommand('copy');
+        document.body.removeChild(t);
+      }
+      const original = label.textContent;
+      label.textContent = '복사됨!';
+      setTimeout(() => { label.textContent = original; }, 1500);
+    });
+  });
 
   // 글 안의 사진을 누르면 크게 보고 다운로드할 수 있는 라이트박스 (한 글에 사진이 여러 장이면 화살표로 넘김)
   const imgLightbox = document.getElementById('imgLightbox');
