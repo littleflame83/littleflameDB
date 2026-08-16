@@ -120,7 +120,7 @@
 
       <!-- 데스크톱 메뉴 -->
       <nav class="hidden lg:flex items-center gap-9 text-[15px] font-medium text-ink-700">
-        <a href="javascript:void(0)" onclick="openOverlay('aboutOverlay')" class="hover:text-ember transition-colors">사역소개</a>
+        <a href="javascript:void(0)" onclick="openOverlay('aboutOverlay')" class="hover:text-ember transition-colors">사역 소개</a>
         <a href="javascript:void(0)" onclick="openOverlay('cambodiaOverlay')" class="hover:text-ember transition-colors">캄보디아 이야기</a>
         <a href="javascript:void(0)" onclick="openOverlay('galleryOverlay')" class="hover:text-ember transition-colors">선교 사진</a>
         <a href="javascript:void(0)" onclick="openOverlay('reportsOverlay')" class="hover:text-ember transition-colors">가족 이야기</a>
@@ -144,7 +144,7 @@
   <!-- 모바일 메뉴 패널 -->
   <div id="mobileMenu" class="hidden lg:hidden border-t border-ink-900/5 bg-white/95 backdrop-blur-md">
     <nav class="flex flex-col px-6 py-4 gap-1 text-[15px] font-medium text-ink-700">
-      <a href="javascript:void(0)" onclick="openOverlay('aboutOverlay')" class="py-2.5 border-b border-ink-900/5">사역소개</a>
+      <a href="javascript:void(0)" onclick="openOverlay('aboutOverlay')" class="py-2.5 border-b border-ink-900/5">사역 소개</a>
       <a href="javascript:void(0)" onclick="openOverlay('cambodiaOverlay')" class="py-2.5 border-b border-ink-900/5">캄보디아 이야기</a>
       <a href="javascript:void(0)" onclick="openOverlay('galleryOverlay')" class="py-2.5 border-b border-ink-900/5">선교 사진</a>
       <a href="javascript:void(0)" onclick="openOverlay('reportsOverlay')" class="py-2.5 border-b border-ink-900/5">가족 이야기</a>
@@ -243,54 +243,6 @@
 </section>
 
 
-<!-- ================= 사역소개 ================= -->
-<section class="bg-warm-bg pb-20 sm:pb-24 px-6">
-  <div class="max-w-6xl mx-auto">
-    <div class="reveal text-center mb-14 sm:mb-16">
-      <p class="text-ember text-xs font-bold tracking-[0.25em] uppercase mb-3">Our Mission</p>
-      <h2 class="text-2xl sm:text-3xl font-bold tracking-tight">사역소개</h2>
-    </div>
-
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-7 lg:gap-8">
-
-      <article class="reveal group bg-warm-card rounded-3xl overflow-hidden shadow-card hover:shadow-soft transition-shadow duration-300">
-        <a href="javascript:void(0)" onclick="openOverlay('aboutOverlay')" class="block">
-          <div class="aspect-[4/3] overflow-hidden">
-            <img src="images/img-7bf08bd0fd0d.jpg" alt="홍성화 선교사 이야기" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-          </div>
-          <div class="p-6">
-            <span class="text-[11px] font-semibold text-ember tracking-wide uppercase">👨‍🏫 사역소개</span>
-            <h3 class="mt-2 font-bold text-lg leading-snug text-ink-900">홍성화 선교사 이야기</h3>
-            <p class="mt-2 text-sm text-ink-500 leading-relaxed">신학교 사역과 독서 모임을 통해 다음 세대 리더를 세우는 이야기를 나눕니다.</p>
-          </div>
-        </a>
-      </article>
-
-      <article class="reveal group bg-warm-card rounded-3xl overflow-hidden shadow-card hover:shadow-soft transition-shadow duration-300">
-        <a href="javascript:void(0)" onclick="openOverlay('aboutOverlay')" class="block">
-          <div class="aspect-[4/3] overflow-hidden">
-            <img src="images/img-7bf08bd0fd0d.jpg" alt="박윤희 선교사 이야기" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-          </div>
-          <div class="p-6">
-            <span class="text-[11px] font-semibold text-ember tracking-wide uppercase">👩‍💼 사역소개</span>
-            <h3 class="mt-2 font-bold text-lg leading-snug text-ink-900">박윤희 선교사 이야기</h3>
-            <p class="mt-2 text-sm text-ink-500 leading-relaxed">'사랑방' 상담 사역으로 현지인의 마음을 어루만지는 이야기를 나눕니다.</p>
-          </div>
-        </a>
-      </article>
-
-    </div>
-
-    <div class="reveal text-center mt-12">
-      <a href="javascript:void(0)" onclick="openOverlay('aboutOverlay')" class="inline-flex items-center gap-2 text-sm font-semibold text-ink-900 border border-ink-900/15 hover:border-ember hover:text-ember px-6 py-3 rounded-full transition-colors">
-        사역소개 전체보기
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 6l6 6-6 6"/></svg>
-      </a>
-    </div>
-  </div>
-</section>
-
-
 <!-- ================= 캄보디아 이야기 ================= -->
 <section class="bg-[#FBF6EE] py-20 sm:py-24 px-6">
   <div class="max-w-6xl mx-auto">
@@ -303,11 +255,11 @@
       <article class="reveal group bg-warm-card rounded-3xl overflow-hidden shadow-card hover:shadow-soft transition-shadow duration-300 max-w-md mx-auto">
         <button type="button" onclick="openDetail('ovcam', 0)" class="block w-full text-left">
           <div class="aspect-[4/3] overflow-hidden">
-            <img src="images/img-durian1.jpg" alt="두리안, 10%의 기쁨" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+            <img src="images/img-durian1.jpg" alt="두리안, 10$의 기쁨" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
           </div>
           <div class="p-6">
             <span class="text-[11px] font-semibold text-ember tracking-wide uppercase">2008.05.07</span>
-            <h3 class="mt-2 font-bold text-lg leading-snug text-ink-900">🍈 두리안, 10%의 기쁨</h3>
+            <h3 class="mt-2 font-bold text-lg leading-snug text-ink-900">🍈 두리안, 10$의 기쁨</h3>
             <p class="mt-2 text-sm text-ink-500 leading-relaxed">캄보디아 단기선교 3개월 차, 낯선 과일 '두리안'을 통해 진정한 '만원의 행복'과 나눔의 기쁨을 깊이 깨달았던 그날의 일기를 나눕니다.</p>
           </div>
         </button>
@@ -1461,7 +1413,7 @@
 <div id="aboutOverlay" class="hidden fixed inset-x-0 bottom-0 top-16 sm:top-20 z-[70] bg-warm-bg overflow-y-auto">
   <div class="sticky top-0 z-10 bg-white/80 backdrop-blur-md border-b border-ink-900/5">
     <div class="max-w-6xl mx-auto px-6 h-16 sm:h-20 flex items-center justify-between">
-      <span class="font-bold text-ink-900">사역소개</span>
+      <span class="font-bold text-ink-900">사역 소개</span>
       
     </div>
   </div>
@@ -1560,11 +1512,11 @@
 
       <button type="button" data-ovcam="0" class="ovcam-card reveal group text-left bg-warm-card rounded-3xl overflow-hidden shadow-card hover:shadow-soft transition-shadow duration-300">
         <div class="aspect-[4/3] overflow-hidden">
-          <img src="images/img-durian1.jpg" alt="두리안, 10%의 기쁨" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+          <img src="images/img-durian1.jpg" alt="두리안, 10$의 기쁨" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
         </div>
         <div class="p-6">
           <span class="text-[11px] font-semibold text-ember tracking-wide uppercase">2008.05.07</span>
-          <h3 class="mt-2 font-bold text-lg leading-snug text-ink-900">🍈 두리안, 10%의 기쁨</h3>
+          <h3 class="mt-2 font-bold text-lg leading-snug text-ink-900">🍈 두리안, 10$의 기쁨</h3>
           <p class="mt-2 text-sm text-ink-500 leading-relaxed">캄보디아 단기선교 3개월 차, 낯선 과일 '두리안'을 통해 진정한 '만원의 행복'과 나눔의 기쁨을 깊이 깨달았던 그날의 일기를 나눕니다.</p>
         </div>
       </button>
@@ -1623,7 +1575,7 @@
 
 <template id="ovcam-tmpl-0">
   <span class="text-[11px] font-semibold text-ember tracking-wide uppercase">2008년 5월 7일</span>
-  <h2 class="mt-2 mb-6 font-bold text-2xl sm:text-3xl leading-snug text-ink-900">🍈 두리안, 10%의 기쁨</h2>
+  <h2 class="mt-2 mb-6 font-bold text-2xl sm:text-3xl leading-snug text-ink-900">🍈 두리안, 10$의 기쁨</h2>
   <div class="aspect-[16/10] rounded-2xl overflow-hidden mb-6"><img src="images/img-durian1.jpg" alt="두리안을 나눠 먹는 모습" class="w-full h-full object-cover" /></div>
   <div class="text-[15px]">
     <p class="mb-5 text-ink-900 font-medium italic leading-relaxed">💡 2008년 5월 7일의 기록 — 캄보디아 단기선교 3개월 차, 낯선 과일 '두리안'을 통해 진정한 '만원의 행복'과 나눔의 기쁨을 깊이 깨달았던 그날의 일기를 나눕니다.</p>
