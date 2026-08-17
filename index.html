@@ -610,30 +610,22 @@
         <div class="space-y-1.5 text-sm leading-relaxed text-white/60">
           <p>대한예수교장로회(통합) 목사</p>
           <p>PCK 허입 선교사</p>
-          <p>ROKMC 928기</p>
+          <p>ROKMC 928K</p>
+          <p class="pt-2 text-white/40 text-xs">기도로 함께하는 캄보디아 선교</p>
         </div>
       </div>
 
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-8 text-sm">
-        <div>
-          <p class="text-white/40 text-xs font-semibold tracking-wide uppercase mb-3">Contact</p>
-          <ul class="space-y-1.5 text-white/60">
-            <li><a href="mailto:littleflame83@gmail.com" class="hover:text-white transition-colors">littleflame83@gmail.com</a></li>
-            <li><a href="tel:+821025437107" class="hover:text-white transition-colors">+82 10-2543-7107</a></li>
-          </ul>
-        </div>
-        <div>
-          <p class="text-white/40 text-xs font-semibold tracking-wide uppercase mb-3">Donation</p>
-          <ul class="space-y-1.5 text-white/60">
-            <li>카카오뱅크 3333-05-8716882</li>
-            <li>예금주 : 홍성화</li>
-          </ul>
-        </div>
+      <div class="text-sm">
+        <p class="text-ember text-xs font-semibold tracking-[0.18em] uppercase mb-3">Contact</p>
+        <ul class="space-y-1.5 text-white/70">
+          <li><a href="mailto:littleflame83@gmail.com" class="hover:text-ember transition-colors">littleflame83@gmail.com</a></li>
+          <li><a href="tel:+821025437107" class="hover:text-ember transition-colors">+82 10-2543-7107</a></li>
+        </ul>
       </div>
     </div>
 
     <div class="mt-14 pt-7 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4">
-      <p class="text-xs text-white/35">&copy; <span id="footerYear">2026</span> 작은불꽃 홍선교. All rights reserved.</p>
+      <p class="text-xs text-white/35">&copy; <span id="footerYear"></span> 작은불꽃 홍선교. All rights reserved.</p>
       <div class="flex items-center gap-3">
         <a href="https://open.kakao.com/o/sIm7KV4h" target="_blank" rel="noopener noreferrer" aria-label="카카오톡 오픈채팅방" class="w-9 h-9 rounded-full bg-white/5 hover:bg-white/15 flex items-center justify-center transition-colors">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" class="text-white/70"><path d="M12 4.5c-4.7 0-8.5 3-8.5 6.8 0 2.5 1.8 4.8 4.5 6.1l-.9 3.1c-.1.4.3.7.7.5l3.6-2.1c.2 0 .4.1.6.1 4.7 0 8.5-3 8.5-6.8S16.7 4.5 12 4.5z"/></svg>
@@ -1749,6 +1741,9 @@
 
 <script>
   // 모바일 메뉴 토글
+  const footerYear = document.getElementById('footerYear');
+  if (footerYear) footerYear.textContent = new Date().getFullYear();
+
   const menuBtn = document.getElementById('menuBtn');
   const mobileMenu = document.getElementById('mobileMenu');
   const iconOpen = document.getElementById('iconOpen');
