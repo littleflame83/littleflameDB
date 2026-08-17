@@ -1922,6 +1922,13 @@
     return (s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   }
 
+  // 화면에 보여줄 때만 이름을 성만 남기고 가림 (구글시트에는 원래 이름 그대로 저장됨, 표시할 때만 가공)
+  function maskName(name) {
+    const trimmed = (name || '').trim();
+    if (trimmed.length <= 1) return trimmed;
+    return trimmed[0] + '○'.repeat(trimmed.length - 1);
+  }
+
   async function loadGuestbook() {
     try {
       const res = await fetch(GUEST_SHEET_CSV_URL, { cache: 'no-store' });
@@ -1939,7 +1946,7 @@
         guestList.innerHTML = '<p class="text-sm text-ink-400 col-span-full text-center py-6">아직 남겨진 메시지가 없어요. 첫 번째 응원을 남겨주세요!</p>';
       } else {
         rows.slice(-24).reverse().forEach((row, i) => {
-          const name = (nameIdx >= 0 ? row[nameIdx] : '') || '익명';
+          const name = maskName((nameIdx >= 0 ? row[nameIdx] : '') || '익명');
           const msg = (msgIdx >= 0 ? row[msgIdx] : '') || '';
           const note = document.createElement('div');
           note.className = 'postit rounded-xl p-5 shadow-sm';
