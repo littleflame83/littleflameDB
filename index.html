@@ -370,7 +370,7 @@
     </div>
 
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-7 lg:gap-8">
-      <article class="reveal group bg-warm-card rounded-3xl overflow-hidden shadow-card hover:shadow-soft transition-shadow duration-300 cursor-pointer" onclick="openOverlay('galleryOverlay'); filterGallery('all')">
+      <article class="reveal group bg-warm-card rounded-3xl overflow-hidden shadow-card hover:shadow-soft transition-shadow duration-300 cursor-pointer" onclick="openGalleryLightbox(['images/img-7d0ddde450cd.jpg','images/img-136fd018d63f.jpg','images/img-3351929aa61f.jpg'], 0)">
         <div class="aspect-[4/3] overflow-hidden">
           <img src="images/img-7d0ddde450cd.jpg" alt="캄보디아 답사 — 공항, 동기 목사님 만남, 캄장신 방문" loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
         </div>
@@ -383,7 +383,7 @@
         </div>
       </article>
 
-      <article class="reveal group bg-warm-card rounded-3xl overflow-hidden shadow-card hover:shadow-soft transition-shadow duration-300 cursor-pointer" onclick="openOverlay('galleryOverlay'); filterGallery('all')">
+      <article class="reveal group bg-warm-card rounded-3xl overflow-hidden shadow-card hover:shadow-soft transition-shadow duration-300 cursor-pointer" onclick="openGalleryLightbox(['images/img-a0fe2194407e.jpg','images/img-cb0b546e3ae0.jpg'], 0)">
         <div class="aspect-[4/3] overflow-hidden">
           <img src="images/img-a0fe2194407e.jpg" alt="총회 선교사 훈련 수료" loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
         </div>
@@ -1616,7 +1616,6 @@
   <div class="sticky top-0 z-10 bg-white/80 backdrop-blur-md border-b border-ink-900/5">
     <div class="max-w-6xl mx-auto px-6 h-16 sm:h-20 flex items-center justify-between gap-4">
       <span class="font-bold text-ink-900">선교 사진</span>
-      <span class="text-xs text-ink-400">최근 사진이 위에 표시됩니다</span>
     </div>
   </div>
 
@@ -1657,10 +1656,7 @@
 
     </div>
 
-    <div class="max-w-3xl mx-auto mt-12 p-5 sm:p-6 rounded-2xl border border-ink-900/10 bg-white/70 text-center">
-      <p class="text-sm font-semibold text-ink-900">앞으로 사진이 10개, 20개로 늘어나도 괜찮습니다.</p>
-      <p class="mt-2 text-xs sm:text-sm text-ink-500 leading-relaxed">메인에는 최신 사진만 보여주고, 이곳에서 카테고리별 전체 앨범을 관리하는 방식으로 확장할 수 있습니다.</p>
-    </div>
+
   </section>
 </div>
 
