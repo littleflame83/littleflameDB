@@ -325,6 +325,19 @@
 
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-7 lg:gap-8">
       <article class="reveal group bg-warm-card rounded-3xl overflow-hidden shadow-card hover:shadow-soft transition-shadow duration-300">
+        <button type="button" onclick="openDetail('ovcam', 8)" class="block w-full text-left">
+          <div class="aspect-[4/3] overflow-hidden">
+            <img src="images/img-trip2014-1.jpg" alt="2014년 캄보디아 방문, 아내와 함께한 첫 답사" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+          </div>
+          <div class="p-6">
+            <span class="text-[11px] font-semibold text-ember tracking-wide uppercase">2014.06.24</span>
+            <h3 class="mt-2 font-bold text-lg leading-snug text-ink-900">✈️ 2014년 캄보디아 방문: 아내와 함께한 첫 답사</h3>
+            <p class="mt-2 text-sm text-ink-500 leading-relaxed">신대원 3학년 시절, 아내와 함께 떠난 캄보디아 답사기. 아내의 마음속에 캄보디아를 향한 확신이 싹트기 시작한 소중한 시간을 나눕니다.</p>
+          </div>
+        </button>
+      </article>
+
+      <article class="reveal group bg-warm-card rounded-3xl overflow-hidden shadow-card hover:shadow-soft transition-shadow duration-300">
         <button type="button" onclick="openDetail('ovcam', 7)" class="block w-full text-left">
           <div class="aspect-[4/3] overflow-hidden">
             <img src="images/img-vietnam1.jpg" alt="버스 타고 떠난 베트남 호찌민 여행" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
@@ -333,19 +346,6 @@
             <span class="text-[11px] font-semibold text-ember tracking-wide uppercase">2008.11</span>
             <h3 class="mt-2 font-bold text-lg leading-snug text-ink-900">🇻🇳 버스 타고 떠난 베트남 호찌민 여행</h3>
             <p class="mt-2 text-sm text-ink-500 leading-relaxed">캄보디아 단기선교 중 잠시 다녀왔던 이웃 나라 베트남. 프놈펜에서 호찌민까지의 버스 여정과 솔직하고 유쾌한 쌀국수 투어 추억을 나눕니다.</p>
-          </div>
-        </button>
-      </article>
-
-      <article class="reveal group bg-warm-card rounded-3xl overflow-hidden shadow-card hover:shadow-soft transition-shadow duration-300">
-        <button type="button" onclick="openDetail('ovcam', 6)" class="block w-full text-left">
-          <div class="aspect-[4/3] overflow-hidden">
-            <img src="images/img-wedding1.jpg" alt="캄보디아 결혼식 풍경과 깜짝 에피소드" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-          </div>
-          <div class="p-6">
-            <span class="text-[11px] font-semibold text-ember tracking-wide uppercase">2008.09</span>
-            <h3 class="mt-2 font-bold text-lg leading-snug text-ink-900">💒 캄보디아 결혼식 풍경과 깜짝 에피소드</h3>
-            <p class="mt-2 text-sm text-ink-500 leading-relaxed">한국과는 사뭇 달랐던 캄보디아 현지 결혼식의 이모저모와, 돌아오는 길에 겪은 소소하고 유쾌한 에피소드를 나눕니다.</p>
           </div>
         </button>
       </article>
@@ -609,9 +609,22 @@
         </div>
         <div class="space-y-1.5 text-sm leading-relaxed text-white/60">
           <p>대한예수교장로회(통합) 목사</p>
-          <p>예장통합 총회파송 선교사(PCK)</p>
+          <p>PCK 허입 선교사</p>
           <p>ROKMC 928K</p>
+          <p class="pt-2 text-ember/70 text-xs font-semibold tracking-[0.2em] uppercase">Phnom Penh, Cambodia</p>
         </div>
+      </div>
+
+      <div class="text-sm">
+        <p class="text-ember text-xs font-semibold tracking-[0.18em] uppercase mb-3">바로가기</p>
+        <ul class="space-y-1.5 text-white/70">
+          <li><a href="javascript:void(0)" onclick="openOverlay('aboutOverlay')" class="hover:text-ember transition-colors">사역소개</a></li>
+          <li><a href="javascript:void(0)" onclick="openOverlay('cambodiaOverlay')" class="hover:text-ember transition-colors">캄보디아 이야기</a></li>
+          <li><a href="javascript:void(0)" onclick="openOverlay('galleryOverlay')" class="hover:text-ember transition-colors">선교 사진</a></li>
+          <li><a href="javascript:void(0)" onclick="openOverlay('reportsOverlay')" class="hover:text-ember transition-colors">가족 이야기</a></li>
+          <li><a href="javascript:void(0)" onclick="openOverlay('lettersOverlay')" class="hover:text-ember transition-colors">기도 편지</a></li>
+          <li><a href="javascript:void(0)" onclick="openOverlay('supportOverlay')" class="hover:text-ember transition-colors">후원 안내</a></li>
+        </ul>
       </div>
 
       <div class="text-sm">
@@ -1267,6 +1280,17 @@
 
     <div class="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-7 lg:gap-8">
 
+      <button type="button" data-ovcam="8" class="ovcam-card reveal group text-left bg-warm-card rounded-3xl overflow-hidden shadow-card hover:shadow-soft transition-shadow duration-300">
+        <div class="aspect-[4/3] overflow-hidden">
+          <img src="images/img-trip2014-1.jpg" alt="2014년 캄보디아 방문, 아내와 함께한 첫 답사" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+        </div>
+        <div class="p-6">
+          <span class="text-[11px] font-semibold text-ember tracking-wide uppercase">2014.06.24</span>
+          <h3 class="mt-2 font-bold text-lg leading-snug text-ink-900">✈️ 2014년 캄보디아 방문: 아내와 함께한 첫 답사</h3>
+          <p class="mt-2 text-sm text-ink-500 leading-relaxed">신대원 3학년 시절, 아내와 함께 떠난 캄보디아 답사기. 아내의 마음속에 캄보디아를 향한 확신이 싹트기 시작한 소중한 시간을 나눕니다.</p>
+        </div>
+      </button>
+
       <button type="button" data-ovcam="7" class="ovcam-card reveal group text-left bg-warm-card rounded-3xl overflow-hidden shadow-card hover:shadow-soft transition-shadow duration-300">
         <div class="aspect-[4/3] overflow-hidden">
           <img src="images/img-vietnam1.jpg" alt="버스 타고 떠난 베트남 호찌민 여행" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
@@ -1424,6 +1448,32 @@
     <p class="mb-3 text-ink-600 leading-relaxed">개헤엄은 보너스샷 🐶💦</p>
 
     <div class="aspect-[16/10] rounded-2xl overflow-hidden my-6"><img src="images/img-baptism6.jpg" alt="바다에서 개헤엄 치는 모습" class="w-full h-full object-cover" /></div>
+  </div>
+</template>
+
+<template id="ovcam-tmpl-8">
+  <span class="text-[11px] font-semibold text-ember tracking-wide uppercase">2014년 6월 24일</span>
+  <h2 class="mt-2 mb-6 font-bold text-2xl sm:text-3xl leading-snug text-ink-900">✈️ 2014년 캄보디아 방문: 아내와 함께한 첫 답사</h2>
+  <div class="text-[15px]">
+    <p class="mb-3 text-ink-600 leading-relaxed">신대원 3학년 시절, 감사하게도 사역하던 교회의 양해를 구하고 휴가를 받아 아내와 함께 캄보디아행 비행기에 올랐습니다. 🛫 선교라는 길은 저 혼자만의 결단으로 갈 수 있는 것이 아니라, 사랑하는 아내와 함께 걸어가야 하는 길이었기 때문입니다. 👫</p>
+    <p class="mb-3 text-ink-600 leading-relaxed">저는 이미 2008년에 캄보디아에서 지내본 경험이 있었고, 체질상 추운 곳(러시아 🥶)보다는 더운 곳(캄보디아 🥵)이 훨씬 더 잘 맞았기에 늘 캄보디아를 품고 기도하고 있었습니다.</p>
+    <p class="mb-3 text-ink-600 leading-relaxed">하지만 가장 중요한 것은 '과연 아내도 그곳의 환경을 견딜 수 있을까? 캄보디아를 마음에 들어 할까?' 하는 것이었고, 이번 방문은 바로 그 마음을 확인하기 위한 아주 중요한 답사였습니다. 🔍</p>
+    <p class="mb-3 text-ink-600 leading-relaxed">출국 전, 2008년에 섬겼던 선교사님께 조심스레 연락을 드렸는데 너무나도 흔쾌히 가이드를 자처해 주셨습니다. 🙏 막상 캄보디아에 도착하니, 선교사님께서는 프놈펜에서부터 씨엠립 앙코르와트까지 그야말로 '풀코스'로 저희를 안내해 주셨습니다.</p>
+    <p class="mb-3 text-ink-600 leading-relaxed">제가 예전에 1년 동안 머물면서도 가보지 못했던 새롭고 아름다운 곳들만 쏙쏙 골라 보여주셔서 얼마나 감사했는지 모릅니다. ✨</p>
+
+    <div class="aspect-[16/10] rounded-2xl overflow-hidden my-6"><img src="images/img-trip2014-1.jpg" alt="앙코르와트 앞에서 아내와 함께" class="w-full h-full object-cover" /></div>
+
+    <p class="mb-3 text-ink-600 leading-relaxed">예전에 앙코르와트를 갈 때는 차로 오랜 시간 이동했었는데, 이번에는 무려 경비행기를 타고 가는 신기하고 특별한 경험도 했습니다! 🛩️</p>
+    <p class="mb-3 text-ink-600 leading-relaxed">앙코르와트 내부에서는 사진이 가장 잘 나오는 핫스팟 장소까지 친절히 알려주셔서, 아내와 함께 정말 귀하고 멋진 인생 사진도 남길 수 있었습니다. 📸</p>
+
+    <div class="aspect-[16/10] rounded-2xl overflow-hidden my-6"><img src="images/img-trip2014-2.jpg" alt="빵 그림 앞에서 다정하게 찍은 인생 사진" class="w-full h-full object-cover" /></div>
+
+    <p class="mb-3 text-ink-600 leading-relaxed">선교사님의 따뜻한 섬김 덕분에 캄보디아에서 너무나 좋은 추억을 한가득 안고 돌아올 수 있었습니다. 아마도 이때 아내의 마음속에 '캄보디아, 생각보다 괜찮네! 싫지 않다.'라는 긍정적인 마음이 싹튼 것 같습니다. 💖</p>
+    <p class="mb-3 text-ink-600 leading-relaxed">아내가 그곳을 힘들어하지 않고 함께 나아갈 수 있겠다는 확신을 얻은 것! 그것만으로도 이번 답사는 정말 엄청난 수확이었습니다. 🌾</p>
+    <p class="mb-3 text-ink-600 leading-relaxed">그리고, 바로 이 답사 기간 동안 제 인생에 아주 큰 전환점이 되는 놀라운 일이 기다리고 있었으니...</p>
+    <p class="mb-3 text-ink-900 font-medium italic leading-relaxed">바로 '캄장신(캄보디아장로교신학교)'과의 만남이었습니다. 🏫 (이 가슴 벅찬 이야기는 다음 글에서 이어집니다! 😉)</p>
+
+    <div class="aspect-[16/10] rounded-2xl overflow-hidden my-6"><img src="images/img-trip2014-3.jpg" alt="캄장신(캄보디아장로교신학교) 건물 표지판" class="w-full h-full object-cover" /></div>
   </div>
 </template>
 
@@ -1740,8 +1790,7 @@
 
 <script>
   // 모바일 메뉴 토글
-  const footerYear = document.getElementById('footerYear');
-  if (footerYear) footerYear.textContent = new Date().getFullYear();
+  // (저작권 연도는 아래에서 한 번 더 정확히 설정됨)
 
   const menuBtn = document.getElementById('menuBtn');
   const mobileMenu = document.getElementById('mobileMenu');
