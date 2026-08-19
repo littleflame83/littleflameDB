@@ -2221,6 +2221,7 @@
     prayed:     { ko: '기도했습니다',           en: 'Prayed',             km: 'បានអធិស្ឋានហើយ' },
     prayHint:   { ko: '한 번 눌러두면 이 기도제목을 기억하는 표시가 저장됩니다.', en: 'Tap once to remember that you prayed for this.', km: 'ចុចម្ដងដើម្បីរក្សាទុកថាអ្នកបានអធិស្ឋាន។' },
     viewAll:    { ko: '전체보기', en: 'View All', km: 'មើលទាំងអស់' },
+    share:      { ko: '공유', en: 'Share', km: 'ចែករំលែក' },
   };
   function uiText(key) {
     const t = UI_TEXT[key];
@@ -2241,6 +2242,10 @@
     if (typeof currentLang !== 'undefined' && currentLang !== 'ko') {
       translateSubtree(modalBody, currentLang);
     }
+
+    // "공유" 버튼 글자는 글을 열 때마다 지금 언어에 정확히 맞춰서 고정 (스캔 누락과 무관하게 항상 일치)
+    const shareLabelEl = document.getElementById(tmplPrefix + 'CopyLinkText');
+    if (shareLabelEl) shareLabelEl.textContent = uiText('share');
 
     // 글별 기도 버튼: 각 글의 기도제목을 읽은 뒤 방문자가 "기도했어요" 표시를 남길 수 있습니다.
     // 현재는 로그인/서버 없이 브라우저에만 저장됩니다. 여러 사람의 공동 카운터는 추후 Apps Script/DB를 연결하면 됩니다.
