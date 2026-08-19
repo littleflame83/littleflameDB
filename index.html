@@ -2112,8 +2112,15 @@
       await Promise.all(chunk.map(async (node) => {
         const original = node.__originalKo || node.nodeValue;
         node.__originalKo = original; // 나중에 '한국어'로 되돌릴 때 사용
+        const leading = original.match(/^\s*/)[0];
+        const trailing = original.match(/\s*$/)[0];
         const translated = await translateText(original.trim(), target);
-        node.nodeValue = translated; // 통째로 교체 (부분 문자열 매칭 실패 방지)
+        node.nodeValue = leading + translated + trailing; // 앞뒤 공백은 그대로 살려서 붙이기
+        if (window.__i18nDebugCount === undefined) window.__i18nDebugCount = 0;
+        if (window.__i18nDebugCount < 5) {
+          window.__i18nDebugCount++;
+          console.log('[번역 확인 ' + window.__i18nDebugCount + '] "' + original.trim() + '" → "' + translated + '"');
+        }
       }));
     }
   }
@@ -2162,11 +2169,19 @@
           try {
             const original = node.__originalKo || node.nodeValue;
             node.__originalKo = original;
+            const leading = original.match(/^\s*/)[0];
+            const trailing = original.match(/\s*$/)[0];
             const translated = await translateText(original.trim(), lang);
-            node.nodeValue = translated; // 통째로 교체 (부분 문자열 매칭 실패 방지)
+            node.nodeValue = leading + translated + trailing;
+            if (window.__i18nDebugCount === undefined) window.__i18nDebugCount = 0;
+            if (window.__i18nDebugCount < 5) {
+              window.__i18nDebugCount++;
+              console.log('[번역 확인 ' + window.__i18nDebugCount + '] "' + original.trim() + '" → "' + translated + '"');
+            }
             successCount++;
           } catch (err) {
             failCount++;
+            console.error('[번역 실패]', err);
           }
         }));
         label.textContent = '번역중… ' + (successCount + failCount) + '/' + foundNodes.length;
