@@ -201,6 +201,16 @@
       </nav>
 
       <div class="flex items-center gap-3">
+        <div class="relative">
+          <button type="button" id="langBtn" onclick="toggleLangMenu()" aria-label="언어 선택" class="flex items-center gap-1 text-sm font-semibold text-ink-700 hover:text-ember transition-colors px-2 py-1.5 rounded-full border border-ink-900/10">
+            🌐 <span id="langBtnLabel">한국어</span>
+          </button>
+          <div id="langMenu" class="hidden absolute right-0 mt-2 w-36 bg-white rounded-2xl shadow-soft border border-ink-900/5 py-1.5 z-50">
+            <button type="button" onclick="setLang('ko')" class="w-full text-left px-4 py-2 text-sm hover:bg-warm-bg text-ink-800">한국어</button>
+            <button type="button" onclick="setLang('en')" class="w-full text-left px-4 py-2 text-sm hover:bg-warm-bg text-ink-800">🇺🇸 English</button>
+            <button type="button" onclick="setLang('km')" class="w-full text-left px-4 py-2 text-sm hover:bg-warm-bg text-ink-800">🇰🇭 ខ្មែរ</button>
+          </div>
+        </div>
         <a href="javascript:void(0)" onclick="openOverlay('supportOverlay')" class="hidden sm:inline-flex items-center gap-1.5 bg-ember hover:bg-ember-dark text-white text-sm font-semibold px-5 py-2.5 rounded-full shadow-soft transition-colors">
           후원하기
         </a>
@@ -2027,6 +2037,107 @@
   };
 
   // 푸터 저작권 연도를 매년 자동으로 최신 연도로 표시 (수동으로 안 고쳐도 됨)
+  // ============================================================
+  // 🌐 실시간 번역 (MyMemory 무료 API — 키 없이 브라우저에서 바로 호출 가능)
+  //    카카오톡 인앱브라우저 등에서도 항상 보이도록, 브라우저 내장 번역 대신
+  //    홈페이지 안에 직접 버튼을 둠. 번역 결과는 메모리에 캐싱해서
+  //    같은 문장을 반복해서 API로 보내지 않도록 함.
+  // ============================================================
+  let currentLang = 'ko';
+  const translationCache = new Map(); // "ko텍스트|목표언어" -> 번역결과
+
+  function toggleLangMenu() {
+    document.getElementById('langMenu').classList.toggle('hidden');
+  }
+  window.toggleLangMenu = toggleLangMenu;
+
+  document.addEventListener('click', (e) => {
+    const menu = document.getElementById('langMenu');
+    const btn = document.getElementById('langBtn');
+    if (menu && !menu.classList.contains('hidden') && !menu.contains(e.target) && e.target !== btn) {
+      menu.classList.add('hidden');
+    }
+  });
+
+  const TRANSLATE_WORKER_URL = 'https://flat-shape-f26f.littleflame83.workers.dev/';
+
+  async function translateText(text, target) {
+    const key = text + '|' + target;
+    if (translationCache.has(key)) return translationCache.get(key);
+    try {
+      const res = await fetch(TRANSLATE_WORKER_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text, target }),
+      });
+      const data = await res.json();
+      const translated = (data && data.translatedText) ? data.translatedText : text;
+      translationCache.set(key, translated);
+      return translated;
+    } catch (e) {
+      return text; // 번역 실패 시 원문 그대로 (화면이 깨지지 않게)
+    }
+  }
+
+  // 화면에 지금 보이는 한글 텍스트 노드들을 찾아서 번역함
+  function collectTextNodes(root) {
+    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+      acceptNode(node) {
+        const t = node.nodeValue.trim();
+        if (!t || t.length < 2) return NodeFilter.FILTER_REJECT;
+        if (!/[가-힣]/.test(t)) return NodeFilter.FILTER_REJECT; // 한글 없는 텍스트(숫자, 이모지 등)는 건너뜀
+        const tag = node.parentElement ? node.parentElement.tagName : '';
+        if (tag === 'SCRIPT' || tag === 'STYLE') return NodeFilter.FILTER_REJECT;
+        return NodeFilter.FILTER_ACCEPT;
+      }
+    });
+    const nodes = [];
+    let n;
+    while ((n = walker.nextNode())) nodes.push(n);
+    return nodes;
+  }
+
+  async function translateSubtree(root, target) {
+    const nodes = collectTextNodes(root);
+    // 너무 많은 요청이 한꺼번에 나가지 않도록 5개씩 묶어서 처리
+    const chunkSize = 5;
+    for (let i = 0; i < nodes.length; i += chunkSize) {
+      const chunk = nodes.slice(i, i + chunkSize);
+      await Promise.all(chunk.map(async (node) => {
+        if (!node.dataset) {
+          // 텍스트 노드 자체엔 dataset이 없어서, 원문을 노드에 직접 저장해둠
+        }
+        const original = node.__originalKo || node.nodeValue;
+        node.__originalKo = original; // 나중에 '한국어'로 되돌릴 때 사용
+        const translated = await translateText(original.trim(), target);
+        node.nodeValue = node.nodeValue.replace(original.trim(), translated);
+      }));
+    }
+  }
+
+  function restoreOriginal(root) {
+    const nodes = collectTextNodes(root);
+    nodes.forEach(node => {
+      if (node.__originalKo) node.nodeValue = node.__originalKo;
+    });
+  }
+
+  async function setLang(lang) {
+    currentLang = lang;
+    document.getElementById('langMenu').classList.add('hidden');
+    const label = document.getElementById('langBtnLabel');
+    label.textContent = lang === 'ko' ? '한국어' : (lang === 'en' ? 'Translating…' : 'កំពុងបកប្រែ…');
+
+    if (lang === 'ko') {
+      restoreOriginal(document.body);
+      label.textContent = '한국어';
+      return;
+    }
+    await translateSubtree(document.body, lang);
+    label.textContent = lang === 'en' ? 'English' : 'ខ្មែរ';
+  }
+  window.setLang = setLang;
+
   const footerYearEl = document.getElementById('footerYear');
   if (footerYearEl) footerYearEl.textContent = String(new Date().getFullYear());
 
@@ -2044,6 +2155,11 @@
     if (!modal || !tmpl) return;
     modalBody.innerHTML = '';
     modalBody.appendChild(tmpl.content.cloneNode(true));
+
+    // 지금 한국어가 아닌 언어가 선택되어 있으면, 새로 연 글도 바로 그 언어로 번역함
+    if (typeof currentLang !== 'undefined' && currentLang !== 'ko') {
+      translateSubtree(modalBody, currentLang);
+    }
 
     // 글별 기도 버튼: 각 글의 기도제목을 읽은 뒤 방문자가 "기도했어요" 표시를 남길 수 있습니다.
     // 현재는 로그인/서버 없이 브라우저에만 저장됩니다. 여러 사람의 공동 카운터는 추후 Apps Script/DB를 연결하면 됩니다.
