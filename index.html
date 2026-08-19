@@ -9,7 +9,9 @@
 <meta name="description" content="캄보디아 프놈펜에서 사역하는 작은불꽃 홍선교(홍성화 목사)의 공식 홈페이지. 캄보디아장로교신학교(캄장신) 교육사역과 선교 이야기, 기도편지, 사진, 가족 이야기, 후원 안내를 전합니다." />
 <meta name="author" content="홍성화 (작은불꽃 홍선교)" />
 <meta name="robots" content="index, follow, max-image-preview:large" />
-<meta name="theme-color" content="#FDFCF8" />
+<meta name="theme-color" content="#FDFCF8" media="(prefers-color-scheme: light)" />
+<meta name="theme-color" content="#17130F" media="(prefers-color-scheme: dark)" />
+<meta name="color-scheme" content="light dark" />
 <link rel="preconnect" href="https://cdn.jsdelivr.net" />
 <link rel="preconnect" href="https://www.googletagmanager.com" />
 <meta name="keywords" content="작은불꽃, 홍선교, 홍성화, 홍성화 목사, 홍성화 선교사, 캄보디아, 캄보디아 선교사, 캄보디아 선교, 프놈펜 선교사, 캄장신, 캄보디아장로교신학교, 캄보디아장로회신학교, 캄보디아장로교신학대학교, PCK, PCK 선교사, 총회 파송 선교사, 예장통합 선교사" />
@@ -164,6 +166,48 @@
   #ovltrModal.modal-open #ovltrModalPanel { transform: translateY(0); opacity: 1; }
   #ovrptModalPanel, #ovltrModalPanel { transform: translateY(16px); opacity: 0; transition: transform 0.3s ease, opacity 0.3s ease; }
   #ovrptModalBody img, #ovltrModalBody img, #ovcamModalBody img { cursor: zoom-in; }
+
+  /* 포스트잇은 배경이 항상 밝은 파스텔이라 다크모드에서도 글자는 항상 어둡게 고정 */
+  .postit p { color: #2A2521 !important; }
+</style>
+
+<!-- ===== 다크모드: 기기(폰/패드/PC)의 시스템 설정을 그대로 따라감 (노션 방식) ===== -->
+<style>
+  @media (prefers-color-scheme: dark) {
+    html, body { background-color: #17130F !important; color: #EDE6DC !important; }
+
+    /* 배경 */
+    .bg-warm-bg { background-color: #17130F !important; }
+    .bg-warm-card, .bg-white { background-color: #221D17 !important; }
+    .bg-white\/70, .bg-white\/80, .bg-white\/90, .bg-white\/95 { background-color: rgba(23,19,15,0.85) !important; }
+
+    /* 번갈아 나오는 아이보리 섹션(bg-[#FBF6EE]) - 위 배경(#17130F)과 구분되는 어두운 회색 */
+    .bg-\[\#FBF6EE\] { background-color: #242423 !important; }
+    .bg-\[\#FBF6EE\] .bg-warm-card, .bg-\[\#FBF6EE\] .bg-white { background-color: #2C2B29 !important; }
+
+    /* 글자색 */
+    .text-ink-900 { color: #F1EBE3 !important; }
+    .text-ink-700 { color: #D8CCBF !important; }
+    .text-ink-500 { color: #A79C8F !important; }
+
+    /* 테두리 */
+    .border-ink-900\/5, .border-ink-900\/10, .border-ink-900\/15 { border-color: rgba(255,255,255,0.12) !important; }
+
+    /* 카드 위 작은 아이콘 버튼(공유/닫기 등) - 어두운 카드 위라 밝은 톤으로 반전 */
+    .bg-ink-900\/5, .bg-ink-900\/10, .hover\:bg-ink-900\/10:hover { background-color: rgba(255,255,255,0.08) !important; }
+
+    /* 드롭다운 메뉴 호버 */
+    .hover\:bg-warm-bg:hover { background-color: rgba(255,255,255,0.06) !important; }
+
+    /* 입력창 */
+    input, textarea { color: #F1EBE3 !important; }
+    input::placeholder, textarea::placeholder { color: #8A8078 !important; }
+
+    /* 그림자는 밝은 배경 기준이라 다크에선 은은하게만 */
+    .shadow-soft, .shadow-card { box-shadow: 0 10px 30px -10px rgba(0,0,0,0.5) !important; }
+
+    ::selection { background-color: #C2410C; color: #F1EBE3; }
+  }
 </style>
 
 <!-- Google Analytics (GA4) -->
