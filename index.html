@@ -2064,19 +2064,16 @@
   async function translateText(text, target) {
     const key = text + '|' + target;
     if (translationCache.has(key)) return translationCache.get(key);
-    try {
-      const res = await fetch(TRANSLATE_WORKER_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text, target }),
-      });
-      const data = await res.json();
-      const translated = (data && data.translatedText) ? data.translatedText : text;
-      translationCache.set(key, translated);
-      return translated;
-    } catch (e) {
-      return text; // 번역 실패 시 원문 그대로 (화면이 깨지지 않게)
-    }
+    const res = await fetch(TRANSLATE_WORKER_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text, target }),
+    });
+    if (!res.ok) throw new Error('서버 응답 오류: HTTP ' + res.status);
+    const data = await res.json();
+    if (!data || !data.translatedText) throw new Error('번역 결과 없음: ' + JSON.stringify(data));
+    translationCache.set(key, data.translatedText);
+    return data.translatedText;
   }
 
   // 화면에 지금 보이는 한글 텍스트 노드들을 찾아서 번역함
@@ -2085,7 +2082,7 @@
       acceptNode(node) {
         const t = node.nodeValue.trim();
         if (!t || t.length < 2) return NodeFilter.FILTER_REJECT;
-        if (!/[가-힣]/.test(t)) return NodeFilter.FILTER_REJECT; // 한글 없는 텍스트(숫자, 이모지 등)는 건너뜀
+        if (!/[가-힣]/.test(t) && !node.__originalKo) return NodeFilter.FILTER_REJECT; // 한글도 없고, 예전에 번역 대상으로 기록된 적도 없으면 건너뜀
         const tag = node.parentElement ? node.parentElement.tagName : '';
         if (tag === 'SCRIPT' || tag === 'STYLE') return NodeFilter.FILTER_REJECT;
         // 메인 화면 번역할 때는, 지금 안 열려있는 오버레이(메뉴창)들은 건너뜀 —
@@ -2107,6 +2104,7 @@
     const nodes = collectTextNodes(root, excludeOverlays);
     // 너무 많은 요청이 한꺼번에 나가지 않도록 10개씩 묶어서 처리
     const chunkSize = 10;
+    let ok = 0, fail = 0;
     for (let i = 0; i < nodes.length; i += chunkSize) {
       const chunk = nodes.slice(i, i + chunkSize);
       await Promise.all(chunk.map(async (node) => {
@@ -2114,15 +2112,22 @@
         node.__originalKo = original; // 나중에 '한국어'로 되돌릴 때 사용
         const leading = original.match(/^\s*/)[0];
         const trailing = original.match(/\s*$/)[0];
-        const translated = await translateText(original.trim(), target);
-        node.nodeValue = leading + translated + trailing; // 앞뒤 공백은 그대로 살려서 붙이기
-        if (window.__i18nDebugCount === undefined) window.__i18nDebugCount = 0;
-        if (window.__i18nDebugCount < 5) {
-          window.__i18nDebugCount++;
-          console.log('[번역 확인 ' + window.__i18nDebugCount + '] "' + original.trim() + '" → "' + translated + '"');
+        try {
+          const translated = await translateText(original.trim(), target);
+          node.nodeValue = leading + translated + trailing; // 앞뒤 공백은 그대로 살려서 붙이기
+          ok++;
+          if (window.__i18nDebugCount === undefined) window.__i18nDebugCount = 0;
+          if (window.__i18nDebugCount < 5) {
+            window.__i18nDebugCount++;
+            console.log('[번역 확인 ' + window.__i18nDebugCount + '] "' + original.trim() + '" → "' + translated + '"');
+          }
+        } catch (err) {
+          fail++;
+          console.error('[번역 실패] "' + original.trim() + '"', err);
         }
       }));
     }
+    return { ok, fail, total: nodes.length };
   }
 
   function restoreOriginal(root) {
@@ -2146,51 +2151,19 @@
       return;
     }
 
-    // 진단용: 지금 이 화면에서 번역 대상 한글 텍스트를 몇 개 찾았는지 화면에 직접 표시
-    // (개발자도구 없이도 바로 눈으로 확인 가능하게)
-    const foundNodes = collectTextNodes(document.body, true);
-    label.textContent = '찾음:' + foundNodes.length + '개 번역중…';
-
-    if (foundNodes.length === 0) {
-      // 여기서 0개면, 화면 스캔 자체에 문제가 있는 것 — 서버 문제가 아님
-      label.textContent = '⚠️ 0개 발견';
-      return;
-    }
+    label.textContent = lang === 'en' ? 'Translating…' : 'កំពុងបកប្រែ…';
 
     // 2) 나머지 홈 화면 내용(히어로, 소개, 하이라이트 카드, 방명록)을 번역
     //    푸터(맨 아래)와 오버레이(메뉴창)는 여기서는 건너뜀
-    let successCount = 0;
-    let failCount = 0;
-    try {
-      const chunkSize = 10;
-      for (let i = 0; i < foundNodes.length; i += chunkSize) {
-        const chunk = foundNodes.slice(i, i + chunkSize);
-        await Promise.all(chunk.map(async (node) => {
-          try {
-            const original = node.__originalKo || node.nodeValue;
-            node.__originalKo = original;
-            const leading = original.match(/^\s*/)[0];
-            const trailing = original.match(/\s*$/)[0];
-            const translated = await translateText(original.trim(), lang);
-            node.nodeValue = leading + translated + trailing;
-            if (window.__i18nDebugCount === undefined) window.__i18nDebugCount = 0;
-            if (window.__i18nDebugCount < 5) {
-              window.__i18nDebugCount++;
-              console.log('[번역 확인 ' + window.__i18nDebugCount + '] "' + original.trim() + '" → "' + translated + '"');
-            }
-            successCount++;
-          } catch (err) {
-            failCount++;
-            console.error('[번역 실패]', err);
-          }
-        }));
-        label.textContent = '번역중… ' + (successCount + failCount) + '/' + foundNodes.length;
-      }
-    } catch (e) {
-      console.error('번역 중 오류:', e);
+    //    실제 성공/실패 개수를 그대로 보여줌 (가짜 100%가 안 뜨도록)
+    const result = await translateSubtree(document.body, lang, true);
+    if (result.total === 0) {
+      label.textContent = '⚠️ 대상 0개';
+    } else if (result.fail === 0) {
+      label.textContent = lang === 'en' ? 'English' : 'ខ្មែរ';
+    } else {
+      label.textContent = (lang === 'en' ? 'English' : 'ខ្មែរ') + ' (실패 ' + result.fail + '/' + result.total + ')';
     }
-    label.textContent = lang === 'en' ? 'English' : 'ខ្មែរ';
-    if (failCount > 0) label.textContent += ' (실패' + failCount + ')';
 
     // 3) 지금 열려있는 메뉴(오버레이)가 있다면 그것도 이어서 번역
     const openOverlayEl = ALL_OVERLAYS.map(id => document.getElementById(id)).find(el => el && !el.classList.contains('hidden'));
