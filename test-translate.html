@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<title>번역 서버 테스트</title>
+<style>
+  body { font-family: sans-serif; max-width: 600px; margin: 40px auto; padding: 0 20px; }
+  button { font-size: 16px; padding: 12px 20px; margin: 10px 0; cursor: pointer; }
+  #result { white-space: pre-wrap; background: #f4f4f4; padding: 16px; border-radius: 8px; margin-top: 20px; min-height: 60px; }
+  .error { color: #c0392b; font-weight: bold; }
+  .ok { color: #27ae60; font-weight: bold; }
+</style>
+</head>
+<body>
+  <h2>🧪 번역 서버 단독 테스트</h2>
+  <p>이 페이지는 홈페이지 코드와 완전히 무관하게, 오직 <b>Cloudflare Worker + 구글 번역 API</b>만 테스트합니다.</p>
+  <button onclick="testTranslate()">"안녕하세요"를 영어로 번역해보기</button>
+  <div id="result">여기에 결과가 표시됩니다.</div>
+
+<script>
+  async function testTranslate() {
+    const resultEl = document.getElementById('result');
+    resultEl.textContent = '요청 보내는 중...';
+    const WORKER_URL = 'https://flat-shape-f26f.littleflame83.workers.dev/';
+    try {
+      const res = await fetch(WORKER_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: '안녕하세요', target: 'en' }),
+      });
+      const status = res.status;
+      const data = await res.json();
+      if (data && data.translatedText) {
+        resultEl.innerHTML = '<span class="ok">✅ 성공!</span>\n\nHTTP 상태: ' + status + '\n번역 결과: ' + data.translatedText + '\n\n(전체 응답: ' + JSON.stringify(data) + ')';
+      } else {
+        resultEl.innerHTML = '<span class="error">⚠️ 응답은 왔는데 번역 결과가 없어요</span>\n\nHTTP 상태: ' + status + '\n전체 응답: ' + JSON.stringify(data);
+      }
+    } catch (e) {
+      resultEl.innerHTML = '<span class="error">❌ 요청 자체가 실패했어요</span>\n\n에러 내용: ' + e.message;
+    }
+  }
+</script>
+</body>
+</html>
