@@ -618,23 +618,10 @@
           <span class="text-white font-bold text-base">작은불꽃 홍선교</span>
         </div>
         <div class="space-y-1.5 text-sm leading-relaxed text-white/60">
-          <p>대한예수교장로회(통합) 목사</p>
-          <p>PCK 허입 선교사</p>
+          <p>예장통합 총회파송 선교사(PCK)</p>
           <p>ROKMC 928K</p>
           <p class="pt-2 text-ember/70 text-xs font-semibold tracking-[0.2em] uppercase">Phnom Penh, Cambodia</p>
         </div>
-      </div>
-
-      <div class="text-sm">
-        <p class="text-ember text-xs font-semibold tracking-[0.18em] uppercase mb-3">바로가기</p>
-        <ul class="space-y-1.5 text-white/70">
-          <li><a href="javascript:void(0)" onclick="openOverlay('aboutOverlay')" class="hover:text-ember transition-colors">사역소개</a></li>
-          <li><a href="javascript:void(0)" onclick="openOverlay('cambodiaOverlay')" class="hover:text-ember transition-colors">캄보디아 이야기</a></li>
-          <li><a href="javascript:void(0)" onclick="openOverlay('galleryOverlay')" class="hover:text-ember transition-colors">선교 사진</a></li>
-          <li><a href="javascript:void(0)" onclick="openOverlay('reportsOverlay')" class="hover:text-ember transition-colors">가족 이야기</a></li>
-          <li><a href="javascript:void(0)" onclick="openOverlay('lettersOverlay')" class="hover:text-ember transition-colors">기도 편지</a></li>
-          <li><a href="javascript:void(0)" onclick="openOverlay('supportOverlay')" class="hover:text-ember transition-colors">후원 안내</a></li>
-        </ul>
       </div>
 
       <div class="text-sm">
@@ -2007,6 +1994,10 @@
     mobileMenu.classList.add('hidden');
     iconOpen.classList.remove('hidden');
     iconClose.classList.add('hidden');
+    // 지금 한국어가 아닌 언어가 선택되어 있으면, 이 메뉴도 열자마자 번역함
+    if (typeof currentLang !== 'undefined' && currentLang !== 'ko' && typeof translateSubtree === 'function') {
+      translateSubtree(el, currentLang, false);
+    }
   }
   function closeOverlay(id) {
     const el = document.getElementById(id);
@@ -2080,7 +2071,7 @@
   }
 
   // 화면에 지금 보이는 한글 텍스트 노드들을 찾아서 번역함
-  function collectTextNodes(root) {
+  function collectTextNodes(root, excludeOverlays) {
     const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
       acceptNode(node) {
         const t = node.nodeValue.trim();
@@ -2088,6 +2079,12 @@
         if (!/[가-힣]/.test(t)) return NodeFilter.FILTER_REJECT; // 한글 없는 텍스트(숫자, 이모지 등)는 건너뜀
         const tag = node.parentElement ? node.parentElement.tagName : '';
         if (tag === 'SCRIPT' || tag === 'STYLE') return NodeFilter.FILTER_REJECT;
+        // 메인 화면 번역할 때는, 지금 안 열려있는 오버레이(메뉴창)들은 건너뜀 —
+        // 그래야 처음 언어 바꿀 때 사이트 전체(모든 글)를 다 번역하려다 오래 걸리는 일이 없음.
+        // 각 오버레이는 실제로 그 메뉴를 열 때 그 자리에서 번역됨.
+        if (excludeOverlays && node.parentElement && node.parentElement.closest('#reportsOverlay, #lettersOverlay, #supportOverlay, #aboutOverlay, #galleryOverlay, #cambodiaOverlay')) {
+          return NodeFilter.FILTER_REJECT;
+        }
         return NodeFilter.FILTER_ACCEPT;
       }
     });
@@ -2097,16 +2094,13 @@
     return nodes;
   }
 
-  async function translateSubtree(root, target) {
-    const nodes = collectTextNodes(root);
-    // 너무 많은 요청이 한꺼번에 나가지 않도록 5개씩 묶어서 처리
-    const chunkSize = 5;
+  async function translateSubtree(root, target, excludeOverlays) {
+    const nodes = collectTextNodes(root, excludeOverlays);
+    // 너무 많은 요청이 한꺼번에 나가지 않도록 10개씩 묶어서 처리
+    const chunkSize = 10;
     for (let i = 0; i < nodes.length; i += chunkSize) {
       const chunk = nodes.slice(i, i + chunkSize);
       await Promise.all(chunk.map(async (node) => {
-        if (!node.dataset) {
-          // 텍스트 노드 자체엔 dataset이 없어서, 원문을 노드에 직접 저장해둠
-        }
         const original = node.__originalKo || node.nodeValue;
         node.__originalKo = original; // 나중에 '한국어'로 되돌릴 때 사용
         const translated = await translateText(original.trim(), target);
@@ -2116,7 +2110,7 @@
   }
 
   function restoreOriginal(root) {
-    const nodes = collectTextNodes(root);
+    const nodes = collectTextNodes(root, false);
     nodes.forEach(node => {
       if (node.__originalKo) node.nodeValue = node.__originalKo;
     });
@@ -2133,8 +2127,13 @@
       label.textContent = '한국어';
       return;
     }
-    await translateSubtree(document.body, lang);
+    // 메인 화면(오버레이 제외)만 먼저 빠르게 번역 — 헤더, 히어로, 홈 섹션들, 방명록, 푸터 전부 포함
+    await translateSubtree(document.body, lang, true);
     label.textContent = lang === 'en' ? 'English' : 'ខ្មែរ';
+
+    // 지금 열려있는 메뉴(오버레이)가 있다면 그것도 이어서 번역
+    const openOverlayEl = ALL_OVERLAYS.map(id => document.getElementById(id)).find(el => el && !el.classList.contains('hidden'));
+    if (openOverlayEl) translateSubtree(openOverlayEl, lang, false);
   }
   window.setLang = setLang;
 
