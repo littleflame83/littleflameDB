@@ -187,7 +187,7 @@
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" class="flame-flicker">
           <path d="M12 2C12 2 6 8.5 6 14a6 6 0 0012 0c0-2.2-1-4-2.2-5.6.2 1.4-.4 2.6-1.3 3-.3-2.6-1.7-5-2.5-9.4z" fill="#F97316"/>
         </svg>
-        <span class="font-bold text-[15px] sm:text-lg tracking-tight text-ink-900 whitespace-nowrap">작은불꽃 홍선교</span>
+        <span id="brandName" class="font-bold text-[15px] sm:text-lg tracking-tight text-ink-900 whitespace-nowrap">작은불꽃 홍선교</span>
       </a>
 
       <!-- 데스크톱 메뉴 -->
@@ -2177,6 +2177,7 @@
   // 메뉴처럼 핵심적이고 고정된 문구는, 매번 번역 서버에 물어보지 않고
   // 여기 미리 확정된 번역을 바로 꽂아 넣음 (네트워크 실패와 무관하게 100% 확실히 바뀜)
   const NAV_TRANSLATIONS = {
+    'brandName':        { en: 'Littleflame Hong Missionary', km: 'Littleflame Hong Missionary' },
     'nav-about':        { en: 'About Us',        km: 'អំពីយើង' },
     'nav-cambodia':     { en: 'Cambodia Story',   km: 'រឿងកម្ពុជា' },
     'nav-gallery':      { en: 'Photos',           km: 'រូបភាព' },
