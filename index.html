@@ -2287,11 +2287,12 @@
     document.body.style.overflow = 'hidden';
     modalPanel.scrollTop = 0;
     // 이 글만의 공유 주소를 query URL로 반영합니다.
-    // 예: https://cammission.com/?story=ovrpt-0
+    // 예: https://cammission.com/?story=ovrpt-0&lang=km
     // 현재 정적 호스팅에서도 새로고침 시 404가 나지 않는 방식이라 안정적입니다.
     try {
       if (!skipHash) {
-        history.pushState(null, '', '?story=' + encodeURIComponent(tmplPrefix + '-' + idx));
+        const langParam = (typeof currentLang !== 'undefined' && currentLang !== 'ko') ? '&lang=' + currentLang : '';
+        history.pushState(null, '', '?story=' + encodeURIComponent(tmplPrefix + '-' + idx) + langParam);
       }
       const titleEl = modalBody.querySelector('h2');
       const descEl = modalBody.querySelector('p');
@@ -2358,10 +2359,17 @@
 
   // 공유 주소로 직접 들어왔을 때 상세 글을 자동으로 열어줌.
   // 새 주소는 ?story=ovrpt-3 형식이며, 기존 #ovrpt-3 링크도 계속 호환합니다.
-  function openFromHash() {
-    const storyParam = new URLSearchParams(location.search).get('story');
+  async function openFromHash() {
+    const params = new URLSearchParams(location.search);
+    const storyParam = params.get('story');
+    const langParam = params.get('lang'); // 링크에 언어 정보(?lang=km)가 담겨 있으면 그 언어로 자동 전환
     const legacyHash = (location.hash || '').replace('#', '');
     const target = storyParam || legacyHash;
+
+    if (langParam === 'en' || langParam === 'km') {
+      await setLang(langParam);
+    }
+
     if (!target) return;
     const detailMatch = target.match(/^(ovrpt|ovltr|ovcam)-(\d+)$/);
     if (detailMatch) {
