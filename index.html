@@ -2208,10 +2208,25 @@
   }
 
   const CATEGORY_INFO = {
-    ovrpt: { label: '가족이야기', overlay: 'reportsOverlay', color: 'rose-500' },
-    ovltr: { label: '기도편지', overlay: 'lettersOverlay', color: 'violet-500' },
-    ovcam: { label: '캄보디아 이야기', overlay: 'cambodiaOverlay', color: 'ember' },
+    ovrpt: { label: '가족이야기', labelEn: 'Family Story', labelKm: 'រឿងគ្រួសារ', overlay: 'reportsOverlay', color: 'rose-500' },
+    ovltr: { label: '기도편지', labelEn: 'Prayer Letter', labelKm: 'លិខិតអធិស្ឋាន', overlay: 'lettersOverlay', color: 'violet-500' },
+    ovcam: { label: '캄보디아 이야기', labelEn: 'Cambodia Story', labelKm: 'រឿងកម្ពុជា', overlay: 'cambodiaOverlay', color: 'ember' },
   };
+
+  // 아래 두 UI 문구(기도 버튼, 전체보기 버튼)는 글을 열 때마다 새로 만들어지는 요소라서,
+  // 구글 번역 스캔이 지나간 뒤에 생기면 계속 한글로 빠지는 문제가 있었음.
+  // 그래서 메뉴처럼 아예 미리 정해둔 번역을 그 자리에서 바로 꽂아 넣도록 함.
+  const UI_TEXT = {
+    prayFor:    { ko: '이 글을 위해 기도할게요', en: 'Pray for this',      km: 'អធិស្ឋានសម្រាប់រឿងនេះ' },
+    prayed:     { ko: '기도했습니다',           en: 'Prayed',             km: 'បានអធិស្ឋានហើយ' },
+    prayHint:   { ko: '한 번 눌러두면 이 기도제목을 기억하는 표시가 저장됩니다.', en: 'Tap once to remember that you prayed for this.', km: 'ចុចម្ដងដើម្បីរក្សាទុកថាអ្នកបានអធិស្ឋាន។' },
+    viewAll:    { ko: '전체보기', en: 'View All', km: 'មើលទាំងអស់' },
+  };
+  function uiText(key) {
+    const t = UI_TEXT[key];
+    if (!t) return '';
+    return t[currentLang] || t.ko;
+  }
 
   function openDetail(tmplPrefix, idx, skipHash) {
     const modal = document.getElementById(tmplPrefix + 'Modal');
@@ -2222,7 +2237,7 @@
     modalBody.innerHTML = '';
     modalBody.appendChild(tmpl.content.cloneNode(true));
 
-    // 지금 한국어가 아닌 언어가 선택되어 있으면, 새로 연 글도 바로 그 언어로 번역함
+    // 지금 한국어가 아닌 언어가 선택되어 있으면, 이 글의 본문(고정문구 아닌 실제 글 내용)도 바로 번역함
     if (typeof currentLang !== 'undefined' && currentLang !== 'ko') {
       translateSubtree(modalBody, currentLang);
     }
@@ -2235,32 +2250,33 @@
     const prayerDone = localStorage.getItem(prayerKey) === '1';
     prayerWrap.innerHTML = `
       <button type="button" id="articlePrayerBtn" class="inline-flex items-center gap-2 text-sm font-semibold ${prayerDone ? 'bg-ember text-white' : 'bg-white text-ink-900 border border-ink-900/15'} px-6 py-3 rounded-full shadow-sm hover:shadow-soft transition-all">
-        🙏 <span>${prayerDone ? '기도했습니다' : '이 글을 위해 기도할게요'}</span>
+        🙏 <span>${prayerDone ? uiText('prayed') : uiText('prayFor')}</span>
       </button>
-      <p class="mt-2 text-xs text-ink-400">한 번 눌러두면 이 기도제목을 기억하는 표시가 저장됩니다.</p>`;
+      <p class="mt-2 text-xs text-ink-400">${uiText('prayHint')}</p>`;
     modalBody.appendChild(prayerWrap);
     prayerWrap.querySelector('#articlePrayerBtn').addEventListener('click', (e) => {
       const done = localStorage.getItem(prayerKey) === '1';
       if (done) {
         localStorage.removeItem(prayerKey);
         e.currentTarget.className = 'inline-flex items-center gap-2 text-sm font-semibold bg-white text-ink-900 border border-ink-900/15 px-6 py-3 rounded-full shadow-sm hover:shadow-soft transition-all';
-        e.currentTarget.querySelector('span').textContent = '이 글을 위해 기도할게요';
+        e.currentTarget.querySelector('span').textContent = uiText('prayFor');
       } else {
         localStorage.setItem(prayerKey, '1');
         e.currentTarget.className = 'inline-flex items-center gap-2 text-sm font-semibold bg-ember text-white px-6 py-3 rounded-full shadow-sm hover:shadow-soft transition-all';
-        e.currentTarget.querySelector('span').textContent = '기도했습니다';
+        e.currentTarget.querySelector('span').textContent = uiText('prayed');
       }
     });
 
     // 글 맨 아래에 해당 카테고리 "전체보기" 버튼을 자동으로 붙임
     const info = CATEGORY_INFO[tmplPrefix];
     if (info) {
+      const catLabel = currentLang === 'en' ? info.labelEn : (currentLang === 'km' ? info.labelKm : info.label);
       const wrap = document.createElement('div');
       wrap.className = 'mt-4 pt-5 text-center';
       wrap.innerHTML = `
         <a href="javascript:void(0)" onclick="closeDetail('${tmplPrefix}'); openOverlay('${info.overlay}')"
           class="inline-flex items-center gap-2 text-sm font-semibold text-ink-900 border border-ink-900/15 hover:border-${info.color} hover:text-${info.color} px-6 py-3 rounded-full transition-colors">
-          ${info.label} 전체보기
+          ${catLabel} ${uiText('viewAll')}
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 6l6 6-6 6"/></svg>
         </a>`;
       modalBody.appendChild(wrap);
