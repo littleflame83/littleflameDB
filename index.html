@@ -1996,8 +1996,16 @@
     iconOpen.classList.remove('hidden');
     iconClose.classList.add('hidden');
     // 지금 한국어가 아닌 언어가 선택되어 있으면, 이 메뉴도 열자마자 번역함
+    const langBtnLabelEl = document.getElementById('langBtnLabel');
     if (typeof currentLang !== 'undefined' && currentLang !== 'ko' && typeof translateSubtree === 'function') {
-      translateSubtree(el, currentLang, false);
+      const overlayNodes = collectTextNodes(el, false);
+      if (langBtnLabelEl) langBtnLabelEl.textContent = '메뉴 번역중… (' + overlayNodes.length + '개)';
+      translateSubtree(el, currentLang, false).then(() => {
+        if (langBtnLabelEl) langBtnLabelEl.textContent = currentLang === 'en' ? 'English' : 'ខ្មែរ';
+      }).catch((e) => {
+        console.error('메뉴 번역 오류:', e);
+        if (langBtnLabelEl) langBtnLabelEl.textContent = '⚠️ 메뉴 번역 실패';
+      });
     }
   }
   function closeOverlay(id) {
@@ -2130,16 +2138,44 @@
       label.textContent = '한국어';
       return;
     }
-    label.textContent = lang === 'en' ? 'Translating…' : 'កំពុងបកប្រែ…';
+
+    // 진단용: 지금 이 화면에서 번역 대상 한글 텍스트를 몇 개 찾았는지 화면에 직접 표시
+    // (개발자도구 없이도 바로 눈으로 확인 가능하게)
+    const foundNodes = collectTextNodes(document.body, true);
+    label.textContent = '찾음:' + foundNodes.length + '개 번역중…';
+
+    if (foundNodes.length === 0) {
+      // 여기서 0개면, 화면 스캔 자체에 문제가 있는 것 — 서버 문제가 아님
+      label.textContent = '⚠️ 0개 발견';
+      return;
+    }
 
     // 2) 나머지 홈 화면 내용(히어로, 소개, 하이라이트 카드, 방명록)을 번역
     //    푸터(맨 아래)와 오버레이(메뉴창)는 여기서는 건너뜀
+    let successCount = 0;
+    let failCount = 0;
     try {
-      await translateSubtree(document.body, lang, true);
+      const chunkSize = 10;
+      for (let i = 0; i < foundNodes.length; i += chunkSize) {
+        const chunk = foundNodes.slice(i, i + chunkSize);
+        await Promise.all(chunk.map(async (node) => {
+          try {
+            const original = node.__originalKo || node.nodeValue;
+            node.__originalKo = original;
+            const translated = await translateText(original.trim(), lang);
+            node.nodeValue = node.nodeValue.replace(original.trim(), translated);
+            successCount++;
+          } catch (err) {
+            failCount++;
+          }
+        }));
+        label.textContent = '번역중… ' + (successCount + failCount) + '/' + foundNodes.length;
+      }
     } catch (e) {
       console.error('번역 중 오류:', e);
     }
     label.textContent = lang === 'en' ? 'English' : 'ខ្មែរ';
+    if (failCount > 0) label.textContent += ' (실패' + failCount + ')';
 
     // 3) 지금 열려있는 메뉴(오버레이)가 있다면 그것도 이어서 번역
     const openOverlayEl = ALL_OVERLAYS.map(id => document.getElementById(id)).find(el => el && !el.classList.contains('hidden'));
