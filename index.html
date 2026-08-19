@@ -192,12 +192,12 @@
 
       <!-- 데스크톱 메뉴 -->
       <nav class="hidden lg:flex items-center gap-9 text-[15px] font-medium text-ink-700">
-        <a href="javascript:void(0)" onclick="openOverlay('aboutOverlay')" class="hover:text-ember transition-colors">사역 소개</a>
-        <a href="javascript:void(0)" onclick="openOverlay('cambodiaOverlay')" class="hover:text-ember transition-colors">캄보디아 이야기</a>
-        <a href="javascript:void(0)" onclick="openOverlay('galleryOverlay')" class="hover:text-ember transition-colors">선교 사진</a>
-        <a href="javascript:void(0)" onclick="openOverlay('reportsOverlay')" class="hover:text-ember transition-colors">가족 이야기</a>
-        <a href="javascript:void(0)" onclick="openOverlay('lettersOverlay')" class="hover:text-ember transition-colors">기도 편지</a>
-        <a href="javascript:void(0)" onclick="openOverlay('supportOverlay')" class="hover:text-ember transition-colors">후원 안내</a>
+        <a id="nav-about" href="javascript:void(0)" onclick="openOverlay('aboutOverlay')" class="hover:text-ember transition-colors">사역 소개</a>
+        <a id="nav-cambodia" href="javascript:void(0)" onclick="openOverlay('cambodiaOverlay')" class="hover:text-ember transition-colors">캄보디아 이야기</a>
+        <a id="nav-gallery" href="javascript:void(0)" onclick="openOverlay('galleryOverlay')" class="hover:text-ember transition-colors">선교 사진</a>
+        <a id="nav-reports" href="javascript:void(0)" onclick="openOverlay('reportsOverlay')" class="hover:text-ember transition-colors">가족 이야기</a>
+        <a id="nav-letters" href="javascript:void(0)" onclick="openOverlay('lettersOverlay')" class="hover:text-ember transition-colors">기도 편지</a>
+        <a id="nav-support" href="javascript:void(0)" onclick="openOverlay('supportOverlay')" class="hover:text-ember transition-colors">후원 안내</a>
       </nav>
 
       <div class="flex items-center gap-3">
@@ -211,7 +211,7 @@
             <button type="button" onclick="setLang('km')" class="w-full text-left px-4 py-2 text-sm hover:bg-warm-bg text-ink-800">🇰🇭 ខ្មែរ</button>
           </div>
         </div>
-        <a href="javascript:void(0)" onclick="openOverlay('supportOverlay')" class="hidden sm:inline-flex items-center gap-1.5 bg-ember hover:bg-ember-dark text-white text-sm font-semibold px-5 py-2.5 rounded-full shadow-soft transition-colors">
+        <a id="nav-donate-btn" href="javascript:void(0)" onclick="openOverlay('supportOverlay')" class="hidden sm:inline-flex items-center gap-1.5 bg-ember hover:bg-ember-dark text-white text-sm font-semibold px-5 py-2.5 rounded-full shadow-soft transition-colors">
           후원하기
         </a>
         <!-- 모바일 메뉴 버튼 -->
@@ -226,13 +226,13 @@
   <!-- 모바일 메뉴 패널 -->
   <div id="mobileMenu" class="hidden lg:hidden border-t border-ink-900/5 bg-white/95 backdrop-blur-md">
     <nav class="flex flex-col px-6 py-4 gap-1 text-[15px] font-medium text-ink-700">
-      <a href="javascript:void(0)" onclick="openOverlay('aboutOverlay')" class="py-2.5 border-b border-ink-900/5">사역 소개</a>
-      <a href="javascript:void(0)" onclick="openOverlay('cambodiaOverlay')" class="py-2.5 border-b border-ink-900/5">캄보디아 이야기</a>
-      <a href="javascript:void(0)" onclick="openOverlay('galleryOverlay')" class="py-2.5 border-b border-ink-900/5">선교 사진</a>
-      <a href="javascript:void(0)" onclick="openOverlay('reportsOverlay')" class="py-2.5 border-b border-ink-900/5">가족 이야기</a>
-      <a href="javascript:void(0)" onclick="openOverlay('lettersOverlay')" class="py-2.5 border-b border-ink-900/5">기도 편지</a>
-      <a href="javascript:void(0)" onclick="openOverlay('supportOverlay')" class="py-2.5">후원 안내</a>
-      <a href="javascript:void(0)" onclick="openOverlay('supportOverlay')" class="mt-3 text-center bg-ember text-white font-semibold px-5 py-2.5 rounded-full">후원하기</a>
+      <a id="navm-about" href="javascript:void(0)" onclick="openOverlay('aboutOverlay')" class="py-2.5 border-b border-ink-900/5">사역 소개</a>
+      <a id="navm-cambodia" href="javascript:void(0)" onclick="openOverlay('cambodiaOverlay')" class="py-2.5 border-b border-ink-900/5">캄보디아 이야기</a>
+      <a id="navm-gallery" href="javascript:void(0)" onclick="openOverlay('galleryOverlay')" class="py-2.5 border-b border-ink-900/5">선교 사진</a>
+      <a id="navm-reports" href="javascript:void(0)" onclick="openOverlay('reportsOverlay')" class="py-2.5 border-b border-ink-900/5">가족 이야기</a>
+      <a id="navm-letters" href="javascript:void(0)" onclick="openOverlay('lettersOverlay')" class="py-2.5 border-b border-ink-900/5">기도 편지</a>
+      <a id="navm-support" href="javascript:void(0)" onclick="openOverlay('supportOverlay')" class="py-2.5">후원 안내</a>
+      <a id="navm-donate-btn" href="javascript:void(0)" onclick="openOverlay('supportOverlay')" class="mt-3 text-center bg-ember text-white font-semibold px-5 py-2.5 rounded-full">후원하기</a>
     </nav>
   </div>
 </header>
@@ -606,7 +606,7 @@
 
 
 <!-- ================= FOOTER ================= -->
-<footer class="bg-ink-900 text-white/70">
+<footer id="siteFooter" class="bg-ink-900 text-white/70">
   <div class="max-w-7xl mx-auto px-6 sm:px-8 py-16">
     <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-10">
 
@@ -2083,7 +2083,7 @@
         // 메인 화면 번역할 때는, 지금 안 열려있는 오버레이(메뉴창)들은 건너뜀 —
         // 그래야 처음 언어 바꿀 때 사이트 전체(모든 글)를 다 번역하려다 오래 걸리는 일이 없음.
         // 각 오버레이는 실제로 그 메뉴를 열 때 그 자리에서 번역됨.
-        if (excludeOverlays && node.parentElement && node.parentElement.closest('#reportsOverlay, #lettersOverlay, #supportOverlay, #aboutOverlay, #galleryOverlay, #cambodiaOverlay')) {
+        if (excludeOverlays && node.parentElement && node.parentElement.closest('#reportsOverlay, #lettersOverlay, #supportOverlay, #aboutOverlay, #galleryOverlay, #cambodiaOverlay, #siteFooter')) {
           return NodeFilter.FILTER_REJECT;
         }
         return NodeFilter.FILTER_ACCEPT;
@@ -2121,18 +2121,27 @@
     currentLang = lang;
     document.getElementById('langMenu').classList.add('hidden');
     const label = document.getElementById('langBtnLabel');
-    label.textContent = lang === 'ko' ? '한국어' : (lang === 'en' ? 'Translating…' : 'កំពុងបកប្រែ…');
+
+    // 1) 메뉴는 네트워크와 무관하게 즉시, 100% 확실하게 바뀜
+    applyNavTranslations(lang);
 
     if (lang === 'ko') {
       restoreOriginal(document.body);
       label.textContent = '한국어';
       return;
     }
-    // 메인 화면(오버레이 제외)만 먼저 빠르게 번역 — 헤더, 히어로, 홈 섹션들, 방명록, 푸터 전부 포함
-    await translateSubtree(document.body, lang, true);
+    label.textContent = lang === 'en' ? 'Translating…' : 'កំពុងបកប្រែ…';
+
+    // 2) 나머지 홈 화면 내용(히어로, 소개, 하이라이트 카드, 방명록)을 번역
+    //    푸터(맨 아래)와 오버레이(메뉴창)는 여기서는 건너뜀
+    try {
+      await translateSubtree(document.body, lang, true);
+    } catch (e) {
+      console.error('번역 중 오류:', e);
+    }
     label.textContent = lang === 'en' ? 'English' : 'ខ្មែរ';
 
-    // 지금 열려있는 메뉴(오버레이)가 있다면 그것도 이어서 번역
+    // 3) 지금 열려있는 메뉴(오버레이)가 있다면 그것도 이어서 번역
     const openOverlayEl = ALL_OVERLAYS.map(id => document.getElementById(id)).find(el => el && !el.classList.contains('hidden'));
     if (openOverlayEl) translateSubtree(openOverlayEl, lang, false);
   }
@@ -2140,6 +2149,38 @@
 
   const footerYearEl = document.getElementById('footerYear');
   if (footerYearEl) footerYearEl.textContent = String(new Date().getFullYear());
+
+  // 메뉴처럼 핵심적이고 고정된 문구는, 매번 번역 서버에 물어보지 않고
+  // 여기 미리 확정된 번역을 바로 꽂아 넣음 (네트워크 실패와 무관하게 100% 확실히 바뀜)
+  const NAV_TRANSLATIONS = {
+    'nav-about':        { en: 'About Us',        km: 'អំពីយើង' },
+    'nav-cambodia':     { en: 'Cambodia Story',   km: 'រឿងកម្ពុជា' },
+    'nav-gallery':      { en: 'Photos',           km: 'រូបភាព' },
+    'nav-reports':      { en: 'Family Story',     km: 'រឿងគ្រួសារ' },
+    'nav-letters':      { en: 'Prayer Letter',    km: 'លិខិតអធិស្ឋាន' },
+    'nav-support':      { en: 'Support Us',       km: 'គាំទ្រ' },
+    'nav-donate-btn':   { en: 'Donate',           km: 'បរិច្ចាគ' },
+    'navm-about':       { en: 'About Us',         km: 'អំពីយើង' },
+    'navm-cambodia':    { en: 'Cambodia Story',   km: 'រឿងកម្ពុជា' },
+    'navm-gallery':     { en: 'Photos',           km: 'រូបភាព' },
+    'navm-reports':     { en: 'Family Story',     km: 'រឿងគ្រួសារ' },
+    'navm-letters':     { en: 'Prayer Letter',    km: 'លិខិតអធិស្ឋាន' },
+    'navm-support':     { en: 'Support Us',       km: 'គាំទ្រ' },
+    'navm-donate-btn':  { en: 'Donate',           km: 'បរិច្ចាគ' },
+  };
+
+  function applyNavTranslations(lang) {
+    Object.keys(NAV_TRANSLATIONS).forEach(id => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      if (lang === 'ko') {
+        if (el.__originalKo) el.textContent = el.__originalKo;
+      } else {
+        if (!el.__originalKo) el.__originalKo = el.textContent;
+        el.textContent = NAV_TRANSLATIONS[id][lang] || el.__originalKo;
+      }
+    });
+  }
 
   const CATEGORY_INFO = {
     ovrpt: { label: '가족이야기', overlay: 'reportsOverlay', color: 'rose-500' },
