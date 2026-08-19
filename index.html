@@ -2113,7 +2113,7 @@
         const original = node.__originalKo || node.nodeValue;
         node.__originalKo = original; // 나중에 '한국어'로 되돌릴 때 사용
         const translated = await translateText(original.trim(), target);
-        node.nodeValue = node.nodeValue.replace(original.trim(), translated);
+        node.nodeValue = translated; // 통째로 교체 (부분 문자열 매칭 실패 방지)
       }));
     }
   }
@@ -2163,7 +2163,7 @@
             const original = node.__originalKo || node.nodeValue;
             node.__originalKo = original;
             const translated = await translateText(original.trim(), lang);
-            node.nodeValue = node.nodeValue.replace(original.trim(), translated);
+            node.nodeValue = translated; // 통째로 교체 (부분 문자열 매칭 실패 방지)
             successCount++;
           } catch (err) {
             failCount++;
