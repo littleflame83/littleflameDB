@@ -402,33 +402,9 @@
       </p>
     </div>
 
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-7 lg:gap-8">
-      <article class="reveal group bg-warm-card rounded-3xl overflow-hidden shadow-card hover:shadow-soft transition-shadow duration-300 cursor-pointer" onclick="openGalleryLightbox(['images/img-7d0ddde450cd.jpg','images/img-136fd018d63f.jpg','images/img-3351929aa61f.jpg'], 0)">
-        <div class="aspect-[4/3] overflow-hidden">
-          <img src="images/img-7d0ddde450cd.jpg" alt="캄보디아 답사 — 공항, 동기 목사님 만남, 캄장신 방문" loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-        </div>
-        <div class="p-6">
-          <div class="flex items-center justify-between gap-3">
-            <span class="text-[11px] font-semibold text-sky tracking-wide uppercase">최근 · 캄보디아 현장</span>
-            <span class="text-[11px] font-medium text-ink-400">2026.07.27~31</span>
-          </div>
-          <p class="mt-2 font-bold text-ink-900 leading-snug">캄보디아 답사 — 공항, 동기 목사님 만남, 캄장신 방문</p>
-        </div>
-      </article>
-
-      <article class="reveal group bg-warm-card rounded-3xl overflow-hidden shadow-card hover:shadow-soft transition-shadow duration-300 cursor-pointer" onclick="openGalleryLightbox(['images/img-a0fe2194407e.jpg','images/img-cb0b546e3ae0.jpg'], 0)">
-        <div class="aspect-[4/3] overflow-hidden">
-          <img src="images/img-a0fe2194407e.jpg" alt="총회 선교사 훈련 수료" loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-        </div>
-        <div class="p-6">
-          <div class="flex items-center justify-between gap-3">
-            <span class="text-[11px] font-semibold text-ember tracking-wide uppercase">2026 준비과정</span>
-            <span class="text-[11px] font-medium text-ink-400">2026.05.15</span>
-          </div>
-          <p class="mt-2 font-bold text-ink-900 leading-snug">총회 선교사 훈련 수료</p>
-        </div>
-      </article>
-    </div>
+    <!-- 아래 2개 카드는 JS가 galleryOverlay(전체보기)의 앞쪽 2개를 자동으로 가져와 채웁니다.
+         새 앨범을 추가할 때 galleryOverlay 목록 맨 앞에만 넣으면 메인에도 자동 반영돼요. -->
+    <div id="galleryMainGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-7 lg:gap-8"></div>
 
     <div class="reveal text-center mt-12">
       <a href="javascript:void(0)" onclick="openOverlay('galleryOverlay'); filterGallery('all')" class="inline-flex items-center gap-2 text-sm font-semibold text-ink-900 border border-ink-900/15 hover:border-sky hover:text-sky px-6 py-3 rounded-full transition-colors">
@@ -448,35 +424,9 @@
       <h2 class="text-2xl sm:text-3xl font-bold tracking-tight">가족 이야기</h2>
     </div>
 
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-7 lg:gap-8">
-
-      <article class="reveal group bg-warm-card rounded-3xl overflow-hidden shadow-card hover:shadow-soft transition-shadow duration-300">
-        <a href="javascript:void(0)" onclick="openDetail('ovrpt', 0)" class="block">
-          <div class="aspect-[4/3] overflow-hidden">
-            <img src="images/img-5b0a372afba3.jpg" alt="가족과 함께한 캄보디아 프놈펜 답사" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-          </div>
-          <div class="p-6">
-            <span class="text-[11px] font-semibold text-rose-500 tracking-wide uppercase">가족 이야기 · 2026.08.01</span>
-            <h3 class="mt-2 font-bold text-lg leading-snug text-ink-900">가족과 함께 밟은 땅, 프놈펜 답사기</h3>
-            <p class="mt-2 text-sm text-ink-500 leading-relaxed">이동에만 11시간, 강행군이었지만 아이들이 불평 없이 잘 버텨주었습니다. "주님께서 우리 가정에게 선교지를 친히 준비시켜주셨다"는 확신을 얻은 시간이었습니다.</p>
-          </div>
-        </a>
-      </article>
-
-      <article class="reveal group bg-warm-card rounded-3xl overflow-hidden shadow-card hover:shadow-soft transition-shadow duration-300">
-        <a href="javascript:void(0)" onclick="openDetail('ovrpt', 1)" class="block">
-          <div class="aspect-[4/3] overflow-hidden">
-            <img src="images/img-6fbafad5c488.jpg" alt="PCK 75기 총회 허입 선교사 명찰" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-          </div>
-          <div class="p-6">
-            <span class="text-[11px] font-semibold text-rose-500 tracking-wide uppercase">가족 이야기 · 2026.05.17</span>
-            <h3 class="mt-2 font-bold text-lg leading-snug text-ink-900">[PCK 75기] 총회 허입 선교사가 되었습니다</h3>
-            <p class="mt-2 text-sm text-ink-500 leading-relaxed">6주간의 합숙 훈련을 마치고 'PCK 허입 선교사'라는 새 이름을 얻었습니다. 16가정, 선교사 자녀 18명과 함께 울고 웃으며 또 하나의 가족이 되었습니다.</p>
-          </div>
-        </a>
-      </article>
-
-    </div>
+    <!-- 아래 2개 카드는 JS가 reportsOverlay(전체보기)의 앞쪽 2개를 자동으로 가져와 채웁니다.
+         새 글을 추가할 때 reportsOverlay 목록 맨 앞에만 넣으면 메인에도 자동 반영돼요. -->
+    <div id="ovrptMainGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-7 lg:gap-8"></div>
 
     <div class="reveal text-center mt-12">
       <a href="javascript:void(0)" onclick="openOverlay('reportsOverlay')" class="inline-flex items-center gap-2 text-sm font-semibold text-ink-900 border border-ink-900/15 hover:border-rose-500 hover:text-rose-500 px-6 py-3 rounded-full transition-colors">
@@ -496,16 +446,9 @@
       <h2 class="text-2xl sm:text-3xl font-bold tracking-tight">기도 편지</h2>
     </div>
 
-    <div class="reveal bg-warm-card rounded-3xl shadow-card overflow-hidden grid grid-cols-1 md:grid-cols-2 cursor-pointer hover:shadow-soft transition-shadow duration-300" onclick="openDetail('ovltr', 0)">
-      <div class="aspect-[4/3] md:aspect-auto">
-        <img src="images/img-397da71c50e3.jpg" alt="총회 파송선교사 훈련 수료 기념 사진" class="w-full h-full object-cover" />
-      </div>
-      <div class="p-8 sm:p-10 flex flex-col justify-center">
-        <span class="text-[11px] font-semibold text-violet-500 tracking-wide uppercase">기도 편지 · 2026.08.07</span>
-        <h3 class="mt-2 font-bold text-xl leading-snug text-ink-900">18년의 기다림, 캄보디아를 향해 걷는 믿음의 발자취</h3>
-        <p class="mt-4 text-sm text-ink-500 leading-relaxed">캄보디아를 마음에 품은 지 18년, 지난 10개월 동안 하나하나 현실이 되어가고 있습니다. 내년 1~2월경 캄보디아로 출국합니다.</p>
-      </div>
-    </div>
+    <!-- 아래 카드는 JS가 lettersOverlay(전체보기)의 가장 위 글을 자동으로 가져와 채웁니다.
+         새 기도편지를 추가할 때 lettersOverlay 목록 맨 앞에만 넣으면 메인에도 자동 반영돼요. -->
+    <div id="ovltrMainFeature"></div>
 
     <div class="reveal text-center mt-10">
       <a href="javascript:void(0)" onclick="openOverlay('lettersOverlay')" class="inline-flex items-center gap-2 text-sm font-semibold text-ink-900 border border-ink-900/15 hover:border-violet-500 hover:text-violet-500 px-6 py-3 rounded-full transition-colors">
@@ -1874,6 +1817,107 @@
     iconOpen.classList.remove('hidden');
     iconClose.classList.add('hidden');
   });
+
+  // "2026년 8월 1일" 같은 한글 날짜 표기를 메인 카드용 "2026.08.01" 점(dot) 표기로 바꿔줌
+  function toDotDate(text) {
+    const m = (text || '').match(/(\d{4})년\s*(\d{1,2})월\s*(\d{1,2})일/);
+    if (!m) return text || '';
+    const pad = n => String(n).padStart(2, '0');
+    return m[1] + '.' + pad(m[2]) + '.' + pad(m[3]);
+  }
+
+  // 메인페이지 "가족 이야기" 미리보기 자동 생성 — reportsOverlay(전체보기) 맨 위 2개를 그대로 가져옴
+  (function renderOvrptMainPreview() {
+    const grid = document.getElementById('ovrptMainGrid');
+    if (!grid) return;
+    const cards = Array.from(document.querySelectorAll('#reportsOverlay .ovrpt-card')).slice(0, 2);
+    cards.forEach(card => {
+      const idx = card.getAttribute('data-ovrpt');
+      const cover = card.children[0] ? card.children[0].cloneNode(true) : document.createElement('div');
+      const text = card.children[1] ? card.children[1].cloneNode(true) : document.createElement('div');
+      const span = text.querySelector('span');
+      if (span) span.textContent = '가족 이야기 · ' + toDotDate(span.textContent);
+
+      const article = document.createElement('article');
+      article.className = 'reveal group bg-warm-card rounded-3xl overflow-hidden shadow-card hover:shadow-soft transition-shadow duration-300';
+      const a = document.createElement('a');
+      a.href = 'javascript:void(0)';
+      a.className = 'block';
+      a.addEventListener('click', () => openDetail('ovrpt', idx));
+      a.appendChild(cover);
+      a.appendChild(text);
+      article.appendChild(a);
+      grid.appendChild(article);
+    });
+  })();
+
+  // 메인페이지 "기도 편지" 미리보기 자동 생성 — lettersOverlay(전체보기) 맨 위 1개를 큰 카드로 보여줌
+  (function renderOvltrMainPreview() {
+    const container = document.getElementById('ovltrMainFeature');
+    if (!container) return;
+    const card = document.querySelector('#lettersOverlay .ovltr-card');
+    if (!card) return;
+    const idx = card.getAttribute('data-ovltr');
+    const imgEl = card.querySelector('img');
+    const spanEl = card.querySelector('span');
+    const h3El = card.querySelector('h3');
+    const pEl = card.querySelector('p');
+
+    const wrap = document.createElement('div');
+    wrap.className = 'reveal bg-warm-card rounded-3xl shadow-card overflow-hidden grid grid-cols-1 md:grid-cols-2 cursor-pointer hover:shadow-soft transition-shadow duration-300';
+    wrap.addEventListener('click', () => openDetail('ovltr', idx));
+
+    const imgWrap = document.createElement('div');
+    imgWrap.className = 'aspect-[4/3] md:aspect-auto';
+    if (imgEl) {
+      const img = document.createElement('img');
+      img.src = imgEl.getAttribute('src') || '';
+      img.alt = imgEl.getAttribute('alt') || '';
+      img.className = 'w-full h-full object-cover';
+      imgWrap.appendChild(img);
+    }
+
+    const textWrap = document.createElement('div');
+    textWrap.className = 'p-8 sm:p-10 flex flex-col justify-center';
+    const span = document.createElement('span');
+    span.className = 'text-[11px] font-semibold text-violet-500 tracking-wide uppercase';
+    span.textContent = '기도 편지 · ' + toDotDate(spanEl ? spanEl.textContent : '');
+    const h3 = document.createElement('h3');
+    h3.className = 'mt-2 font-bold text-xl leading-snug text-ink-900';
+    h3.textContent = h3El ? h3El.textContent : '';
+    const p = document.createElement('p');
+    p.className = 'mt-4 text-sm text-ink-500 leading-relaxed';
+    p.textContent = pEl ? pEl.textContent : '';
+
+    textWrap.appendChild(span);
+    textWrap.appendChild(h3);
+    textWrap.appendChild(p);
+    wrap.appendChild(imgWrap);
+    wrap.appendChild(textWrap);
+    container.appendChild(wrap);
+  })();
+
+  // 메인페이지 "선교 사진" 미리보기 자동 생성 — galleryOverlay(전체보기) 맨 위 2개를 그대로 가져옴
+  (function renderGalleryMainPreview() {
+    const grid = document.getElementById('galleryMainGrid');
+    if (!grid) return;
+    const cards = Array.from(document.querySelectorAll('#galleryOverlay .gallery-card')).slice(0, 2);
+    cards.forEach(card => {
+      let photos = [];
+      try { photos = JSON.parse(card.getAttribute('data-photos') || '[]'); } catch (e) { /* 무시 */ }
+      const cover = card.children[0] ? card.children[0].cloneNode(true) : document.createElement('div');
+      const text = card.children[1] ? card.children[1].cloneNode(true) : document.createElement('div');
+      const imgEl = cover.querySelector('img');
+      if (imgEl) imgEl.className = imgEl.className.replace('hover:scale-105', 'group-hover:scale-105');
+
+      const article = document.createElement('article');
+      article.className = 'reveal group bg-warm-card rounded-3xl overflow-hidden shadow-card hover:shadow-soft transition-shadow duration-300 cursor-pointer';
+      article.addEventListener('click', () => openGalleryLightbox(photos, 0));
+      article.appendChild(cover);
+      article.appendChild(text);
+      grid.appendChild(article);
+    });
+  })();
 
   // 메인페이지 "캄보디아 이야기" 미리보기 자동 생성
   // cambodiaOverlay(전체보기) 목록의 맨 위 2개(=가장 최신 글, 목록 맨 앞에 추가한 글)를 그대로 가져와 메인에 보여줌.
