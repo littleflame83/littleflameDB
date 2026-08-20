@@ -377,33 +377,9 @@
       <h2 class="text-2xl sm:text-3xl font-bold tracking-tight">캄보디아 이야기</h2>
     </div>
 
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-7 lg:gap-8">
-      <article class="reveal group bg-warm-card rounded-3xl overflow-hidden shadow-card hover:shadow-soft transition-shadow duration-300">
-        <button type="button" onclick="openDetail('ovcam', 8)" class="block w-full text-left">
-          <div class="aspect-[4/3] overflow-hidden">
-            <img src="images/img-trip2014-1.jpg" alt="2014년 캄보디아 방문, 아내와 함께한 첫 답사" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-          </div>
-          <div class="p-6">
-            <span class="text-[11px] font-semibold text-ember tracking-wide uppercase">2014.06.24</span>
-            <h3 class="mt-2 font-bold text-lg leading-snug text-ink-900">✈️ 2014년 캄보디아 방문: 아내와 함께한 첫 답사</h3>
-            <p class="mt-2 text-sm text-ink-500 leading-relaxed">신대원 3학년 시절, 아내와 함께 떠난 캄보디아 답사기. 아내의 마음속에 캄보디아를 향한 확신이 싹트기 시작한 소중한 시간을 나눕니다.</p>
-          </div>
-        </button>
-      </article>
-
-      <article class="reveal group bg-warm-card rounded-3xl overflow-hidden shadow-card hover:shadow-soft transition-shadow duration-300">
-        <button type="button" onclick="openDetail('ovcam', 7)" class="block w-full text-left">
-          <div class="aspect-[4/3] overflow-hidden">
-            <img src="images/img-vietnam1.jpg" alt="버스 타고 떠난 베트남 호찌민 여행" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-          </div>
-          <div class="p-6">
-            <span class="text-[11px] font-semibold text-ember tracking-wide uppercase">2008.11</span>
-            <h3 class="mt-2 font-bold text-lg leading-snug text-ink-900">🇻🇳 버스 타고 떠난 베트남 호찌민 여행</h3>
-            <p class="mt-2 text-sm text-ink-500 leading-relaxed">캄보디아 단기선교 중 잠시 다녀왔던 이웃 나라 베트남. 프놈펜에서 호찌민까지의 버스 여정과 솔직하고 유쾌한 쌀국수 투어 추억을 나눕니다.</p>
-          </div>
-        </button>
-      </article>
-    </div>
+    <!-- 이 안의 카드 2개는 JS가 자동으로 채웁니다. 아래 cambodiaOverlay(전체보기) 목록의 맨 앞 2개를 그대로 가져와요.
+         즉, 새 글을 쓸 때 여기는 손대지 않고 cambodiaOverlay 목록 맨 위에만 추가하면 메인에도 자동 반영됩니다. -->
+    <div id="ovcamMainGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-7 lg:gap-8"></div>
 
     <div class="reveal text-center mt-12">
       <a href="javascript:void(0)" onclick="openOverlay('cambodiaOverlay')" class="inline-flex items-center gap-2 text-sm font-semibold text-ink-900 border border-ink-900/15 hover:border-ember hover:text-ember px-6 py-3 rounded-full transition-colors">
@@ -1898,6 +1874,58 @@
     iconOpen.classList.remove('hidden');
     iconClose.classList.add('hidden');
   });
+
+  // 메인페이지 "캄보디아 이야기" 미리보기 자동 생성
+  // cambodiaOverlay(전체보기) 목록의 맨 위 2개(=가장 최신 글, 목록 맨 앞에 추가한 글)를 그대로 가져와 메인에 보여줌.
+  // → 새 글을 쓸 때 cambodiaOverlay 목록 맨 위에만 카드를 추가하면, 여기는 자동으로 최신 2개로 갱신됨. 메인페이지는 따로 손댈 필요 없음.
+  (function renderOvcamMainPreview() {
+    const grid = document.getElementById('ovcamMainGrid');
+    if (!grid) return;
+    const cards = Array.from(document.querySelectorAll('#cambodiaOverlay .ovcam-card')).slice(0, 2);
+    cards.forEach(card => {
+      const idx = card.getAttribute('data-ovcam');
+      const img = card.querySelector('img');
+      const dateEl = card.querySelector('span');
+      const titleEl = card.querySelector('h3');
+      const descEl = card.querySelector('p');
+
+      const article = document.createElement('article');
+      article.className = 'reveal group bg-warm-card rounded-3xl overflow-hidden shadow-card hover:shadow-soft transition-shadow duration-300';
+
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'block w-full text-left';
+      btn.addEventListener('click', () => openDetail('ovcam', idx));
+
+      const imgWrap = document.createElement('div');
+      imgWrap.className = 'aspect-[4/3] overflow-hidden';
+      const imgEl = document.createElement('img');
+      imgEl.src = img ? img.getAttribute('src') : '';
+      imgEl.alt = img ? img.getAttribute('alt') : '';
+      imgEl.className = 'w-full h-full object-cover group-hover:scale-105 transition-transform duration-500';
+      imgWrap.appendChild(imgEl);
+
+      const body = document.createElement('div');
+      body.className = 'p-6';
+      const dateSpan = document.createElement('span');
+      dateSpan.className = 'text-[11px] font-semibold text-ember tracking-wide uppercase';
+      dateSpan.textContent = dateEl ? dateEl.textContent : '';
+      const h3 = document.createElement('h3');
+      h3.className = 'mt-2 font-bold text-lg leading-snug text-ink-900';
+      h3.textContent = titleEl ? titleEl.textContent : '';
+      const p = document.createElement('p');
+      p.className = 'mt-2 text-sm text-ink-500 leading-relaxed';
+      p.textContent = descEl ? descEl.textContent : '';
+
+      body.appendChild(dateSpan);
+      body.appendChild(h3);
+      body.appendChild(p);
+      btn.appendChild(imgWrap);
+      btn.appendChild(body);
+      article.appendChild(btn);
+      grid.appendChild(article);
+    });
+  })();
 
   // 스크롤 리빌
   const revealEls = document.querySelectorAll('.reveal');
