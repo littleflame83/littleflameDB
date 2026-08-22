@@ -2424,12 +2424,12 @@
     document.body.style.overflow = 'hidden';
     modalPanel.scrollTop = 0;
     // 이 글만의 공유 주소를 query URL로 반영합니다.
-    // 예: https://cammission.com/?story=ovrpt-0&lang=km
+    // 예: https://cammission.com/share?story=ovrpt-0&lang=km
     // 현재 정적 호스팅에서도 새로고침 시 404가 나지 않는 방식이라 안정적입니다.
     try {
       if (!skipHash) {
         const langParam = (typeof currentLang !== 'undefined' && currentLang !== 'ko') ? '&lang=' + currentLang : '';
-        history.pushState(null, '', '?story=' + encodeURIComponent(tmplPrefix + '-' + idx) + langParam);
+        history.pushState(null, '', '/share?story=' + encodeURIComponent(tmplPrefix + '-' + idx) + langParam);
       }
       const titleEl = modalBody.querySelector('h2');
       const descEl = modalBody.querySelector('p');
@@ -2454,6 +2454,17 @@
           const twDesc = document.querySelector('meta[name="twitter:description"]');
           if (twDesc) twDesc.content = storyDesc;
         }
+        // 글의 첫 번째 대표 이미지를 SNS 공유 이미지로도 연결합니다.
+        const storyImg = modalBody.querySelector('img');
+        if (storyImg && storyImg.getAttribute('src')) {
+          const storyImageUrl = new URL(storyImg.getAttribute('src'), location.href).href;
+          const ogImage = document.querySelector('meta[property="og:image"]');
+          if (ogImage) ogImage.content = storyImageUrl;
+          const twImage = document.querySelector('meta[name="twitter:image"]');
+          if (twImage) twImage.content = storyImageUrl;
+          const ogImageAlt = document.querySelector('meta[property="og:image:alt"]');
+          if (ogImageAlt) ogImageAlt.content = storyTitle;
+        }
       }
     } catch (e) {}
   }
@@ -2474,7 +2485,7 @@
     }
     // 글 상세 URL 정리 및 기본 페이지 제목·SEO 메타정보 복원 (canonical, OG, twitter 전부)
     try {
-      history.pushState(null, '', location.pathname);
+      history.pushState(null, '', '/');
       document.title = DEFAULT_META.title;
       const canonical = document.querySelector('link[rel="canonical"]');
       if (canonical) canonical.href = DEFAULT_META.url;
@@ -2490,12 +2501,18 @@
       if (ogDesc) ogDesc.content = DEFAULT_META.ogDescription;
       const twDesc = document.querySelector('meta[name="twitter:description"]');
       if (twDesc) twDesc.content = DEFAULT_META.twitterDescription;
+      const ogImage = document.querySelector('meta[property="og:image"]');
+      if (ogImage) ogImage.content = DEFAULT_META.ogImage || 'https://cammission.com/images/img-809ccadbb89a.jpg';
+      const twImage = document.querySelector('meta[name="twitter:image"]');
+      if (twImage) twImage.content = DEFAULT_META.ogImage || 'https://cammission.com/images/img-809ccadbb89a.jpg';
+      const ogImageAlt = document.querySelector('meta[property="og:image:alt"]');
+      if (ogImageAlt) ogImageAlt.content = '앙코르와트 앞 작은 촛불 이미지';
     } catch (e) {}
   }
   window.closeDetail = closeDetail;
 
   // 공유 주소로 직접 들어왔을 때 상세 글을 자동으로 열어줌.
-  // 새 주소는 ?story=ovrpt-3 형식이며, 기존 #ovrpt-3 링크도 계속 호환합니다.
+  // 새 주소는 /share?story=ovrpt-3 형식이며, 기존 ?story=ovrpt-3 / #ovrpt-3 링크도 계속 호환합니다.
   async function openFromHash() {
     const params = new URLSearchParams(location.search);
     const storyParam = params.get('story');
@@ -2547,10 +2564,11 @@
       const bodyEl = document.getElementById(prefix + 'ModalBody');
       const titleEl = bodyEl ? bodyEl.querySelector('h2') : null;
       const shareTitle = titleEl ? titleEl.textContent.trim() : document.title;
+      const shareUrl = location.href;
 
       if (navigator.share) {
         try {
-          await navigator.share({ title: shareTitle, url: location.href });
+          await navigator.share({ title: shareTitle, url: shareUrl });
           return; // 공유창에서 실제로 보냈든 취소했든, 별도 안내 문구는 안 띄움
         } catch (e) {
           // 사용자가 공유창을 취소한 경우 등 — 아무 것도 안 함
