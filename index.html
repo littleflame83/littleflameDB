@@ -2544,23 +2544,10 @@
     const label = document.getElementById(prefix + 'CopyLinkText');
     if (!btn) return;
     btn.addEventListener('click', async () => {
-      const bodyEl = document.getElementById(prefix + 'ModalBody');
-      const titleEl = bodyEl ? bodyEl.querySelector('h2') : null;
-      const shareTitle = titleEl ? titleEl.textContent.trim() : document.title;
       // SNS 미리보기(사진/제목/설명)가 뜨도록 /share 경로를 붙인 주소를 공유함
       const shareUrl = location.origin + '/share' + location.search;
 
-      if (navigator.share) {
-        try {
-          await navigator.share({ title: shareTitle, url: shareUrl });
-          return; // 공유창에서 실제로 보냈든 취소했든, 별도 안내 문구는 안 띄움
-        } catch (e) {
-          // 사용자가 공유창을 취소한 경우 등 — 아무 것도 안 함
-          return;
-        }
-      }
-
-      // navigator.share를 지원하지 않는 환경(PC 등) — 링크 복사로 대신함
+      // OS 공유창(navigator.share)은 쓰지 않고, 항상 링크만 바로 클립보드에 복사함
       try {
         await navigator.clipboard.writeText(shareUrl);
       } catch (e) {
