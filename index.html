@@ -218,6 +218,8 @@
   gtag('js', new Date());
   gtag('config', 'G-QTM6P3B9BK');
 </script>
+<!-- 방명록 스팸 방지용 Cloudflare Turnstile -->
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 </head>
 
 <body class="bg-warm-bg text-ink-900 antialiased">
@@ -543,6 +545,8 @@
         <input id="guestWebsite" type="text" tabindex="-1" autocomplete="off" aria-hidden="true" class="absolute -left-[9999px] opacity-0 pointer-events-none" />
         <button type="submit" class="shrink-0 bg-ink-900 hover:bg-ink-700 text-white text-sm font-semibold px-6 py-3 rounded-xl transition-colors">남기기</button>
       </form>
+      <!-- ⚠️ data-sitekey를 Cloudflare Turnstile 대시보드에서 발급받은 실제 Site Key로 교체하세요 -->
+      <div class="cf-turnstile mt-3" data-sitekey="YOUR_TURNSTILE_SITE_KEY" data-callback="onGuestTurnstileVerified" data-expired-callback="onGuestTurnstileExpired" data-theme="light"></div>
       <p id="guestSubmitMsg" class="hidden mt-3 text-xs text-sky font-medium">소중한 메시지 감사합니다! 확인 후 승인된 글만 홈페이지에 공개됩니다. 🕯️</p>
     </div>
 
@@ -2064,16 +2068,35 @@
   const guestHiddenIframeEl = document.getElementById('guestHiddenIframe');
 
   let guestJustSubmitted = false;
+  // ⭐ Turnstile 토큰 저장용 (방명록 스팸 방지)
+  let guestTurnstileToken = '';
+
+  window.onGuestTurnstileVerified = function (token) {
+    guestTurnstileToken = token;
+  };
+
+  window.onGuestTurnstileExpired = function () {
+    guestTurnstileToken = '';
+  };
+
+  function resetGuestTurnstile() {
+    guestTurnstileToken = '';
+    if (window.turnstile) {
+      try { window.turnstile.reset(); } catch (e) {}
+    }
+  }
+
   guestHiddenIframeEl.addEventListener('load', () => {
     if (!guestJustSubmitted) return;
     guestJustSubmitted = false;
     guestSubmitMsg.classList.remove('hidden');
     guestForm.reset();
     guestForm.querySelector('button[type="submit"]').disabled = false;
+    resetGuestTurnstile();
     setTimeout(loadGuestbook, 4000);
   });
 
-  guestForm.addEventListener('submit', (e) => {
+  guestForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const name = document.getElementById('guestName').value.trim();
     const msg = document.getElementById('guestMsg').value.trim();
@@ -2082,7 +2105,35 @@
     if (!name || !msg) return;
     if (name.length > 30 || msg.length > 300) return;
 
-    guestForm.querySelector('button[type="submit"]').disabled = true;
+    if (!guestTurnstileToken) {
+      alert('로봇이 아님을 먼저 확인해주세요.');
+      return;
+    }
+
+    const submitBtn = guestForm.querySelector('button[type="submit"]');
+    submitBtn.disabled = true;
+
+    // ⭐ 서버(워커)에 turnstile 토큰 검증 요청 — 여기서 통과해야 실제 제출 진행
+    try {
+      const verifyRes = await fetch('https://flat-shape-f26f.littleflame83.workers.dev/verify-turnstile', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token: guestTurnstileToken })
+      });
+      const verifyData = await verifyRes.json();
+
+      if (!verifyData.success) {
+        alert('확인에 실패했어요. 다시 시도해주세요.');
+        submitBtn.disabled = false;
+        resetGuestTurnstile();
+        return;
+      }
+    } catch (err) {
+      alert('확인 중 오류가 발생했어요. 잠시 후 다시 시도해주세요.');
+      submitBtn.disabled = false;
+      return;
+    }
+
     guestHiddenName.value = name;
     guestHiddenMsg.value = msg;
     guestJustSubmitted = true;
