@@ -337,38 +337,6 @@
 </section>
 
 
-<!-- ================= 사역 로드맵 (점화·확산·승화) ================= -->
-<section class="bg-warm-bg pb-28 sm:pb-36 px-6">
-  <div class="max-w-5xl mx-auto">
-    <div class="reveal text-center mb-14 sm:mb-16">
-      <p class="text-ember text-xs font-bold tracking-[0.25em] uppercase mb-3">Mission Roadmap</p>
-      <h2 class="text-2xl sm:text-3xl font-bold tracking-tight">작은 불꽃은 이렇게 타오르겠습니다</h2>
-    </div>
-
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
-      <div class="reveal bg-warm-card rounded-3xl shadow-card p-8">
-        <span class="text-3xl">🌱</span>
-        <p class="mt-5 text-xs font-bold tracking-wide text-ember uppercase">점화 · 1년차</p>
-        <h3 class="mt-2 font-bold text-lg text-ink-900">언어와 문화 적응</h3>
-        <p class="mt-3 text-sm text-ink-500 leading-relaxed">불꽃을 피우기 위한 준비 — 현지어 습득과 문화 이해에 힘씁니다.</p>
-      </div>
-      <div class="reveal bg-warm-card rounded-3xl shadow-card p-8">
-        <span class="text-3xl">🔥</span>
-        <p class="mt-5 text-xs font-bold tracking-wide text-ember uppercase">확산 · 3년차</p>
-        <h3 class="mt-2 font-bold text-lg text-ink-900">제자 양육과 교육사역</h3>
-        <p class="mt-3 text-sm text-ink-500 leading-relaxed">불꽃 옮겨 붙이기 — 현지 목회자 양성과 교회 사역을 이어갑니다.</p>
-      </div>
-      <div class="reveal bg-warm-card rounded-3xl shadow-card p-8">
-        <span class="text-3xl">🌟</span>
-        <p class="mt-5 text-xs font-bold tracking-wide text-ember uppercase">승화 · 10년차</p>
-        <h3 class="mt-2 font-bold text-lg text-ink-900">스승을 기르는 스승</h3>
-        <p class="mt-3 text-sm text-ink-500 leading-relaxed">스스로 타오르는 불꽃 — 석·박사 전문 목회자를 지도하며 신학의 뿌리를 내립니다.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-
 <!-- ================= 우리의 발자취 (타임라인) ================= -->
 <!-- cambodiaOverlay 안의 글 카드(data-ovcam)를 그대로 읽어서 자동으로 그려집니다.
      즉, 새 글을 추가해도 이 섹션은 손댈 필요 없이 자동으로 타임라인에 반영됩니다. -->
@@ -377,15 +345,10 @@
     <div class="reveal text-center mb-10 sm:mb-14">
       <p class="text-ember text-xs font-bold tracking-[0.25em] uppercase mb-3">Timeline</p>
       <h2 class="text-2xl sm:text-3xl font-bold tracking-tight">우리의 발자취</h2>
-      <p class="mt-3 text-sm text-ink-400">마우스 휠로 확대·축소, 좌우로 드래그해서 살펴보세요</p>
+      <p class="mt-3 text-sm text-ink-400">확대/축소, 좌우로 이동해서 살펴보세요</p>
     </div>
 
     <div class="relative reveal">
-      <div class="flex justify-center gap-2 mb-5">
-        <button id="tlZoomOut" type="button" aria-label="축소" class="w-9 h-9 rounded-full border border-ink-900/15 text-ink-500 hover:border-ember hover:text-ember transition-colors flex items-center justify-center text-lg font-bold">−</button>
-        <button id="tlZoomIn" type="button" aria-label="확대" class="w-9 h-9 rounded-full border border-ink-900/15 text-ink-500 hover:border-ember hover:text-ember transition-colors flex items-center justify-center text-lg font-bold">+</button>
-      </div>
-
       <div id="tlScroll" class="overflow-x-auto overflow-y-hidden pb-4 -mx-6 px-6 cursor-grab active:cursor-grabbing">
         <div id="tlTrack" class="relative flex items-center min-w-max" style="height:160px;"></div>
       </div>
@@ -395,7 +358,7 @@
 
 
 <!-- ================= 사역지 지도 ================= -->
-<section id="missionMap" class="bg-[#FBF6EE] pb-28 sm:pb-36 px-6">
+<section id="missionMap" class="bg-[#FBF6EE] pt-20 sm:pt-24 pb-28 sm:pb-36 px-6">
   <div class="max-w-5xl mx-auto">
     <div class="reveal text-center mb-10 sm:mb-14">
       <p class="text-sky text-xs font-bold tracking-[0.25em] uppercase mb-3">Field Map</p>
@@ -403,15 +366,20 @@
       <p class="mt-3 text-sm text-ink-400">캄보디아 현지에서 함께하는 주요 장소들을 소개합니다</p>
     </div>
 
-    <div class="reveal rounded-3xl overflow-hidden shadow-card">
+    <div class="reveal relative rounded-3xl overflow-hidden shadow-card aspect-square max-w-2xl mx-auto">
       <iframe
         src="https://www.google.com/maps/d/embed?mid=1kuaMd0fUfX7Pch8oicYNSKtXKgKV2Xs"
-        width="100%"
-        height="480"
+        class="absolute inset-0 w-full h-full"
         style="border:0;"
         loading="lazy"
         title="작은불꽃 홍선교 사역지 지도"
       ></iframe>
+      <!-- ⭐ 신규: 처음엔 살짝 덮어두었다가, 한 번 터치하면 사라짐.
+           페이지를 스크롤하려던 손가락이 실수로 지도를 건드려 이동/확대되는 걸 방지하고,
+           지도를 보려는 의도가 분명할 때만 자연스럽게 조작할 수 있게 해줍니다. -->
+      <button type="button" id="mapTapOverlay" class="absolute inset-0 flex items-center justify-center bg-ink-900/5 hover:bg-ink-900/0 transition-colors">
+        <span class="bg-white/95 text-ink-900 text-xs font-semibold px-4 py-2.5 rounded-full shadow-md">👆 지도를 터치해서 살펴보세요</span>
+      </button>
     </div>
   </div>
 </section>
@@ -1219,6 +1187,32 @@
         </ul>
       </div>
 
+    </div>
+
+    <div class="reveal text-center mb-10 sm:mb-12">
+      <p class="text-ember text-xs font-bold tracking-[0.25em] uppercase mb-3">Mission Roadmap</p>
+      <h3 class="text-lg sm:text-xl font-bold tracking-tight text-ink-900">작은 불꽃은 이렇게 타오르겠습니다</h3>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 mb-16">
+      <div class="reveal bg-white rounded-3xl shadow-card p-8">
+        <span class="text-3xl">🌱</span>
+        <p class="mt-5 text-xs font-bold tracking-wide text-ember uppercase">점화 · 1년차</p>
+        <h4 class="mt-2 font-bold text-lg text-ink-900">언어와 문화 적응</h4>
+        <p class="mt-3 text-sm text-ink-500 leading-relaxed">불꽃을 피우기 위한 준비 — 현지어 습득과 문화 이해에 힘씁니다.</p>
+      </div>
+      <div class="reveal bg-white rounded-3xl shadow-card p-8">
+        <span class="text-3xl">🔥</span>
+        <p class="mt-5 text-xs font-bold tracking-wide text-ember uppercase">확산 · 3년차</p>
+        <h4 class="mt-2 font-bold text-lg text-ink-900">제자 양육과 교육사역</h4>
+        <p class="mt-3 text-sm text-ink-500 leading-relaxed">불꽃 옮겨 붙이기 — 현지 목회자 양성과 교회 사역을 이어갑니다.</p>
+      </div>
+      <div class="reveal bg-white rounded-3xl shadow-card p-8">
+        <span class="text-3xl">🌟</span>
+        <p class="mt-5 text-xs font-bold tracking-wide text-ember uppercase">승화 · 10년차</p>
+        <h4 class="mt-2 font-bold text-lg text-ink-900">스승을 기르는 스승</h4>
+        <p class="mt-3 text-sm text-ink-500 leading-relaxed">스스로 타오르는 불꽃 — 석·박사 전문 목회자를 지도하며 신학의 뿌리를 내립니다.</p>
+      </div>
     </div>
 
     <div class="reveal max-w-2xl mx-auto text-center mb-16">
@@ -2038,6 +2032,15 @@
     });
   })();
 
+  // 사역지 지도: 처음 터치하면 안내 오버레이가 사라지고 지도를 바로 조작할 수 있음
+  (function initMapTapOverlay() {
+    const overlay = document.getElementById('mapTapOverlay');
+    if (!overlay) return;
+    overlay.addEventListener('click', () => {
+      overlay.style.display = 'none';
+    });
+  })();
+
   // ============================================================
   // 우리의 발자취 (타임라인)
   //
@@ -2046,7 +2049,7 @@
   // 새 글을 추가해도 이 코드는 손댈 필요 없습니다 —
   // cambodiaOverlay 목록에 카드만 추가하면 타임라인도 자동으로 갱신됩니다.
   //
-  // 마우스 휠: 확대/축소 (제자리에서, 페이지는 스크롤되지 않음)
+  // 마우스 휠(PC) 또는 두 손가락 핀치(모바일)로 확대/축소 (제자리에서, 페이지는 스크롤되지 않음)
   // 확대하면 사진+제목이 보이고, 축소하면 연도별 점으로 요약됩니다.
   // 점을 클릭하면 해당 글이 열립니다.
   // ============================================================
@@ -2054,8 +2057,6 @@
 
     const track = document.getElementById('tlTrack');
     const scrollWrap = document.getElementById('tlScroll');
-    const zoomInBtn = document.getElementById('tlZoomIn');
-    const zoomOutBtn = document.getElementById('tlZoomOut');
 
     if (!track || !scrollWrap) return;
 
@@ -2183,10 +2184,32 @@
       setScale(scale - e.deltaY * 0.0015);
     }, { passive: false });
 
-    zoomInBtn && zoomInBtn.addEventListener('click', () => setScale(scale + 0.25));
-    zoomOutBtn && zoomOutBtn.addEventListener('click', () => setScale(scale - 0.25));
+    // ⭐ 신규: 손가락 두 개로 오므리고 벌려서 확대/축소 (모바일)
+    function getTouchDist(touches) {
+      const dx = touches[0].clientX - touches[1].clientX;
+      const dy = touches[0].clientY - touches[1].clientY;
+      return Math.hypot(dx, dy);
+    }
+    let pinchStartDist = 0;
+    let pinchStartScale = 1;
+    scrollWrap.addEventListener('touchstart', (e) => {
+      if (e.touches.length === 2) {
+        pinchStartDist = getTouchDist(e.touches);
+        pinchStartScale = scale;
+      }
+    }, { passive: true });
+    scrollWrap.addEventListener('touchmove', (e) => {
+      if (e.touches.length === 2 && pinchStartDist > 0) {
+        e.preventDefault();
+        const dist = getTouchDist(e.touches);
+        setScale(pinchStartScale * (dist / pinchStartDist));
+      }
+    }, { passive: false });
+    scrollWrap.addEventListener('touchend', (e) => {
+      if (e.touches.length < 2) pinchStartDist = 0;
+    });
 
-    // 데스크탑에서 마우스로 좌우 드래그 스크롤
+    // 데스크탑에서 마우스로 좌우 드래그 스크롤 (손가락 스크롤은 overflow-x-auto가 기본 지원)
     let isDown = false, startX = 0, startScrollLeft = 0;
     scrollWrap.addEventListener('mousedown', (e) => {
       isDown = true;
