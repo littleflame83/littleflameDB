@@ -5,6 +5,15 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>작은불꽃 홍선교 | 캄보디아 프놈펜 선교사 홍성화 목사</title>
 
+<!-- ⭐ 신규: 외부 사이트 미리 연결 (유튜브/구글맵/폰트가 실제로 로드되기 전에
+     연결 준비를 미리 해둬서, 체감 로딩 속도를 살짝 앞당깁니다) -->
+<link rel="preconnect" href="https://www.youtube.com" />
+<link rel="preconnect" href="https://www.google.com" />
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+<link rel="preconnect" href="https://script.google.com" />
+<link rel="preconnect" href="https://flat-shape-f26f.littleflame83.workers.dev" />
+<link rel="dns-prefetch" href="https://img.youtube.com" />
+
 <!-- 검색엔진(구글·네이버)이 이 사이트를 이해하는 데 쓰는 기본 정보 -->
 <meta name="description" content="캄보디아 프놈펜에서 사역하는 작은불꽃 홍선교(홍성화 목사)의 공식 홈페이지. 캄보디아장로교신학교(캄장신) 교육사역과 선교 이야기, 기도편지, 사진, 가족 이야기, 후원 안내를 전합니다." />
 <meta name="author" content="홍성화 (작은불꽃 홍선교)" />
@@ -514,27 +523,26 @@
         후원은 계속 타오르게 하는 장작이 됩니다. 원하시는 방식을 선택해 주세요.
       </p>
       <p id="prayerCounterDisplay" class="mt-5 inline-flex items-center gap-2 bg-white/70 text-ember text-sm font-semibold px-5 py-2.5 rounded-full shadow-sm">
-        🙏 지금까지 <span id="prayerCounterNumber">···</span>번 함께 기도했습니다
+        🙏 지금까지 <span id="prayerCounterNumber" class="animate-pulse">불러오는 중</span>번 함께 기도했습니다
       </p>
     </div>
 
     <!-- ⭐ 신규: 정기후원 목표 달성률 (원형 그래프)
-         매달 업데이트하실 숫자는 아래쪽 <script>의 FUND_CURRENT_MONTHLY / FUND_GOAL_MONTHLY
-         두 줄만 고치면 됩니다 (단위: 만원). 후원자 개별 명단이 아니라 합계만 넣으시면 돼요. -->
+         구글 시트에서 자동으로 불러옵니다 (설정법은 fund-apps-script.gs 참고). -->
     <div class="reveal max-w-xs mx-auto mb-14 text-center">
       <p class="text-xs font-bold text-ink-400 tracking-wide uppercase mb-4">정기후원 목표 달성률</p>
-      <div class="relative w-36 h-36 mx-auto">
+      <div id="fundProgressWrap" class="relative w-36 h-36 mx-auto animate-pulse">
         <svg viewBox="0 0 120 120" class="w-full h-full -rotate-90">
           <circle cx="60" cy="60" r="52" fill="none" stroke="#e7e0d4" stroke-width="12" />
           <circle id="fundProgressCircle" cx="60" cy="60" r="52" fill="none" stroke="#f97316" stroke-width="12" stroke-linecap="round" />
         </svg>
         <div class="absolute inset-0 flex flex-col items-center justify-center">
-          <span id="fundPercentText" class="text-2xl font-bold text-ink-900">0%</span>
+          <span id="fundPercentText" class="text-lg font-bold text-ink-400">불러오는 중</span>
           <span class="text-[10px] text-ink-400 mt-0.5">달성</span>
         </div>
       </div>
       <p class="mt-4 text-sm text-ink-600">
-        월 <span id="fundCurrentText" class="font-semibold text-ink-900">0만원</span> / 목표 <span id="fundGoalText" class="font-semibold text-ink-900">350만원</span>
+        월 <span id="fundCurrentText" class="font-semibold text-ink-900">···</span> / 목표 <span id="fundGoalText" class="font-semibold text-ink-900">···</span>
       </p>
     </div>
 
@@ -2082,6 +2090,7 @@
     const percentEl = document.getElementById('fundPercentText');
     const currentEl = document.getElementById('fundCurrentText');
     const goalEl = document.getElementById('fundGoalText');
+    const progressWrap = document.getElementById('fundProgressWrap');
     if (!circle) return;
 
     function render(current, goal) {
@@ -2090,7 +2099,11 @@
       const circumference = 2 * Math.PI * radius;
       circle.style.strokeDasharray = String(circumference);
       circle.style.strokeDashoffset = String(circumference - (circumference * percent / 100));
-      if (percentEl) percentEl.textContent = percent + '%';
+      if (progressWrap) progressWrap.classList.remove('animate-pulse');
+      if (percentEl) {
+        percentEl.textContent = percent + '%';
+        percentEl.className = 'text-2xl font-bold text-ink-900';
+      }
       if (currentEl) currentEl.textContent = current.toLocaleString('ko-KR') + '만원';
       if (goalEl) goalEl.textContent = goal.toLocaleString('ko-KR') + '만원';
     }
@@ -2136,14 +2149,20 @@
   // 전체 기도 카운터: 페이지 열릴 때 워커에서 현재 숫자를 불러와 표시
   function updatePrayerCounterDisplay(count) {
     const el = document.getElementById('prayerCounterNumber');
-    if (el) el.textContent = count.toLocaleString('ko-KR');
+    if (el) {
+      el.textContent = count.toLocaleString('ko-KR');
+      el.classList.remove('animate-pulse');
+    }
   }
   fetch('https://flat-shape-f26f.littleflame83.workers.dev/prayer-count')
     .then(res => res.json())
     .then(data => { if (typeof data.count === 'number') updatePrayerCounterDisplay(data.count); })
     .catch(() => {
       const el = document.getElementById('prayerCounterNumber');
-      if (el) el.textContent = '0';
+      if (el) {
+        el.textContent = '0';
+        el.classList.remove('animate-pulse');
+      }
     });
 
   // 사역지 지도: 처음 터치하면 안내 오버레이가 사라지고 지도를 바로 조작할 수 있음
