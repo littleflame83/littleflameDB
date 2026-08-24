@@ -2143,6 +2143,39 @@
       const original = btn.textContent;
       btn.textContent = '복사되었어요 ✓';
       setTimeout(() => { btn.textContent = original; }, 2000);
+
+      // ⭐ 신규: GA4 이벤트 — 계좌번호 복사 클릭 추적
+      if (typeof gtag === 'function') {
+        gtag('event', 'click_copy_account', { event_category: 'donation' });
+      }
+    });
+  })();
+
+  // ⭐ 신규: GA4 이벤트 — 정기후원 신청하기 / 공유 버튼 클릭 추적
+  // (버튼 자체의 원래 동작은 그대로 두고, 클릭 순간에 이벤트만 하나씩 더 보냄)
+  (function initGaEventTracking() {
+    if (typeof gtag !== 'function') return;
+
+    // 정기후원 신청하기 (미션펀드로 나가는 링크, 페이지에 여러 개 있을 수 있음)
+    document.querySelectorAll('a[href="https://go.missionfund.org/littleflame"]').forEach(a => {
+      a.addEventListener('click', () => {
+        gtag('event', 'click_recurring_donate', { event_category: 'donation' });
+      });
+    });
+
+    // 공유 버튼 (가족이야기 / 기도편지 / 캄보디아이야기 각 글 상세 안)
+    const shareButtons = [
+      { id: 'ovrptCopyLink', category: 'family_story' },
+      { id: 'ovltrCopyLink', category: 'prayer_letter' },
+      { id: 'ovcamCopyLink', category: 'cambodia_story' }
+    ];
+    shareButtons.forEach(({ id, category }) => {
+      const el = document.getElementById(id);
+      if (el) {
+        el.addEventListener('click', () => {
+          gtag('event', 'click_share', { event_category: category });
+        });
+      }
     });
   })();
 
@@ -2282,7 +2315,9 @@
           }
 
           dotWrap.addEventListener('click', () => {
-            if (window.openOverlay) window.openOverlay('cambodiaOverlay');
+            // ⭐ 수정: 캄보디아이야기 전체보기 목록(오버레이)을 열지 않고,
+            // 홈페이지 메인 화면을 그대로 배경에 둔 채 글만 위에 띄웁니다.
+            // (메인페이지 미리보기 카드를 클릭했을 때와 똑같은 동작)
             if (window.openDetail) window.openDetail('ovcam', it.idx);
           });
 
@@ -2889,8 +2924,9 @@
           if (tmplPrefix !== r.prefix) {
             closeDetail(tmplPrefix);
           }
-          const overlayId = OVERLAY_MAP_BY_PREFIX[r.prefix];
-          if (overlayId) openOverlay(overlayId);
+          // ⭐ 수정: 오버레이(카테고리 전체보기 목록)를 강제로 열지 않음.
+          // 원래 배경이 홈페이지였으면 홈페이지 그대로, 오버레이 안에서 보고 있었으면
+          // 그 오버레이 그대로 유지됨 — 배경이 예상치 못하게 바뀌지 않도록 함.
           openDetail(r.prefix, r.idx);
           const newPanel = document.getElementById(r.prefix + 'ModalPanel');
           if (newPanel) newPanel.scrollTop = 0;
