@@ -369,6 +369,31 @@
 </section>
 
 
+<!-- ================= 우리의 발자취 (타임라인) ================= -->
+<!-- cambodiaOverlay 안의 글 카드(data-ovcam)를 그대로 읽어서 자동으로 그려집니다.
+     즉, 새 글을 추가해도 이 섹션은 손댈 필요 없이 자동으로 타임라인에 반영됩니다. -->
+<section id="missionTimeline" class="bg-warm-bg pb-28 sm:pb-36 px-6">
+  <div class="max-w-6xl mx-auto">
+    <div class="reveal text-center mb-10 sm:mb-14">
+      <p class="text-ember text-xs font-bold tracking-[0.25em] uppercase mb-3">Timeline</p>
+      <h2 class="text-2xl sm:text-3xl font-bold tracking-tight">우리의 발자취</h2>
+      <p class="mt-3 text-sm text-ink-400">마우스 휠로 확대·축소, 좌우로 드래그해서 살펴보세요</p>
+    </div>
+
+    <div class="relative reveal">
+      <div class="flex justify-center gap-2 mb-5">
+        <button id="tlZoomOut" type="button" aria-label="축소" class="w-9 h-9 rounded-full border border-ink-900/15 text-ink-500 hover:border-ember hover:text-ember transition-colors flex items-center justify-center text-lg font-bold">−</button>
+        <button id="tlZoomIn" type="button" aria-label="확대" class="w-9 h-9 rounded-full border border-ink-900/15 text-ink-500 hover:border-ember hover:text-ember transition-colors flex items-center justify-center text-lg font-bold">+</button>
+      </div>
+
+      <div id="tlScroll" class="overflow-x-auto overflow-y-hidden pb-4 -mx-6 px-6 cursor-grab active:cursor-grabbing">
+        <div id="tlTrack" class="relative flex items-center min-w-max" style="height:160px;"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
 <!-- ================= 캄보디아 이야기 ================= -->
 <section class="bg-[#FBF6EE] py-20 sm:py-24 px-6">
   <div class="max-w-6xl mx-auto">
@@ -1978,6 +2003,171 @@
       article.appendChild(btn);
       grid.appendChild(article);
     });
+  })();
+
+  // ============================================================
+  // 우리의 발자취 (타임라인)
+  //
+  // cambodiaOverlay 안의 [data-ovcam] 카드들을 그대로 읽어서
+  // 연도별로 묶고, 시간순으로 자동 배치합니다.
+  // 새 글을 추가해도 이 코드는 손댈 필요 없습니다 —
+  // cambodiaOverlay 목록에 카드만 추가하면 타임라인도 자동으로 갱신됩니다.
+  //
+  // 마우스 휠: 확대/축소 (제자리에서, 페이지는 스크롤되지 않음)
+  // 확대하면 사진+제목이 보이고, 축소하면 연도별 점으로 요약됩니다.
+  // 점을 클릭하면 해당 글이 열립니다.
+  // ============================================================
+  (function initMissionTimeline() {
+
+    const track = document.getElementById('tlTrack');
+    const scrollWrap = document.getElementById('tlScroll');
+    const zoomInBtn = document.getElementById('tlZoomIn');
+    const zoomOutBtn = document.getElementById('tlZoomOut');
+
+    if (!track || !scrollWrap) return;
+
+    const cardEls = Array.from(document.querySelectorAll('#cambodiaOverlay [data-ovcam]'));
+
+    const items = cardEls.map(btn => {
+      const idx = btn.getAttribute('data-ovcam');
+      const dateText = (btn.querySelector('span')?.textContent || '').trim();
+      const title = (btn.querySelector('h3')?.textContent || '').trim();
+      const img = btn.querySelector('img')?.getAttribute('src') || '';
+
+      const parts = dateText.split('.').map(p => parseInt(p, 10)).filter(n => !isNaN(n));
+      const year = parts[0] || 0;
+      const month = parts[1] || 1;
+      const day = parts[2] || 1;
+
+      return {
+        idx, dateText, title, img, year,
+        sortKey: year * 10000 + month * 100 + day
+      };
+    })
+    .filter(it => it.year > 0)
+    .sort((a, b) => a.sortKey - b.sortKey);
+
+    if (!items.length) return;
+
+    const byYear = {};
+    items.forEach(it => {
+      if (!byYear[it.year]) byYear[it.year] = [];
+      byYear[it.year].push(it);
+    });
+    const years = Object.keys(byYear).map(Number).sort((a, b) => a - b);
+
+    let scale = 1;
+    const MIN_SCALE = 0.6;
+    const MAX_SCALE = 2;
+
+    function render() {
+      track.innerHTML = '';
+
+      const gapBase = 84;
+      const gap = gapBase * scale;
+      const showTitle = scale >= 1.05;
+
+      years.forEach((year, yi) => {
+
+        const yearWrap = document.createElement('div');
+        yearWrap.className = 'flex flex-col items-center shrink-0';
+        yearWrap.style.marginRight = (gap * 0.6) + 'px';
+
+        const yearLabel = document.createElement('div');
+        yearLabel.className = 'text-xs font-bold text-ember mb-3 tracking-wide whitespace-nowrap';
+        yearLabel.textContent = year + '년 · ' + byYear[year].length + '편';
+        yearWrap.appendChild(yearLabel);
+
+        const dotsRow = document.createElement('div');
+        dotsRow.className = 'flex items-start';
+        dotsRow.style.gap = gap + 'px';
+
+        byYear[year].forEach(it => {
+
+          const dotWrap = document.createElement('button');
+          dotWrap.type = 'button';
+          dotWrap.className = 'group flex flex-col items-center shrink-0 focus:outline-none';
+          dotWrap.style.width = (showTitle ? (110 * scale) : 14) + 'px';
+
+          const dot = document.createElement('div');
+          dot.className = 'rounded-full shadow-md group-hover:scale-110 transition-transform bg-ember';
+          const dotSize = showTitle ? (44 * scale) : 12;
+          dot.style.width = dotSize + 'px';
+          dot.style.height = dotSize + 'px';
+          dot.style.border = '2px solid #fff';
+          if (showTitle && it.img) {
+            dot.style.backgroundImage = "url('" + it.img + "')";
+            dot.style.backgroundSize = 'cover';
+            dot.style.backgroundPosition = 'center';
+          }
+          dotWrap.appendChild(dot);
+
+          if (showTitle) {
+            const dateEl = document.createElement('span');
+            dateEl.className = 'mt-2 text-[10px] text-ink-400 whitespace-nowrap';
+            dateEl.textContent = it.dateText;
+            dotWrap.appendChild(dateEl);
+
+            const titleEl = document.createElement('span');
+            titleEl.className = 'mt-1 text-xs font-semibold text-ink-900 text-center leading-snug line-clamp-2';
+            titleEl.textContent = it.title;
+            dotWrap.appendChild(titleEl);
+          }
+
+          dotWrap.addEventListener('click', () => {
+            if (window.openOverlay) window.openOverlay('cambodiaOverlay');
+            if (window.openDetail) window.openDetail('ovcam', it.idx);
+          });
+
+          dotsRow.appendChild(dotWrap);
+        });
+
+        yearWrap.appendChild(dotsRow);
+        track.appendChild(yearWrap);
+
+        if (yi < years.length - 1) {
+          const divider = document.createElement('div');
+          divider.className = 'w-px self-stretch bg-ink-900/10 shrink-0 mt-6';
+          divider.style.marginRight = (gap * 0.6) + 'px';
+          track.appendChild(divider);
+        }
+      });
+    }
+
+    function setScale(next) {
+      const clamped = Math.min(MAX_SCALE, Math.max(MIN_SCALE, next));
+      if (clamped === scale) return;
+      scale = clamped;
+      render();
+    }
+
+    render();
+
+    // 마우스 휠: 타임라인 위에서만 확대/축소, 페이지 스크롤은 막지 않음(패널 안에서만 preventDefault)
+    scrollWrap.addEventListener('wheel', (e) => {
+      if (Math.abs(e.deltaY) < 2) return;
+      e.preventDefault();
+      setScale(scale - e.deltaY * 0.0015);
+    }, { passive: false });
+
+    zoomInBtn && zoomInBtn.addEventListener('click', () => setScale(scale + 0.25));
+    zoomOutBtn && zoomOutBtn.addEventListener('click', () => setScale(scale - 0.25));
+
+    // 데스크탑에서 마우스로 좌우 드래그 스크롤
+    let isDown = false, startX = 0, startScrollLeft = 0;
+    scrollWrap.addEventListener('mousedown', (e) => {
+      isDown = true;
+      startX = e.pageX;
+      startScrollLeft = scrollWrap.scrollLeft;
+    });
+    window.addEventListener('mouseup', () => { isDown = false; });
+    scrollWrap.addEventListener('mouseleave', () => { isDown = false; });
+    scrollWrap.addEventListener('mousemove', (e) => {
+      if (!isDown) return;
+      e.preventDefault();
+      scrollWrap.scrollLeft = startScrollLeft - (e.pageX - startX) * 1.2;
+    });
+
   })();
 
   // 스크롤 리빌
