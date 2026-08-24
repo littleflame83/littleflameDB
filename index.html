@@ -923,9 +923,7 @@
         </button>
 
         <button type="button" data-ovltr="3" class="ovltr-card reveal group text-left bg-warm-card rounded-3xl overflow-hidden shadow-card hover:shadow-soft transition-shadow duration-300">
-          <div class="aspect-[4/3] overflow-hidden"><div class="w-full h-full flex items-center justify-center bg-[#FBF6EE]"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" class="flame-flicker">
-    <path d="M12 2C12 2 6 8.5 6 14a6 6 0 0012 0c0-2.2-1-4-2.2-5.6.2 1.4-.4 2.6-1.3 3-.3-2.6-1.7-5-2.5-9.4z" fill="#F97316"/>
-  </svg></div></div>
+          <div class="aspect-[4/3] overflow-hidden"><img loading="lazy" src="images/img-checkup-report.jpg" alt="건강진단 결과보고서" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" /></div>
           <div class="p-6">
             <span class="text-[11px] font-semibold text-violet-500 tracking-wide uppercase">2026년 1월 11일</span>
             <h3 class="mt-2 font-bold text-lg leading-snug text-ink-900">선교사가 되기 위해 걸어가야 할 과정들 (1) - 건강검진</h3>
@@ -943,9 +941,14 @@
         </button>
 
         <button type="button" data-ovltr="5" class="ovltr-card reveal group text-left bg-warm-card rounded-3xl overflow-hidden shadow-card hover:shadow-soft transition-shadow duration-300">
-          <div class="aspect-[4/3] overflow-hidden"><div class="w-full h-full flex items-center justify-center bg-[#FBF6EE]"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" class="flame-flicker">
-    <path d="M12 2C12 2 6 8.5 6 14a6 6 0 0012 0c0-2.2-1-4-2.2-5.6.2 1.4-.4 2.6-1.3 3-.3-2.6-1.7-5-2.5-9.4z" fill="#F97316"/>
-  </svg></div></div>
+          <div class="aspect-[4/3] overflow-hidden relative">
+            <img loading="lazy" src="https://img.youtube.com/vi/9AgWcKDhABI/hqdefault.jpg" alt="후원요청을 위한 첫 발걸음" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+            <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+              <div class="w-12 h-12 rounded-full bg-ink-900/60 flex items-center justify-center">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg>
+              </div>
+            </div>
+          </div>
           <div class="p-6">
             <span class="text-[11px] font-semibold text-violet-500 tracking-wide uppercase">2025년 12월 9일</span>
             <h3 class="mt-2 font-bold text-lg leading-snug text-ink-900">후원요청을 위한 첫 발걸음, 떨리는 마음으로 출발합니다</h3>
@@ -2914,23 +2917,6 @@
       }
     });
 
-    // ⭐ 복원: "동역하기" 버튼 — 이 글을 읽고 후원 페이지로 바로 이동할 수 있게 함
-    const donateWrap = document.createElement('div');
-    donateWrap.className = 'mt-6 text-center';
-    donateWrap.innerHTML = `
-      <a href="javascript:void(0)" id="articleDonateBtn"
-        class="inline-flex items-center gap-2 text-sm font-semibold bg-ember text-white px-6 py-3.5 rounded-full shadow-sm hover:opacity-90 transition-opacity">
-        🔥 동역하기
-      </a>`;
-    modalBody.appendChild(donateWrap);
-    donateWrap.querySelector('#articleDonateBtn').addEventListener('click', () => {
-      if (typeof gtag === 'function') {
-        gtag('event', 'click_donate_from_article', { event_category: tmplPrefix });
-      }
-      closeDetail(tmplPrefix);
-      openOverlay('supportOverlay');
-    });
-
     // ⭐ 신규: 날짜가 가까운 다른 글 1~2개를 "이 시기의 다른 이야기"로 추천
     const related = getRelatedArticles(tmplPrefix, idx, 2);
     if (related.length) {
@@ -2966,6 +2952,24 @@
       });
       modalBody.appendChild(relWrap);
     }
+
+    // ⭐ "동역하기" 버튼 — 전체보기 버튼 바로 위, 글을 다 읽고 관련 글까지 본 다음
+    // 마지막으로 마주치는 CTA가 되도록 배치함
+    const donateWrap = document.createElement('div');
+    donateWrap.className = 'mt-10 pt-8 border-t border-ink-900/10 text-center';
+    donateWrap.innerHTML = `
+      <a href="javascript:void(0)" id="articleDonateBtn"
+        class="inline-flex items-center gap-2 text-sm font-semibold bg-ember text-white px-6 py-3.5 rounded-full shadow-sm hover:opacity-90 transition-opacity">
+        동역하기
+      </a>`;
+    modalBody.appendChild(donateWrap);
+    donateWrap.querySelector('#articleDonateBtn').addEventListener('click', () => {
+      if (typeof gtag === 'function') {
+        gtag('event', 'click_donate_from_article', { event_category: tmplPrefix });
+      }
+      closeDetail(tmplPrefix);
+      openOverlay('supportOverlay');
+    });
 
     // 글 맨 아래에 해당 카테고리 "전체보기" 버튼을 자동으로 붙임
     const info = CATEGORY_INFO[tmplPrefix];
