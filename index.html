@@ -381,6 +381,10 @@
         <span class="bg-white/95 text-ink-900 text-xs font-semibold px-4 py-2.5 rounded-full shadow-md">👆 지도를 터치해서 살펴보세요</span>
       </button>
     </div>
+
+    <p class="reveal text-center mt-4">
+      <a href="https://www.google.com/maps/d/viewer?mid=1kuaMd0fUfX7Pch8oicYNSKtXKgKV2Xs" target="_blank" rel="noopener" class="text-ink-400 text-xs underline hover:text-sky">지도가 안 보이시면 여기를 눌러 구글 지도에서 크게 보기</a>
+    </p>
   </div>
 </section>
 
@@ -514,6 +518,26 @@
       </p>
     </div>
 
+    <!-- ⭐ 신규: 정기후원 목표 달성률 (원형 그래프)
+         매달 업데이트하실 숫자는 아래쪽 <script>의 FUND_CURRENT_MONTHLY / FUND_GOAL_MONTHLY
+         두 줄만 고치면 됩니다 (단위: 만원). 후원자 개별 명단이 아니라 합계만 넣으시면 돼요. -->
+    <div class="reveal max-w-xs mx-auto mb-14 text-center">
+      <p class="text-xs font-bold text-ink-400 tracking-wide uppercase mb-4">정기후원 목표 달성률</p>
+      <div class="relative w-36 h-36 mx-auto">
+        <svg viewBox="0 0 120 120" class="w-full h-full -rotate-90">
+          <circle cx="60" cy="60" r="52" fill="none" stroke="#e7e0d4" stroke-width="12" />
+          <circle id="fundProgressCircle" cx="60" cy="60" r="52" fill="none" stroke="#f97316" stroke-width="12" stroke-linecap="round" />
+        </svg>
+        <div class="absolute inset-0 flex flex-col items-center justify-center">
+          <span id="fundPercentText" class="text-2xl font-bold text-ink-900">0%</span>
+          <span class="text-[10px] text-ink-400 mt-0.5">달성</span>
+        </div>
+      </div>
+      <p class="mt-4 text-sm text-ink-600">
+        월 <span id="fundCurrentText" class="font-semibold text-ink-900">0만원</span> / 목표 <span id="fundGoalText" class="font-semibold text-ink-900">350만원</span>
+      </p>
+    </div>
+
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8">
 
       <div class="reveal bg-white rounded-3xl shadow-card hover:shadow-soft transition-shadow duration-300 p-8 sm:p-9">
@@ -537,6 +561,9 @@
         </p>
         <p class="mt-4 text-sm text-ink-900 font-semibold">카카오뱅크 3333-05-8716882</p>
         <p class="text-sm text-ink-500">예금주 : 홍성화</p>
+        <button type="button" id="copyAccountBtn" class="mt-6 block w-full text-center bg-ember hover:opacity-90 text-white font-semibold text-sm px-6 py-3.5 rounded-full shadow-soft transition-opacity">
+          계좌번호 복사하기
+        </button>
       </div>
 
     </div>
@@ -1834,8 +1861,13 @@
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 6l-6 6 6 6"/></svg>
   </button>
   <img loading="lazy" id="galleryLightboxImg" src="" alt="" class="max-h-[78vh] max-w-full rounded-2xl shadow-2xl object-contain" />
-  <div id="galleryLightboxVideoWrap" class="hidden w-full max-w-4xl aspect-video">
-    <iframe id="galleryLightboxVideoFrame" class="w-full h-full rounded-2xl shadow-2xl" src="" title="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+  <div id="galleryLightboxVideoWrap" class="hidden w-full max-w-4xl">
+    <div class="aspect-video">
+      <iframe id="galleryLightboxVideoFrame" class="w-full h-full rounded-2xl shadow-2xl" src="" title="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+    </div>
+    <p class="text-center mt-3">
+      <a id="galleryLightboxVideoFallback" href="#" target="_blank" rel="noopener" class="text-white/60 text-xs underline hover:text-white/90">영상이 안 보이시나요? 유튜브에서 바로 보기</a>
+    </p>
   </div>
   <button type="button" id="galleryLightboxNext" aria-label="다음 사진" class="hidden absolute right-3 sm:right-6 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors">
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 6l6 6-6 6"/></svg>
@@ -2032,6 +2064,72 @@
       btn.appendChild(body);
       article.appendChild(btn);
       grid.appendChild(article);
+    });
+  })();
+
+  // ⭐ 신규: 정기후원 목표 달성률 (원형 그래프)
+  //
+  // 구글 시트에서 자동으로 합계를 불러와 그립니다. 코드를 건드릴 필요 없이,
+  // 구글 시트에 후원 내역 행만 추가/수정하시면 홈페이지에 자동 반영됩니다.
+  //
+  // ⚠️ 아래 FUND_API_URL을 새로 만드실 Apps Script 배포 주소로 교체해야 작동합니다.
+  //    (설정 방법은 별도로 안내해드릴게요 — 방명록 구글폼과 똑같은 방식이에요)
+  (function initFundProgress() {
+
+    const FUND_API_URL = 'https://script.google.com/macros/s/YOUR_FUND_SCRIPT_ID/exec';
+
+    const circle = document.getElementById('fundProgressCircle');
+    const percentEl = document.getElementById('fundPercentText');
+    const currentEl = document.getElementById('fundCurrentText');
+    const goalEl = document.getElementById('fundGoalText');
+    if (!circle) return;
+
+    function render(current, goal) {
+      const percent = goal > 0 ? Math.min(100, Math.round((current / goal) * 100)) : 0;
+      const radius = 52;
+      const circumference = 2 * Math.PI * radius;
+      circle.style.strokeDasharray = String(circumference);
+      circle.style.strokeDashoffset = String(circumference - (circumference * percent / 100));
+      if (percentEl) percentEl.textContent = percent + '%';
+      if (currentEl) currentEl.textContent = current.toLocaleString('ko-KR') + '만원';
+      if (goalEl) goalEl.textContent = goal.toLocaleString('ko-KR') + '만원';
+    }
+
+    fetch(FUND_API_URL, { cache: 'no-store' })
+      .then(res => res.json())
+      .then(data => {
+        const current = typeof data.total === 'number' ? data.total : 0;
+        const goal = typeof data.goal === 'number' ? data.goal : 350;
+        render(current, goal);
+      })
+      .catch(() => {
+        // 시트를 못 불러왔을 때는 그래프를 0%로 표시 (에러로 화면이 깨지지 않게)
+        render(0, 350);
+      });
+  })();
+
+  // ⭐ 신규: 계좌번호 복사 버튼
+  (function initCopyAccountBtn() {
+    const btn = document.getElementById('copyAccountBtn');
+    if (!btn) return;
+    const accountNumber = '카카오뱅크 3333-05-8716882';
+    btn.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(accountNumber);
+      } catch (e) {
+        // 클립보드 API가 막혀있는 구형 브라우저 대비
+        const textarea = document.createElement('textarea');
+        textarea.value = accountNumber;
+        textarea.style.position = 'fixed';
+        textarea.style.opacity = '0';
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+      }
+      const original = btn.textContent;
+      btn.textContent = '복사되었어요 ✓';
+      setTimeout(() => { btn.textContent = original; }, 2000);
     });
   })();
 
@@ -3052,6 +3150,8 @@
     galleryLightboxVideoWrap.classList.remove('hidden');
     galleryLightboxVideoFrame.src = 'https://www.youtube.com/embed/' + videoId + '?autoplay=1&rel=0';
     galleryLightboxVideoFrame.title = title || '';
+    const fallbackLink = document.getElementById('galleryLightboxVideoFallback');
+    if (fallbackLink) fallbackLink.href = 'https://youtu.be/' + videoId;
 
     galleryLightbox.classList.remove('hidden');
     document.body.style.overflow = 'hidden';
