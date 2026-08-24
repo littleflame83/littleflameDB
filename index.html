@@ -2592,6 +2592,25 @@
     modalBody.innerHTML = '';
     modalBody.appendChild(tmpl.content.cloneNode(true));
 
+    // ⭐ 신규: 글 안에 장소 표시가 있으면 자동으로 작은 지도로 바꿔줌
+    // 글을 쓸 때 원하는 위치에 아래처럼 한 줄만 넣으면 됩니다:
+    //   <div data-place-map="캄보디아장로교신학교"></div>
+    // API 키 없이 작동하는 방식이라 장소명이 정확할수록 잘 찾습니다
+    // (주소나 "구글맵에 검색했을 때 나오는 이름"을 그대로 쓰면 가장 정확해요).
+    modalBody.querySelectorAll('[data-place-map]').forEach(el => {
+      const place = el.getAttribute('data-place-map');
+      if (!place) return;
+      const iframe = document.createElement('iframe');
+      iframe.src = 'https://www.google.com/maps?q=' + encodeURIComponent(place) + '&output=embed';
+      iframe.width = '100%';
+      iframe.height = '260';
+      iframe.style.border = '0';
+      iframe.loading = 'lazy';
+      iframe.className = 'rounded-2xl w-full';
+      iframe.title = place + ' 지도';
+      el.replaceWith(iframe);
+    });
+
     // 지금 한국어가 아닌 언어가 선택되어 있으면, 이 글의 본문(고정문구 아닌 실제 글 내용)도 바로 번역함
     if (typeof currentLang !== 'undefined' && currentLang !== 'ko') {
       translateSubtree(modalBody, currentLang);
