@@ -509,6 +509,9 @@
         불꽃은 혼자 타오를 수 없습니다. 여러분의 기도는 선교지의 산소가 되고,<br class="hidden sm:block" />
         후원은 계속 타오르게 하는 장작이 됩니다. 원하시는 방식을 선택해 주세요.
       </p>
+      <p id="prayerCounterDisplay" class="mt-5 inline-flex items-center gap-2 bg-white/70 text-ember text-sm font-semibold px-5 py-2.5 rounded-full shadow-sm">
+        🙏 지금까지 <span id="prayerCounterNumber">···</span>번 함께 기도했습니다
+      </p>
     </div>
 
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8">
@@ -597,9 +600,9 @@
           <span class="text-white font-bold text-base">작은불꽃 홍선교</span>
         </div>
         <div class="space-y-1.5 text-sm leading-relaxed text-white/60">
-          <p>대한예수교장로회(통합) 목사</p>
-          <p>총회파송 선교사(PCK)</p>
-          <p>ROKMC 928k</p>
+          <p class="flex items-center gap-2"><img src="images/badge-pck-logo.png" alt="대한예수교장로회 통합 로고" class="h-5 w-auto bg-white rounded p-0.5" />대한예수교장로회(통합) 목사</p>
+          <p class="flex items-center gap-2"><img src="images/badge-pck-logo.png" alt="PCK 로고" class="h-5 w-auto bg-white rounded p-0.5" />총회파송 선교사(PCK)</p>
+          <p class="flex items-center gap-2"><img src="images/badge-rokmc-logo.png" alt="대한민국 해병대 마크" class="h-6 w-auto" />ROKMC 928k</p>
           <p class="pt-2 text-ember/70 text-xs font-semibold tracking-[0.2em] uppercase">Phnom Penh, Cambodia</p>
         </div>
       </div>
@@ -2032,6 +2035,19 @@
     });
   })();
 
+  // 전체 기도 카운터: 페이지 열릴 때 워커에서 현재 숫자를 불러와 표시
+  function updatePrayerCounterDisplay(count) {
+    const el = document.getElementById('prayerCounterNumber');
+    if (el) el.textContent = count.toLocaleString('ko-KR');
+  }
+  fetch('https://flat-shape-f26f.littleflame83.workers.dev/prayer-count')
+    .then(res => res.json())
+    .then(data => { if (typeof data.count === 'number') updatePrayerCounterDisplay(data.count); })
+    .catch(() => {
+      const el = document.getElementById('prayerCounterNumber');
+      if (el) el.textContent = '0';
+    });
+
   // 사역지 지도: 처음 터치하면 안내 오버레이가 사라지고 지도를 바로 조작할 수 있음
   (function initMapTapOverlay() {
     const overlay = document.getElementById('mapTapOverlay');
@@ -2608,6 +2624,63 @@
     return t[currentLang] || t.ko;
   }
 
+  // ============================================================
+  // ⭐ 신규: "이 시기의 다른 이야기" 추천
+  //
+  // 가족이야기/기도편지/캄보디아이야기 모든 글을 날짜순으로 인덱싱해두고,
+  // 글을 열 때 날짜가 가장 가까운 글 1~2개를 자동으로 추천합니다.
+  // 새 글을 추가해도 손댈 필요 없이 자동으로 인덱스에 포함됩니다.
+  // ============================================================
+
+  function parseKoreanDate(text) {
+    const m = (text || '').match(/(\d{4})년\s*(\d{1,2})월(?:\s*(\d{1,2})일)?/);
+    if (!m) return null;
+    const y = parseInt(m[1], 10);
+    const mo = parseInt(m[2], 10) - 1;
+    const d = m[3] ? parseInt(m[3], 10) : 1;
+    return new Date(y, mo, d);
+  }
+
+  let ARTICLE_INDEX = null;
+  function buildArticleIndex() {
+    if (ARTICLE_INDEX) return ARTICLE_INDEX;
+    const list = [];
+    document.querySelectorAll('template[id]').forEach(tmpl => {
+      const m = tmpl.id.match(/^(ovrpt|ovltr|ovcam)-tmpl-(\d+)$/);
+      if (!m) return;
+      const prefix = m[1];
+      const idx = m[2];
+      const frag = tmpl.content;
+      const dateEl = frag.querySelector('span');
+      const titleEl = frag.querySelector('h2');
+      const imgEl = frag.querySelector('img');
+      const date = parseKoreanDate(dateEl ? dateEl.textContent : '');
+      if (!date || !titleEl) return;
+      list.push({
+        prefix,
+        idx,
+        date,
+        title: titleEl.textContent.trim(),
+        image: imgEl ? imgEl.getAttribute('src') : null
+      });
+    });
+    ARTICLE_INDEX = list;
+    return list;
+  }
+
+  function getRelatedArticles(prefix, idx, count) {
+    const list = buildArticleIndex();
+    const current = list.find(a => a.prefix === prefix && a.idx === String(idx));
+    if (!current) return [];
+    return list
+      .filter(a => !(a.prefix === prefix && a.idx === String(idx)))
+      .map(a => ({ ...a, diff: Math.abs(a.date - current.date) }))
+      .sort((a, b) => a.diff - b.diff)
+      .slice(0, count);
+  }
+
+  const OVERLAY_MAP_BY_PREFIX = { ovrpt: 'reportsOverlay', ovltr: 'lettersOverlay', ovcam: 'cambodiaOverlay' };
+
   function openDetail(tmplPrefix, idx, skipHash) {
     const modal = document.getElementById(tmplPrefix + 'Modal');
     const modalPanel = document.getElementById(tmplPrefix + 'ModalPanel');
@@ -2646,7 +2719,7 @@
     if (shareLabelEl) shareLabelEl.textContent = uiText('share');
 
     // 글별 기도 버튼: 각 글의 기도제목을 읽은 뒤 방문자가 "기도했어요" 표시를 남길 수 있습니다.
-    // 현재는 로그인/서버 없이 브라우저에만 저장됩니다. 여러 사람의 공동 카운터는 추후 Apps Script/DB를 연결하면 됩니다.
+    // 내 브라우저의 표시(눌렀는지 여부)는 localStorage에, 전체 합산 숫자는 워커의 KV에 저장됩니다.
     const prayerWrap = document.createElement('div');
     prayerWrap.className = 'mt-10 pt-8 border-t border-ink-900/10 text-center';
     const prayerKey = 'prayer-' + tmplPrefix + '-' + idx;
@@ -2667,8 +2740,40 @@
         localStorage.setItem(prayerKey, '1');
         e.currentTarget.className = 'inline-flex items-center gap-2 text-sm font-semibold bg-ember text-white px-6 py-3 rounded-full shadow-sm hover:shadow-soft transition-all';
         e.currentTarget.querySelector('span').textContent = uiText('prayed');
+        // ⭐ 신규: 처음 누를 때만(취소했다가 다시 누르는 것도 포함) 전체 합산 카운터 +1
+        fetch('https://flat-shape-f26f.littleflame83.workers.dev/prayer-count/increment', { method: 'POST' })
+          .then(res => res.json())
+          .then(data => { if (typeof data.count === 'number') updatePrayerCounterDisplay(data.count); })
+          .catch(() => {});
       }
     });
+
+    // ⭐ 신규: 날짜가 가까운 다른 글 1~2개를 "이 시기의 다른 이야기"로 추천
+    const related = getRelatedArticles(tmplPrefix, idx, 2);
+    if (related.length) {
+      const relWrap = document.createElement('div');
+      relWrap.className = 'mt-10 pt-8 border-t border-ink-900/10';
+      relWrap.innerHTML = `
+        <p class="text-center text-xs font-bold text-ink-400 tracking-wide uppercase mb-5">이 시기의 다른 이야기</p>
+        <div class="grid grid-cols-1 ${related.length > 1 ? 'sm:grid-cols-2' : ''} gap-4"></div>`;
+      const relGrid = relWrap.querySelector('.grid');
+      related.forEach(r => {
+        const card = document.createElement('button');
+        card.type = 'button';
+        card.className = 'text-left bg-white rounded-2xl shadow-sm hover:shadow-soft transition-shadow duration-300 overflow-hidden flex items-center gap-3 p-3';
+        card.innerHTML = `
+          ${r.image ? `<div class="w-16 h-16 rounded-xl overflow-hidden shrink-0"><img loading="lazy" src="${r.image}" alt="${r.title}" class="w-full h-full object-cover" /></div>` : ''}
+          <span class="text-sm font-semibold text-ink-900 leading-snug line-clamp-2">${r.title}</span>`;
+        card.addEventListener('click', () => {
+          closeDetail(tmplPrefix);
+          const overlayId = OVERLAY_MAP_BY_PREFIX[r.prefix];
+          if (overlayId) openOverlay(overlayId);
+          openDetail(r.prefix, r.idx);
+        });
+        relGrid.appendChild(card);
+      });
+      modalBody.appendChild(relWrap);
+    }
 
     // 글 맨 아래에 해당 카테고리 "전체보기" 버튼을 자동으로 붙임
     const info = CATEGORY_INFO[tmplPrefix];
