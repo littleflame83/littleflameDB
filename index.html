@@ -168,6 +168,48 @@
     .reveal { transition: none; opacity: 1; transform: none; }
   }
 
+  /* ============================================================
+     ⭐ 신규: 인쇄 / PDF 저장
+     열려있는 글 모달의 내용만 남기고 나머지(네비게이션, 배경,
+     기도 버튼, 동역하기, 공유/닫기/인쇄 버튼 등)는 전부 숨깁니다.
+     인쇄 버튼 클릭 → window.print() → 브라우저 인쇄창에서
+     "PDF로 저장"을 고르면 그대로 파일로 저장됩니다.
+     ============================================================ */
+  @media print {
+    body * { visibility: hidden; }
+
+    #ovrptModal.modal-open, #ovltrModal.modal-open, #ovcamModal.modal-open,
+    #ovrptModal.modal-open *, #ovltrModal.modal-open *, #ovcamModal.modal-open * {
+      visibility: visible;
+    }
+
+    #ovrptModal.modal-open, #ovltrModal.modal-open, #ovcamModal.modal-open {
+      position: absolute !important;
+      inset: 0 !important;
+      top: 0 !important; left: 0 !important;
+      width: 100% !important;
+      height: auto !important;
+      background: #fff !important;
+      backdrop-filter: none !important;
+      padding: 0 !important;
+      display: block !important;
+    }
+
+    #ovrptModalPanel, #ovltrModalPanel, #ovcamModalPanel {
+      position: static !important;
+      width: 100% !important;
+      max-width: 100% !important;
+      max-height: none !important;
+      overflow: visible !important;
+      box-shadow: none !important;
+      border-radius: 0 !important;
+      padding: 0 !important;
+      background: #fff !important;
+    }
+
+    .no-print { display: none !important; }
+  }
+
   /* 전체보기 오버레이 내 상세 모달 */
   #ovrptModal, #ovltrModal { opacity: 0; transition: opacity 0.25s ease; }
   #ovrptModal.modal-open, #ovltrModal.modal-open { opacity: 1; }
@@ -1738,11 +1780,15 @@
 
 <div id="ovcamModal" class="hidden fixed inset-0 z-[105] flex items-start sm:items-center justify-center p-0 sm:p-6 bg-ink-900/60 backdrop-blur-sm">
   <div id="ovcamModalPanel" class="relative bg-warm-card w-full sm:max-w-2xl sm:rounded-3xl shadow-soft h-full sm:h-auto sm:max-h-[85vh] overflow-y-auto p-7 sm:p-10">
-    <button type="button" id="ovcamCopyLink" aria-label="공유하기" class="absolute top-5 right-16 h-9 px-3 rounded-full bg-ink-900/5 hover:bg-ink-900/10 flex items-center gap-1.5 text-xs font-semibold text-ink-700 transition-colors">
+    <button type="button" id="ovcamPrintBtn" aria-label="인쇄 / PDF로 저장" class="hidden no-print absolute top-5 right-28 h-9 px-3 rounded-full bg-ink-900/5 hover:bg-ink-900/10 flex items-center gap-1.5 text-xs font-semibold text-ink-700 transition-colors">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2M6 14h12v8H6v-8z"/></svg>
+        <span>인쇄</span>
+      </button>
+      <button type="button" id="ovcamCopyLink" aria-label="공유하기" class="no-print absolute top-5 right-16 h-9 px-3 rounded-full bg-ink-900/5 hover:bg-ink-900/10 flex items-center gap-1.5 text-xs font-semibold text-ink-700 transition-colors">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 16V4m0 0L7 9m5-5l5 5"/><path stroke-linecap="round" stroke-linejoin="round" d="M5 14v4a2 2 0 002 2h10a2 2 0 002-2v-4"/></svg>
         <span id="ovcamCopyLinkText">공유</span>
       </button>
-      <button type="button" id="ovcamModalClose" aria-label="닫기" class="absolute top-5 right-5 w-9 h-9 rounded-full bg-ink-900/5 hover:bg-ink-900/10 flex items-center justify-center transition-colors">
+      <button type="button" id="ovcamModalClose" aria-label="닫기" class="no-print absolute top-5 right-5 w-9 h-9 rounded-full bg-ink-900/5 hover:bg-ink-900/10 flex items-center justify-center transition-colors">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" d="M6 6l12 12M18 6L6 18"/></svg>
     </button>
     <div id="ovcamModalBody"></div>
@@ -1840,11 +1886,15 @@
 <!-- 상세보기 모달 (독립적으로 항상 사용 가능) -->
 <div id="ovrptModal" class="hidden fixed inset-0 z-[105] flex items-start sm:items-center justify-center p-0 sm:p-6 bg-ink-900/60 backdrop-blur-sm">
     <div id="ovrptModalPanel" class="relative bg-warm-card w-full sm:max-w-2xl sm:rounded-3xl shadow-soft h-full sm:h-auto sm:max-h-[85vh] overflow-y-auto p-7 sm:p-10">
-      <button type="button" id="ovrptCopyLink" aria-label="공유하기" class="absolute top-5 right-16 h-9 px-3 rounded-full bg-ink-900/5 hover:bg-ink-900/10 flex items-center gap-1.5 text-xs font-semibold text-ink-700 transition-colors">
+      <button type="button" id="ovrptPrintBtn" aria-label="인쇄 / PDF로 저장" class="hidden no-print absolute top-5 right-28 h-9 px-3 rounded-full bg-ink-900/5 hover:bg-ink-900/10 flex items-center gap-1.5 text-xs font-semibold text-ink-700 transition-colors">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2M6 14h12v8H6v-8z"/></svg>
+        <span>인쇄</span>
+      </button>
+      <button type="button" id="ovrptCopyLink" aria-label="공유하기" class="no-print absolute top-5 right-16 h-9 px-3 rounded-full bg-ink-900/5 hover:bg-ink-900/10 flex items-center gap-1.5 text-xs font-semibold text-ink-700 transition-colors">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 16V4m0 0L7 9m5-5l5 5"/><path stroke-linecap="round" stroke-linejoin="round" d="M5 14v4a2 2 0 002 2h10a2 2 0 002-2v-4"/></svg>
         <span id="ovrptCopyLinkText">공유</span>
       </button>
-      <button type="button" id="ovrptModalClose" aria-label="닫기" class="absolute top-5 right-5 w-9 h-9 rounded-full bg-ink-900/5 hover:bg-ink-900/10 flex items-center justify-center transition-colors">
+      <button type="button" id="ovrptModalClose" aria-label="닫기" class="no-print absolute top-5 right-5 w-9 h-9 rounded-full bg-ink-900/5 hover:bg-ink-900/10 flex items-center justify-center transition-colors">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" d="M6 6l12 12M18 6L6 18"/></svg>
       </button>
       <div id="ovrptModalBody"></div>
@@ -1852,11 +1902,15 @@
   </div>
 <div id="ovltrModal" class="hidden fixed inset-0 z-[105] flex items-start sm:items-center justify-center p-0 sm:p-6 bg-ink-900/60 backdrop-blur-sm">
     <div id="ovltrModalPanel" class="relative bg-warm-card w-full sm:max-w-2xl sm:rounded-3xl shadow-soft h-full sm:h-auto sm:max-h-[85vh] overflow-y-auto p-7 sm:p-10">
-      <button type="button" id="ovltrCopyLink" aria-label="공유하기" class="absolute top-5 right-16 h-9 px-3 rounded-full bg-ink-900/5 hover:bg-ink-900/10 flex items-center gap-1.5 text-xs font-semibold text-ink-700 transition-colors">
+      <button type="button" id="ovltrPrintBtn" aria-label="인쇄 / PDF로 저장" class="hidden no-print absolute top-5 right-28 h-9 px-3 rounded-full bg-ink-900/5 hover:bg-ink-900/10 flex items-center gap-1.5 text-xs font-semibold text-ink-700 transition-colors">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2M6 14h12v8H6v-8z"/></svg>
+        <span>인쇄</span>
+      </button>
+      <button type="button" id="ovltrCopyLink" aria-label="공유하기" class="no-print absolute top-5 right-16 h-9 px-3 rounded-full bg-ink-900/5 hover:bg-ink-900/10 flex items-center gap-1.5 text-xs font-semibold text-ink-700 transition-colors">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 16V4m0 0L7 9m5-5l5 5"/><path stroke-linecap="round" stroke-linejoin="round" d="M5 14v4a2 2 0 002 2h10a2 2 0 002-2v-4"/></svg>
         <span id="ovltrCopyLinkText">공유</span>
       </button>
-      <button type="button" id="ovltrModalClose" aria-label="닫기" class="absolute top-5 right-5 w-9 h-9 rounded-full bg-ink-900/5 hover:bg-ink-900/10 flex items-center justify-center transition-colors">
+      <button type="button" id="ovltrModalClose" aria-label="닫기" class="no-print absolute top-5 right-5 w-9 h-9 rounded-full bg-ink-900/5 hover:bg-ink-900/10 flex items-center justify-center transition-colors">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" d="M6 6l12 12M18 6L6 18"/></svg>
       </button>
       <div id="ovltrModalBody"></div>
@@ -2936,7 +2990,7 @@
     // 글별 기도 버튼: 각 글의 기도제목을 읽은 뒤 방문자가 "기도했어요" 표시를 남길 수 있습니다.
     // 내 브라우저의 표시(눌렀는지 여부)는 localStorage에, 전체 합산 숫자는 워커의 KV에 저장됩니다.
     const prayerWrap = document.createElement('div');
-    prayerWrap.className = 'mt-10 pt-8 border-t border-ink-900/10 text-center';
+    prayerWrap.className = 'mt-10 pt-8 border-t border-ink-900/10 text-center no-print';
     const prayerKey = 'prayer-' + tmplPrefix + '-' + idx;
     const prayerDone = localStorage.getItem(prayerKey) === '1';
     prayerWrap.innerHTML = `
@@ -2967,7 +3021,7 @@
     const related = getRelatedArticles(tmplPrefix, idx, 2);
     if (related.length) {
       const relWrap = document.createElement('div');
-      relWrap.className = 'mt-10 pt-8 border-t border-ink-900/10';
+      relWrap.className = 'mt-10 pt-8 border-t border-ink-900/10 no-print';
       relWrap.innerHTML = `
         <p class="text-center text-xs font-bold text-ink-400 tracking-wide uppercase mb-5">이 시기의 다른 이야기</p>
         <div class="grid grid-cols-1 ${related.length > 1 ? 'sm:grid-cols-2' : ''} gap-4"></div>`;
@@ -3002,7 +3056,7 @@
     // ⭐ "동역하기" 버튼 — 전체보기 버튼 바로 위, 글을 다 읽고 관련 글까지 본 다음
     // 마지막으로 마주치는 CTA가 되도록 배치함
     const donateWrap = document.createElement('div');
-    donateWrap.className = 'mt-10 pt-8 border-t border-ink-900/10 text-center';
+    donateWrap.className = 'mt-10 pt-8 border-t border-ink-900/10 text-center no-print';
     donateWrap.innerHTML = `
       <a href="javascript:void(0)" id="articleDonateBtn"
         class="inline-flex items-center gap-2 text-sm font-semibold bg-ember text-white px-6 py-3.5 rounded-full shadow-sm hover:opacity-90 transition-opacity">
@@ -3022,7 +3076,7 @@
     if (info) {
       const catLabel = currentLang === 'en' ? info.labelEn : (currentLang === 'km' ? info.labelKm : info.label);
       const wrap = document.createElement('div');
-      wrap.className = 'mt-4 pt-5 text-center';
+      wrap.className = 'mt-4 pt-5 text-center no-print';
       wrap.innerHTML = `
         <a href="javascript:void(0)" onclick="closeDetail('${tmplPrefix}'); openOverlay('${info.overlay}')"
           class="inline-flex items-center gap-2 text-sm font-semibold text-ink-900 border border-ink-900/15 hover:border-${info.color} hover:text-${info.color} px-6 py-3 rounded-full transition-colors">
@@ -3189,6 +3243,58 @@
   wireGalleryModal('ovrpt-card', 'ovrpt', 'data-ovrpt', 'ovrptModal', 'ovrptModalPanel', 'ovrptModalBody', 'ovrptModalClose');
   wireGalleryModal('ovltr-card', 'ovltr', 'data-ovltr', 'ovltrModal', 'ovltrModalPanel', 'ovltrModalBody', 'ovltrModalClose');
   wireGalleryModal('ovcam-card', 'ovcam', 'data-ovcam', 'ovcamModal', 'ovcamModalPanel', 'ovcamModalBody', 'ovcamModalClose');
+
+  // ⭐ 신규: 인쇄 버튼은 평소엔 숨겨져 있음 (일반 방문자는 안 보임)
+  //
+  // 본인만 켜서 쓰는 방법:
+  //   https://cammission.com/?admin=1  으로 접속하면 비밀번호를 물어봄
+  //   맞게 입력하면 그 브라우저에서는 계속 인쇄 버튼이 보이게 기억해둠(localStorage)
+  //
+  // ⚠️ 주의: 이건 진짜 보안이 아니라 "일반 방문자 눈에 안 띄게 하는" 수준의
+  // 가벼운 잠금이에요. 공개된 사이트라 완전한 차단은 원래 불가능해요.
+  //
+  // 비밀번호를 바꾸고 싶으면 아래 PRINT_UNLOCK_PASSWORD 값만 고치면 됩니다.
+  (function initPrintUnlock() {
+    const PRINT_UNLOCK_PASSWORD = 'Missionhong1!';
+
+    function showPrintButtons() {
+      ['ovrpt', 'ovltr', 'ovcam'].forEach(prefix => {
+        const btn = document.getElementById(prefix + 'PrintBtn');
+        if (btn) btn.classList.remove('hidden');
+      });
+    }
+
+    // 이미 잠금 해제된 적 있는 브라우저면 바로 보여줌
+    if (localStorage.getItem('printAccess') === '1') {
+      showPrintButtons();
+    }
+
+    // ?admin=1 로 들어오면 비밀번호 확인
+    const params = new URLSearchParams(location.search);
+    if (params.get('admin') === '1') {
+      const input = window.prompt('인쇄 기능을 켜려면 비밀번호를 입력하세요');
+      if (input === PRINT_UNLOCK_PASSWORD) {
+        localStorage.setItem('printAccess', '1');
+        showPrintButtons();
+        alert('인쇄 버튼이 켜졌어요. 이 브라우저에서는 계속 보여요.');
+      } else if (input !== null) {
+        alert('비밀번호가 일치하지 않아요.');
+      }
+      // 주소창에 ?admin=1 이 계속 남아있지 않도록 깨끗하게 정리
+      history.replaceState(null, '', location.pathname);
+    }
+  })();
+
+  // 인쇄 / PDF로 저장 버튼 — 클릭하면 브라우저 인쇄창이 뜨고,
+  // 거기서 "PDF로 저장"을 고르면 그대로 PDF 파일이 됩니다.
+  ['ovrpt', 'ovltr', 'ovcam'].forEach(prefix => {
+    const btn = document.getElementById(prefix + 'PrintBtn');
+    if (btn) {
+      btn.addEventListener('click', () => {
+        window.print();
+      });
+    }
+  });
 
   // 지금 보고 있는 글을 공유하는 버튼 (선교리포트/기도편지/캄보디아이야기 공용)
   // 폰이면 카카오톡 등으로 바로 보낼 수 있는 공유창을 띄우고, 지원 안 하는 환경(PC 등)에서는 링크만 복사함
