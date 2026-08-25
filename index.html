@@ -176,23 +176,25 @@
      "PDF로 저장"을 고르면 그대로 파일로 저장됩니다.
      ============================================================ */
   @media print {
-    body * { visibility: hidden; }
-
-    #ovrptModal.modal-open, #ovltrModal.modal-open, #ovcamModal.modal-open,
-    #ovrptModal.modal-open *, #ovltrModal.modal-open *, #ovcamModal.modal-open * {
-      visibility: visible;
+    /* ⭐ 수정: 예전엔 visibility만 숨겼더니, 화면에 안 보이는 부분들이
+       그대로 문서 높이를 다 차지해서 백지 페이지가 잔뜩 인쇄됐어요.
+       이번엔 display:none으로 아예 레이아웃에서 빼버려서, 열려있는
+       글 모달의 실제 내용 높이만큼만 종이/PDF가 만들어져요. */
+    body > *:not(.modal-open) {
+      display: none !important;
     }
 
-    #ovrptModal.modal-open, #ovltrModal.modal-open, #ovcamModal.modal-open {
-      position: absolute !important;
-      inset: 0 !important;
-      top: 0 !important; left: 0 !important;
+    .modal-open {
+      display: block !important;
+      position: static !important;
+      inset: auto !important;
       width: 100% !important;
       height: auto !important;
+      max-height: none !important;
       background: #fff !important;
       backdrop-filter: none !important;
       padding: 0 !important;
-      display: block !important;
+      overflow: visible !important;
     }
 
     #ovrptModalPanel, #ovltrModalPanel, #ovcamModalPanel {
@@ -1780,7 +1782,7 @@
 
 <div id="ovcamModal" class="hidden fixed inset-0 z-[105] flex items-start sm:items-center justify-center p-0 sm:p-6 bg-ink-900/60 backdrop-blur-sm">
   <div id="ovcamModalPanel" class="relative bg-warm-card w-full sm:max-w-2xl sm:rounded-3xl shadow-soft h-full sm:h-auto sm:max-h-[85vh] overflow-y-auto p-7 sm:p-10">
-    <button type="button" id="ovcamPrintBtn" aria-label="인쇄 / PDF로 저장" class="hidden no-print absolute top-5 right-28 h-9 px-3 rounded-full bg-ink-900/5 hover:bg-ink-900/10 flex items-center gap-1.5 text-xs font-semibold text-ink-700 transition-colors">
+    <button type="button" id="ovcamPrintBtn" aria-label="인쇄 / PDF로 저장" class="hidden no-print absolute top-5 right-[10.5rem] h-9 px-3 rounded-full bg-ink-900/5 hover:bg-ink-900/10 flex items-center gap-1.5 text-xs font-semibold text-ink-700 transition-colors">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2M6 14h12v8H6v-8z"/></svg>
         <span>인쇄</span>
       </button>
@@ -1886,7 +1888,7 @@
 <!-- 상세보기 모달 (독립적으로 항상 사용 가능) -->
 <div id="ovrptModal" class="hidden fixed inset-0 z-[105] flex items-start sm:items-center justify-center p-0 sm:p-6 bg-ink-900/60 backdrop-blur-sm">
     <div id="ovrptModalPanel" class="relative bg-warm-card w-full sm:max-w-2xl sm:rounded-3xl shadow-soft h-full sm:h-auto sm:max-h-[85vh] overflow-y-auto p-7 sm:p-10">
-      <button type="button" id="ovrptPrintBtn" aria-label="인쇄 / PDF로 저장" class="hidden no-print absolute top-5 right-28 h-9 px-3 rounded-full bg-ink-900/5 hover:bg-ink-900/10 flex items-center gap-1.5 text-xs font-semibold text-ink-700 transition-colors">
+      <button type="button" id="ovrptPrintBtn" aria-label="인쇄 / PDF로 저장" class="hidden no-print absolute top-5 right-[10.5rem] h-9 px-3 rounded-full bg-ink-900/5 hover:bg-ink-900/10 flex items-center gap-1.5 text-xs font-semibold text-ink-700 transition-colors">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2M6 14h12v8H6v-8z"/></svg>
         <span>인쇄</span>
       </button>
@@ -1902,7 +1904,7 @@
   </div>
 <div id="ovltrModal" class="hidden fixed inset-0 z-[105] flex items-start sm:items-center justify-center p-0 sm:p-6 bg-ink-900/60 backdrop-blur-sm">
     <div id="ovltrModalPanel" class="relative bg-warm-card w-full sm:max-w-2xl sm:rounded-3xl shadow-soft h-full sm:h-auto sm:max-h-[85vh] overflow-y-auto p-7 sm:p-10">
-      <button type="button" id="ovltrPrintBtn" aria-label="인쇄 / PDF로 저장" class="hidden no-print absolute top-5 right-28 h-9 px-3 rounded-full bg-ink-900/5 hover:bg-ink-900/10 flex items-center gap-1.5 text-xs font-semibold text-ink-700 transition-colors">
+      <button type="button" id="ovltrPrintBtn" aria-label="인쇄 / PDF로 저장" class="hidden no-print absolute top-5 right-[10.5rem] h-9 px-3 rounded-full bg-ink-900/5 hover:bg-ink-900/10 flex items-center gap-1.5 text-xs font-semibold text-ink-700 transition-colors">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2M6 14h12v8H6v-8z"/></svg>
         <span>인쇄</span>
       </button>
