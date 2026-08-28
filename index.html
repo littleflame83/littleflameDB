@@ -299,7 +299,7 @@
   window.GMAPS_READY = new Promise(res => { window.__gmapsResolve = res; });
   window.initGoogleMaps = function () { window.__gmapsResolve(); };
 </script>
-<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAHeBwXr6kEiMO_bh5LdPWQu4GS5B9WXEs&callback=initGoogleMaps&loading=async"></script>
+<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAHeBwXr6kEiMO_bh5LdPWQu4GS5B9WXEs&libraries=places&callback=initGoogleMaps&loading=async"></script>
 </head>
 <body class="bg-warm-bg text-ink-900 antialiased">
 <!-- ================= NAV ================= -->
@@ -1574,7 +1574,10 @@
         const pos = new google.maps.LatLng(p.lat, p.lng);
         const z = placeZIndex(key);
         const marker = new google.maps.Marker({ position: pos, map, title: p.name, zIndex: z });
-        const openCard = () => openPlaceCard(map, pos, p);
+        const openCard = (e) => {
+          const { x, y } = extractClientXY(e);
+          openPlaceCard(x, y, p);
+        };
         marker.addListener('click', openCard);
         // ⭐ 항상 보이는 이름표 (화살표 아래쪽) — 핀을 눌러도, 이름표를 눌러도 같은 소개 카드가 뜸
         new window.PlaceLabelOverlay(pos, p.short, z, openCard).setMap(map);
@@ -2040,16 +2043,16 @@
   const PLACES = {
     camjangsin: { name: '캄보디아 장로교 신학교', short: '캄장신', lat: 11.560598, lng: 104.833593,
       aliases: ['캄장신', '캄보디아장로교신학교', '캄보디아 장로교 신학교', '캄보디아장로회신학교'],
-      url: '', desc: '' },
+      url: '', desc: '', image: '' },
     hebron: { name: '헤브론 메디컬 센터', short: '헤브론', lat: 11.561763, lng: 104.8391636,
       aliases: ['헤브론', '헤브론센터', '헤브론 센터', '헤브론메디컬센터', '헤브론 메디컬 센터'],
-      url: '', desc: '' },
+      url: '', desc: '', image: '' },
     npic: { name: '내셔널 폴리테크닉 인스티튜트 오브 캄보디아', short: 'NPIC', lat: 11.598406, lng: 104.8007837,
       aliases: ['NPIC', 'npic', '폴리텍', '내셔널폴리테크닉', '내셔널 폴리테크닉 인스티튜트 오브 캄보디아'],
-      url: '', desc: '' },
+      url: '', desc: '', image: '' },
     adulam: { name: '아둘람센터', short: '아둘람', lat: 11.5968859, lng: 104.8031447,
       aliases: ['아둘람', '아둘람센터', '아둘람 센터'],
-      url: '', desc: '' },
+      url: '', desc: '', image: '' },
   };
   // 지도 위에서 겹칠 때 어떤 핀/이름표가 위로 오는지 순서 (위에 적힌 순서대로 앞에 옴)
   // 지금은 캄장신 > 헤브론 > NPIC > 아둘람 순서
@@ -2058,33 +2061,82 @@
     return (PLACE_ORDER.length - PLACE_ORDER.indexOf(key)) * 10;
   }
 
-  // 핀이나 이름표를 눌렀을 때 뜨는 네모 카드에 들어갈 내용
-  // (place.url 을 채워두면 "홈페이지 보기" 링크가, place.desc를 채워두면 짧은 소개글이 함께 나옵니다)
-  function buildPlaceCardContent(place) {
-    const mapsUrl = 'https://www.google.com/maps/search/?api=1&query=' + place.lat + ',' + place.lng;
-    const urlLink = place.url
-      ? '<a href="' + place.url + '" target="_blank" rel="noopener" style="color:#0284c7;font-weight:700;text-decoration:underline;">홈페이지 보기</a> · '
-      : '';
+  // ⭐ 변경: 구글이 자체적으로 갖고 있는 장소 정보(사진/설명) 가져오기 — My Maps에서 장소를 클릭하면
+  // 나오던 바로 그 정보입니다. 한 번 가져온 장소는 캐시해서 다시 요청하지 않습니다.
+  // (Cloud Console에서 "Places API" 활성화가 되어 있어야 정상 작동합니다)
+  function fetchGooglePlaceInfo(place) {
+    if (place._googleInfoPromise) return place._googleInfoPromise;
+    place._googleInfoPromise = new Promise((resolve) => {
+      window.GMAPS_READY.then(() => {
+        if (!window.google?.maps?.places) { resolve(null); return; }
+        if (!window.__placesService) {
+          window.__placesService = new google.maps.places.PlacesService(document.createElement('div'));
+        }
+        const service = window.__placesService;
+        service.findPlaceFromQuery({
+          query: place.name,
+          fields: ['place_id'],
+          locationBias: new google.maps.Circle({ center: { lat: place.lat, lng: place.lng }, radius: 400 }),
+        }, (results, status) => {
+          if (status !== google.maps.places.PlacesServiceStatus.OK || !results?.[0]) { resolve(null); return; }
+          service.getDetails({
+            placeId: results[0].place_id,
+            fields: ['photos', 'editorial_summary', 'formatted_address', 'url', 'rating', 'types'],
+          }, (detail, status2) => {
+            if (status2 !== google.maps.places.PlacesServiceStatus.OK || !detail) { resolve(null); return; }
+            resolve({
+              photoUrl: detail.photos?.[0] ? detail.photos[0].getUrl({ maxWidth: 160, maxHeight: 160 }) : null,
+              summary: detail.editorial_summary?.overview || null,
+              address: detail.formatted_address || null,
+              googleMapsUrl: detail.url || null,
+              rating: detail.rating || null,
+            });
+          });
+        });
+      });
+    });
+    return place._googleInfoPromise;
+  }
+
+  // 핀이나 이름표를 눌렀을 때 뜨는 카드에 들어갈 내용
+  // googleInfo가 있으면(구글이 갖고 있는 사진/설명/평점) 그걸 우선 쓰고,
+  // 없으면 place.image / place.desc (직접 넣어둔 값)로 대신합니다.
+  function buildPlaceCardContent(place, googleInfo, loading) {
+    const mapsUrl = googleInfo?.googleMapsUrl || ('https://www.google.com/maps/search/?api=1&query=' + place.lat + ',' + place.lng);
+    const photoSrc = googleInfo?.photoUrl || place.image || '';
+    const desc = googleInfo?.summary || place.desc || (googleInfo?.address ? googleInfo.address : '');
+    const ratingHtml = googleInfo?.rating ? ' · ⭐ ' + googleInfo.rating : '';
+    const photoHtml = photoSrc
+      ? '<div style="width:72px;height:72px;border-radius:10px;overflow:hidden;flex-shrink:0;background:#f1ebe3;">' +
+        '<img src="' + photoSrc + '" alt="' + place.name + '" style="width:100%;height:100%;object-fit:cover;display:block;" />' +
+        '</div>'
+      : (loading
+          ? '<div style="width:72px;height:72px;border-radius:10px;flex-shrink:0;background:#f1ebe3;"></div>'
+          : '');
     return '' +
-      '<div style="min-width:160px;max-width:230px;font-family:inherit;">' +
-      '<div style="font-weight:800;font-size:13px;color:#1c1917;margin-bottom:4px;">' + place.name + '</div>' +
-      (place.desc ? '<div style="font-size:12px;color:#57534e;line-height:1.45;margin-bottom:6px;">' + place.desc + '</div>' : '') +
-      '<div style="font-size:11.5px;">' + urlLink +
-      '<a href="' + mapsUrl + '" target="_blank" rel="noopener" style="color:#0284c7;font-weight:700;text-decoration:underline;">길찾기</a>' +
-      '</div></div>';
+      '<div style="display:flex;gap:12px;align-items:flex-start;font-family:inherit;min-width:200px;max-width:300px;">' +
+      photoHtml +
+      '<div style="min-width:0;">' +
+      '<div style="font-weight:800;font-size:13px;color:#1c1917;margin-bottom:4px;line-height:1.3;">' + place.name + ratingHtml + '</div>' +
+      (loading
+        ? '<div style="font-size:12px;color:#a8a29e;margin-bottom:6px;">정보를 불러오는 중…</div>'
+        : (desc ? '<div style="font-size:12px;color:#57534e;line-height:1.45;margin-bottom:6px;">' + desc + '</div>' : '')) +
+      '<div style="font-size:11px;">' +
+      '<a href="' + mapsUrl + '" target="_blank" rel="noopener" style="color:#0284c7;font-weight:700;text-decoration:underline;">구글 지도에서 보기</a>' +
+      '</div></div></div>';
   }
 
   // ⭐ 신규: 핀/이름표를 눌렀을 때 뜨는 소개 카드.
   //    화면(뷰포트) 기준 고정 위치(position:fixed)로 <body>에 직접 붙여서,
   //    지도를 감싼 둥근 카드의 "잘라내기(overflow-hidden)" 효과에 절대 잘리지 않습니다.
-  //    구글 기본 정보창처럼 흰 사각형 + 아래쪽 꼬리 + 우측상단 닫기(✕) 형태입니다.
-  let ACTIVE_PLACE_CARD = null;
+  //    구글 지도 좌표 계산 대신, 클릭한 그 자리(실제 화면 좌표)를 그대로 써서 위치 오차가 없습니다.
+  let ACTIVE_PLACE_CARD_EL = null;
   let PLACE_CARD_OUTSIDE_HANDLER = null;
 
   function closePlaceCard() {
-    if (ACTIVE_PLACE_CARD) {
-      ACTIVE_PLACE_CARD.setMap(null);
-      ACTIVE_PLACE_CARD = null;
+    if (ACTIVE_PLACE_CARD_EL) {
+      ACTIVE_PLACE_CARD_EL.remove();
+      ACTIVE_PLACE_CARD_EL = null;
     }
     if (PLACE_CARD_OUTSIDE_HANDLER) {
       document.removeEventListener('click', PLACE_CARD_OUTSIDE_HANDLER, true);
@@ -2092,64 +2144,63 @@
     }
   }
 
-  function definePlaceCardOverlay() {
-    if (window.PlaceCardOverlay || !window.google?.maps?.OverlayView) return;
-    class PlaceCardOverlay extends google.maps.OverlayView {
-      constructor(position, place) {
-        super();
-        this.position = position;
-        this.place = place;
-      }
-      onAdd() {
-        const card = document.createElement('div');
-        card.style.cssText = [
-          'position:fixed', 'z-index:9999', 'transform:translate(-50%,calc(-100% - 16px))',
-          'background:#ffffff', 'color:#1c1917', 'border-radius:14px',
-          'box-shadow:0 10px 30px rgba(0,0,0,.28)', 'padding:12px 34px 12px 14px',
-          'font-family:inherit', 'max-width:240px', 'min-width:170px',
-        ].join(';');
-        card.innerHTML = buildPlaceCardContent(this.place);
-        const closeBtn = document.createElement('button');
-        closeBtn.type = 'button';
-        closeBtn.setAttribute('aria-label', '닫기');
-        closeBtn.textContent = '✕';
-        closeBtn.style.cssText = 'position:absolute;top:8px;right:10px;background:none;border:none;font-size:14px;color:#a8a29e;cursor:pointer;line-height:1;padding:2px;';
-        card.appendChild(closeBtn);
-        const tail = document.createElement('div');
-        tail.style.cssText = 'position:absolute;left:50%;bottom:-6px;transform:translateX(-50%) rotate(45deg);width:12px;height:12px;background:#ffffff;box-shadow:2px 2px 4px rgba(0,0,0,.06);';
-        card.appendChild(tail);
-        card.addEventListener('click', (e) => e.stopPropagation());
-        closeBtn.addEventListener('click', (e) => { e.stopPropagation(); closePlaceCard(); });
-        document.body.appendChild(card);
-        this.div = card;
-      }
-      draw() {
-        const proj = this.getProjection();
-        const map = this.getMap();
-        if (!proj || !this.div || !map) return;
-        const divPixel = proj.fromLatLngToDivPixel(this.position);
-        const rect = map.getDiv().getBoundingClientRect();
-        this.div.style.left = (rect.left + divPixel.x) + 'px';
-        this.div.style.top = (rect.top + divPixel.y) + 'px';
-      }
-      onRemove() {
-        if (this.div) { this.div.remove(); this.div = null; }
-      }
-    }
-    window.PlaceCardOverlay = PlaceCardOverlay;
+  // 마커 클릭(구글 MapMouseEvent)이든 이름표 클릭(일반 DOM 이벤트)이든
+  // 실제 화면 좌표(clientX/clientY)를 뽑아내는 공용 함수
+  function extractClientXY(e) {
+    const de = e && e.domEvent ? e.domEvent : e;
+    const x = de && typeof de.clientX === 'number' ? de.clientX : window.innerWidth / 2;
+    const y = de && typeof de.clientY === 'number' ? de.clientY : window.innerHeight / 2;
+    return { x, y };
   }
 
-  function openPlaceCard(map, position, place) {
+  function openPlaceCard(clientX, clientY, place) {
     closePlaceCard();
-    definePlaceCardOverlay();
-    const card = new window.PlaceCardOverlay(position, place);
-    card.setMap(map);
-    ACTIVE_PLACE_CARD = card;
+    const card = document.createElement('div');
+    card.style.cssText = [
+      'position:fixed', 'left:' + clientX + 'px', 'top:' + clientY + 'px',
+      'z-index:9999', 'transform:translate(-50%,calc(-100% - 16px))',
+      'background:#ffffff', 'color:#1c1917', 'border-radius:14px',
+      'box-shadow:0 10px 30px rgba(0,0,0,.28)', 'padding:12px 34px 12px 14px',
+      'font-family:inherit',
+    ].join(';');
+    const contentEl = document.createElement('div');
+    contentEl.innerHTML = buildPlaceCardContent(place, null, true);
+    card.appendChild(contentEl);
+    const closeBtn = document.createElement('button');
+    closeBtn.type = 'button';
+    closeBtn.setAttribute('aria-label', '닫기');
+    closeBtn.textContent = '✕';
+    closeBtn.style.cssText = 'position:absolute;top:8px;right:10px;background:none;border:none;font-size:14px;color:#a8a29e;cursor:pointer;line-height:1;padding:2px;';
+    card.appendChild(closeBtn);
+    const tail = document.createElement('div');
+    tail.style.cssText = 'position:absolute;left:50%;bottom:-6px;transform:translateX(-50%) rotate(45deg);width:12px;height:12px;background:#ffffff;box-shadow:2px 2px 4px rgba(0,0,0,.06);';
+    card.appendChild(tail);
+    card.addEventListener('click', (e) => e.stopPropagation());
+    closeBtn.addEventListener('click', (e) => { e.stopPropagation(); closePlaceCard(); });
+    document.body.appendChild(card);
+    ACTIVE_PLACE_CARD_EL = card;
+
+    // 구글이 갖고 있는 사진/설명을 불러와서 카드 안 내용을 채워넣음
+    fetchGooglePlaceInfo(place).then((info) => {
+      if (ACTIVE_PLACE_CARD_EL !== card) return; // 그 사이에 카드가 닫혔거나 다른 장소로 바뀌었으면 무시
+      contentEl.innerHTML = buildPlaceCardContent(place, info, false);
+    });
+
+    // 화면 밖으로 넘치지 않도록 위치 살짝 보정
+    requestAnimationFrame(() => {
+      const rect = card.getBoundingClientRect();
+      let shiftX = 0;
+      if (rect.left < 8) shiftX = 8 - rect.left;
+      if (rect.right > window.innerWidth - 8) shiftX = (window.innerWidth - 8) - rect.right;
+      if (shiftX) card.style.left = (clientX + shiftX) + 'px';
+      if (rect.top < 8) card.style.transform = 'translate(-50%, 16px)'; // 위쪽 공간이 없으면 아래로 뜨게
+    });
+
     // 지금 이 클릭이 document까지 튀어서 방금 연 카드를 바로 닫아버리지 않도록,
     // "바깥 클릭 감지"는 한 박자 늦게 켭니다.
     setTimeout(() => {
       PLACE_CARD_OUTSIDE_HANDLER = (e) => {
-        if (ACTIVE_PLACE_CARD && ACTIVE_PLACE_CARD.div && !ACTIVE_PLACE_CARD.div.contains(e.target)) {
+        if (ACTIVE_PLACE_CARD_EL && !ACTIVE_PLACE_CARD_EL.contains(e.target)) {
           closePlaceCard();
         }
       };
@@ -2227,7 +2278,10 @@
       });
       const pos = new google.maps.LatLng(place.lat, place.lng);
       const marker = new google.maps.Marker({ position: pos, map, title: place.name });
-      const openCard = () => openPlaceCard(map, pos, place);
+      const openCard = (e) => {
+        const { x, y } = extractClientXY(e);
+        openPlaceCard(x, y, place);
+      };
       marker.addListener('click', openCard);
       new window.PlaceLabelOverlay(pos, place.short || place.name, 1, openCard).setMap(map);
     });
