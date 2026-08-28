@@ -2508,32 +2508,32 @@
     return list;
   }
 
-  function getRelatedArticles(prefix, idx, count) {
+  // ⭐ 변경: "가까운 날짜" 매칭 대신, 전체 글을 하나의 시간순 목록으로 만들어두고
+  //    그 목록에서 바로 앞/뒤 글을 "이전 이야기 / 다음 이야기"로 보여줍니다.
+  //    이러면 날짜가 몰려있는 글 3~4개만 계속 맴도는 문제 없이, 처음 글부터 끝 글까지
+  //    빠짐없이 이어서 읽을 수 있고, 카테고리(가족이야기/기도편지/캄보디아이야기)가 끝나면
+  //    자연스럽게 다음 카테고리의 글로 넘어갑니다. 맨 끝 글 다음은 다시 맨 처음 글로 순환됩니다.
+  function buildMasterArticleOrder() {
     const list = buildArticleIndex();
-    const current = list.find(
-      a => a.prefix === prefix && a.idx === String(idx)
-    );
-    if (!current) return [];
-
     return list
-      .filter(a => !(a.prefix === prefix && a.idx === String(idx)))
-      .map(a => ({
-        ...a,
-        diff:
-          current.dateValue !== Infinity && a.dateValue !== Infinity
-            ? Math.abs(a.dateValue - current.dateValue)
-            : Infinity
-      }))
+      .slice()
       .sort((a, b) => {
-        if (a.diff !== b.diff) return a.diff - b.diff;
         if (a.dateValue !== b.dateValue) return a.dateValue - b.dateValue;
-        return String(a.idx).localeCompare(
-          String(b.idx),
-          undefined,
-          { numeric: true }
-        );
-      })
-      .slice(0, count);
+        return String(a.idx).localeCompare(String(b.idx), undefined, { numeric: true });
+      });
+  }
+
+  var MASTER_ARTICLE_ORDER = null;
+
+  function getPrevNextArticles(prefix, idx) {
+    if (!MASTER_ARTICLE_ORDER) MASTER_ARTICLE_ORDER = buildMasterArticleOrder();
+    const list = MASTER_ARTICLE_ORDER;
+    if (list.length < 2) return { prev: null, next: null };
+    const i = list.findIndex(a => a.prefix === prefix && a.idx === String(idx));
+    if (i === -1) return { prev: null, next: null };
+    const prev = list[(i - 1 + list.length) % list.length];
+    const next = list[(i + 1) % list.length];
+    return { prev, next };
   }
 
 
@@ -2873,22 +2873,30 @@
       }
     });
 
-    // ⭐ 신규: 날짜가 가까운 다른 글 1~2개를 "이 시기의 다른 이야기"로 추천
-    const related = getRelatedArticles(tmplPrefix, idx, 2);
-    if (related.length) {
+    // ⭐ 변경: "이전 이야기 / 다음 이야기" — 전체 글을 시간순으로 쭉 이어서 읽을 수 있도록
+    // (카테고리가 끝나면 자연스럽게 다음 카테고리로, 맨 끝 글에서는 다시 처음 글로 순환)
+    const { prev, next } = getPrevNextArticles(tmplPrefix, idx);
+    const navItems = [
+      prev ? { r: prev, label: '이전 이야기' } : null,
+      next ? { r: next, label: '다음 이야기' } : null,
+    ].filter(Boolean);
+    if (navItems.length) {
       const relWrap = document.createElement('div');
       relWrap.className = 'mt-10 pt-8 border-t border-ink-900/10 no-print';
       relWrap.innerHTML = `
-        <p class="text-center text-xs font-bold text-ink-400 tracking-wide uppercase mb-5">이 시기의 다른 이야기</p>
-        <div class="grid grid-cols-1 ${related.length > 1 ? 'sm:grid-cols-2' : ''} gap-4"></div>`;
+        <p class="text-center text-xs font-bold text-ink-400 tracking-wide uppercase mb-5">이어지는 이야기</p>
+        <div class="grid grid-cols-1 ${navItems.length > 1 ? 'sm:grid-cols-2' : ''} gap-4"></div>`;
       const relGrid = relWrap.querySelector('.grid');
-      related.forEach(r => {
+      navItems.forEach(({ r, label }) => {
         const card = document.createElement('button');
         card.type = 'button';
-        card.className = 'text-left bg-white rounded-2xl shadow-sm hover:shadow-soft transition-shadow duration-300 overflow-hidden flex items-center gap-3 p-3';
+        card.className = 'text-left bg-white rounded-2xl shadow-sm hover:shadow-soft transition-shadow duration-300 overflow-hidden flex items-start gap-3 p-3';
         card.innerHTML = `
           ${r.image ? `<div class="w-16 h-16 rounded-xl overflow-hidden shrink-0"><img loading="lazy" src="${r.image}" alt="${r.title}" class="w-full h-full object-cover" /></div>` : ''}
-          <span class="text-sm font-semibold text-ink-900 leading-snug line-clamp-2">${r.title}</span>`;
+          <div class="min-w-0">
+            <span class="block text-[10px] font-bold text-ember tracking-wide uppercase mb-1">${label}</span>
+            <span class="text-sm font-semibold text-ink-900 leading-snug line-clamp-2">${r.title}</span>
+          </div>`;
         card.addEventListener('click', () => {
           // ⭐ 같은 종류의 글(같은 모달)을 추천할 때는 closeDetail을 부르지 않음.
           // closeDetail은 200ms 뒤에 모달을 숨기도록 예약을 거는데, 같은 모달을 그대로
