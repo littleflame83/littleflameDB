@@ -1574,8 +1574,7 @@
         const pos = new google.maps.LatLng(p.lat, p.lng);
         const z = placeZIndex(key);
         const marker = new google.maps.Marker({ position: pos, map, title: p.name, zIndex: z });
-        const info = new google.maps.InfoWindow({ content: buildPlaceCardContent(p) });
-        const openCard = () => info.open(map, marker);
+        const openCard = () => openPlaceCard(map, pos, p);
         marker.addListener('click', openCard);
         // ⭐ 항상 보이는 이름표 (화살표 아래쪽) — 핀을 눌러도, 이름표를 눌러도 같은 소개 카드가 뜸
         new window.PlaceLabelOverlay(pos, p.short, z, openCard).setMap(map);
@@ -2075,6 +2074,89 @@
       '</div></div>';
   }
 
+  // ⭐ 신규: 핀/이름표를 눌렀을 때 뜨는 소개 카드.
+  //    화면(뷰포트) 기준 고정 위치(position:fixed)로 <body>에 직접 붙여서,
+  //    지도를 감싼 둥근 카드의 "잘라내기(overflow-hidden)" 효과에 절대 잘리지 않습니다.
+  //    구글 기본 정보창처럼 흰 사각형 + 아래쪽 꼬리 + 우측상단 닫기(✕) 형태입니다.
+  let ACTIVE_PLACE_CARD = null;
+  let PLACE_CARD_OUTSIDE_HANDLER = null;
+
+  function closePlaceCard() {
+    if (ACTIVE_PLACE_CARD) {
+      ACTIVE_PLACE_CARD.setMap(null);
+      ACTIVE_PLACE_CARD = null;
+    }
+    if (PLACE_CARD_OUTSIDE_HANDLER) {
+      document.removeEventListener('click', PLACE_CARD_OUTSIDE_HANDLER, true);
+      PLACE_CARD_OUTSIDE_HANDLER = null;
+    }
+  }
+
+  function definePlaceCardOverlay() {
+    if (window.PlaceCardOverlay || !window.google?.maps?.OverlayView) return;
+    class PlaceCardOverlay extends google.maps.OverlayView {
+      constructor(position, place) {
+        super();
+        this.position = position;
+        this.place = place;
+      }
+      onAdd() {
+        const card = document.createElement('div');
+        card.style.cssText = [
+          'position:fixed', 'z-index:9999', 'transform:translate(-50%,calc(-100% - 16px))',
+          'background:#ffffff', 'color:#1c1917', 'border-radius:14px',
+          'box-shadow:0 10px 30px rgba(0,0,0,.28)', 'padding:12px 34px 12px 14px',
+          'font-family:inherit', 'max-width:240px', 'min-width:170px',
+        ].join(';');
+        card.innerHTML = buildPlaceCardContent(this.place);
+        const closeBtn = document.createElement('button');
+        closeBtn.type = 'button';
+        closeBtn.setAttribute('aria-label', '닫기');
+        closeBtn.textContent = '✕';
+        closeBtn.style.cssText = 'position:absolute;top:8px;right:10px;background:none;border:none;font-size:14px;color:#a8a29e;cursor:pointer;line-height:1;padding:2px;';
+        card.appendChild(closeBtn);
+        const tail = document.createElement('div');
+        tail.style.cssText = 'position:absolute;left:50%;bottom:-6px;transform:translateX(-50%) rotate(45deg);width:12px;height:12px;background:#ffffff;box-shadow:2px 2px 4px rgba(0,0,0,.06);';
+        card.appendChild(tail);
+        card.addEventListener('click', (e) => e.stopPropagation());
+        closeBtn.addEventListener('click', (e) => { e.stopPropagation(); closePlaceCard(); });
+        document.body.appendChild(card);
+        this.div = card;
+      }
+      draw() {
+        const proj = this.getProjection();
+        const map = this.getMap();
+        if (!proj || !this.div || !map) return;
+        const divPixel = proj.fromLatLngToDivPixel(this.position);
+        const rect = map.getDiv().getBoundingClientRect();
+        this.div.style.left = (rect.left + divPixel.x) + 'px';
+        this.div.style.top = (rect.top + divPixel.y) + 'px';
+      }
+      onRemove() {
+        if (this.div) { this.div.remove(); this.div = null; }
+      }
+    }
+    window.PlaceCardOverlay = PlaceCardOverlay;
+  }
+
+  function openPlaceCard(map, position, place) {
+    closePlaceCard();
+    definePlaceCardOverlay();
+    const card = new window.PlaceCardOverlay(position, place);
+    card.setMap(map);
+    ACTIVE_PLACE_CARD = card;
+    // 지금 이 클릭이 document까지 튀어서 방금 연 카드를 바로 닫아버리지 않도록,
+    // "바깥 클릭 감지"는 한 박자 늦게 켭니다.
+    setTimeout(() => {
+      PLACE_CARD_OUTSIDE_HANDLER = (e) => {
+        if (ACTIVE_PLACE_CARD && ACTIVE_PLACE_CARD.div && !ACTIVE_PLACE_CARD.div.contains(e.target)) {
+          closePlaceCard();
+        }
+      };
+      document.addEventListener('click', PLACE_CARD_OUTSIDE_HANDLER, true);
+    }, 0);
+  }
+
   // ⭐ 신규: 마커를 누르지 않아도 항상 이름표가 보이게 해주는 오버레이
   //    (구글 기본 InfoWindow는 사이트 CSS 영향을 받아 글씨가 흐리게 보이는 문제가 있어서
   //     직접 스타일을 고정한 작은 이름표를 마커 아래에 항상 띄워둠)
@@ -2145,8 +2227,7 @@
       });
       const pos = new google.maps.LatLng(place.lat, place.lng);
       const marker = new google.maps.Marker({ position: pos, map, title: place.name });
-      const info = new google.maps.InfoWindow({ content: buildPlaceCardContent(place) });
-      const openCard = () => info.open(map, marker);
+      const openCard = () => openPlaceCard(map, pos, place);
       marker.addListener('click', openCard);
       new window.PlaceLabelOverlay(pos, place.short || place.name, 1, openCard).setMap(map);
     });
