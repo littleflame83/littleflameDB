@@ -844,6 +844,9 @@
           </p>
 <p class="mt-1 text-sm text-ink-900 font-semibold">카카오뱅크 3333-05-8716882</p>
 <p class="text-sm text-ink-500">예금주 : 홍성화</p>
+<button class="mt-auto block w-full text-center bg-ember hover:opacity-90 text-white font-semibold text-sm px-6 py-3.5 rounded-full shadow-soft transition-opacity" id="copyAccountBtnSupport" type="button">
+            계좌번호 복사하기
+          </button>
 </div>
 </div>
 </div>
@@ -1471,33 +1474,37 @@
       });
   })();
 
-  // ⭐ 신규: 계좌번호 복사 버튼
+  // ⭐ 신규: 계좌번호 복사 버튼 (메인 페이지 + 후원 안내 페이지, 둘 다 동일하게 작동)
   (function initCopyAccountBtn() {
-    const btn = document.getElementById('copyAccountBtn');
-    if (!btn) return;
+    const btns = ['copyAccountBtn', 'copyAccountBtnSupport']
+      .map(id => document.getElementById(id))
+      .filter(Boolean);
+    if (!btns.length) return;
     const accountNumber = '카카오뱅크 3333-05-8716882';
-    btn.addEventListener('click', async () => {
-      try {
-        await navigator.clipboard.writeText(accountNumber);
-      } catch (e) {
-        // 클립보드 API가 막혀있는 구형 브라우저 대비
-        const textarea = document.createElement('textarea');
-        textarea.value = accountNumber;
-        textarea.style.position = 'fixed';
-        textarea.style.opacity = '0';
-        document.body.appendChild(textarea);
-        textarea.select();
-        document.execCommand('copy');
-        document.body.removeChild(textarea);
-      }
-      const original = btn.textContent;
-      btn.textContent = '복사되었어요 ✓';
-      setTimeout(() => { btn.textContent = original; }, 2000);
+    btns.forEach((btn) => {
+      btn.addEventListener('click', async () => {
+        try {
+          await navigator.clipboard.writeText(accountNumber);
+        } catch (e) {
+          // 클립보드 API가 막혀있는 구형 브라우저 대비
+          const textarea = document.createElement('textarea');
+          textarea.value = accountNumber;
+          textarea.style.position = 'fixed';
+          textarea.style.opacity = '0';
+          document.body.appendChild(textarea);
+          textarea.select();
+          document.execCommand('copy');
+          document.body.removeChild(textarea);
+        }
+        const original = btn.textContent;
+        btn.textContent = '복사되었어요 ✓';
+        setTimeout(() => { btn.textContent = original; }, 2000);
 
-      // ⭐ 신규: GA4 이벤트 — 계좌번호 복사 클릭 추적
-      if (typeof gtag === 'function') {
-        gtag('event', 'click_copy_account', { event_category: 'donation' });
-      }
+        // ⭐ 신규: GA4 이벤트 — 계좌번호 복사 클릭 추적
+        if (typeof gtag === 'function') {
+          gtag('event', 'click_copy_account', { event_category: 'donation' });
+        }
+      });
     });
   })();
 
