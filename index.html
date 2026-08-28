@@ -2727,19 +2727,35 @@
 
   const TRANSLATE_WORKER_URL = 'https://flat-shape-f26f.littleflame83.workers.dev/';
 
-  async function translateText(text, target) {
-    const key = text + '|' + target;
-    if (translationCache.has(key)) return translationCache.get(key);
+  // ⭐ 배치 번역: 문장을 하나씩 보내지 않고, 중복은 한 번만 묶어서 한 번에 요청함
+  // (예: 30개 문장 → 예전엔 30번 왕복, 지금은 1번 왕복)
+  async function translateTextsBatch(texts, target) {
+    const toFetch = [];
+    const result = {};
+    texts.forEach(t => {
+      const key = t + '|' + target;
+      if (translationCache.has(key)) {
+        result[t] = translationCache.get(key);
+      } else if (!toFetch.includes(t)) {
+        toFetch.push(t);
+      }
+    });
+    if (toFetch.length === 0) return result;
+
     const res = await fetch(TRANSLATE_WORKER_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ text, target }),
+      body: JSON.stringify({ texts: toFetch, target }),
     });
     if (!res.ok) throw new Error('서버 응답 오류: HTTP ' + res.status);
     const data = await res.json();
-    if (!data || !data.translatedText) throw new Error('번역 결과 없음: ' + JSON.stringify(data));
-    translationCache.set(key, data.translatedText);
-    return data.translatedText;
+    if (!data || !Array.isArray(data.translatedTexts)) throw new Error('번역 결과 없음: ' + JSON.stringify(data));
+    toFetch.forEach((t, i) => {
+      const translated = data.translatedTexts[i];
+      translationCache.set(t + '|' + target, translated);
+      result[t] = translated;
+    });
+    return result;
   }
 
   // 화면에 지금 보이는 한글 텍스트 노드들을 찾아서 번역함
@@ -2768,31 +2784,35 @@
 
   async function translateSubtree(root, target, excludeOverlays) {
     const nodes = collectTextNodes(root, excludeOverlays);
-    // 너무 많은 요청이 한꺼번에 나가지 않도록 10개씩 묶어서 처리
-    const chunkSize = 10;
-    let ok = 0, fail = 0;
-    for (let i = 0; i < nodes.length; i += chunkSize) {
-      const chunk = nodes.slice(i, i + chunkSize);
-      await Promise.all(chunk.map(async (node) => {
-        const original = node.__originalKo || node.nodeValue;
-        node.__originalKo = original; // 나중에 '한국어'로 되돌릴 때 사용
-        const leading = original.match(/^\s*/)[0];
-        const trailing = original.match(/\s*$/)[0];
-        try {
-          const translated = await translateText(original.trim(), target);
-          node.nodeValue = leading + translated + trailing; // 앞뒤 공백은 그대로 살려서 붙이기
-          ok++;
-          if (window.__i18nDebugCount === undefined) window.__i18nDebugCount = 0;
-          if (window.__i18nDebugCount < 5) {
-            window.__i18nDebugCount++;
-            console.log('[번역 확인 ' + window.__i18nDebugCount + '] "' + original.trim() + '" → "' + translated + '"');
-          }
-        } catch (err) {
-          fail++;
-          console.error('[번역 실패] "' + original.trim() + '"', err);
-        }
-      }));
+    const uniqueTexts = [...new Set(nodes.map(n => (n.__originalKo || n.nodeValue).trim()))];
+
+    // 한 번에 너무 큰 요청이 되지 않도록 60개 문장씩 나눠서 보냄 (그래도 예전보다 훨씬 적은 왕복 횟수)
+    const chunkSize = 60;
+    const translatedMap = {};
+    for (let i = 0; i < uniqueTexts.length; i += chunkSize) {
+      const chunk = uniqueTexts.slice(i, i + chunkSize);
+      try {
+        Object.assign(translatedMap, await translateTextsBatch(chunk, target));
+      } catch (err) {
+        console.error('[번역 배치 실패]', err);
+      }
     }
+
+    let ok = 0, fail = 0;
+    nodes.forEach(node => {
+      const original = node.__originalKo || node.nodeValue;
+      node.__originalKo = original; // 나중에 '한국어'로 되돌릴 때 사용
+      const leading = original.match(/^\s*/)[0];
+      const trailing = original.match(/\s*$/)[0];
+      const translated = translatedMap[original.trim()];
+      if (translated) {
+        node.nodeValue = leading + translated + trailing; // 앞뒤 공백은 그대로 살려서 붙이기
+        ok++;
+      } else {
+        fail++;
+        console.error('[번역 실패] "' + original.trim() + '"');
+      }
+    });
     return { ok, fail, total: nodes.length };
   }
 
