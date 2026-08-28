@@ -220,7 +220,7 @@
 
 
   /* ============================================================
-     ⭐ 검색 / 공유 / 기도제목 / 이전·다음 이야기
+     ⭐ 검색 / 공유 / 기도제목
      ============================================================ */
   .site-search-trigger { min-width: 150px; }
   .site-search-trigger input { width: 108px; outline: none; }
@@ -230,9 +230,6 @@
   .share-sheet { width: min(92vw, 430px); }
   .share-choice { transition: transform .18s ease, box-shadow .18s ease, background-color .18s ease; }
   .share-choice:hover { transform: translateY(-2px); box-shadow: 0 10px 28px -12px rgba(42,37,33,.24); }
-  .article-step { transition: transform .18s ease, border-color .18s ease, background-color .18s ease; }
-  .article-step:hover { transform: translateY(-1px); border-color: rgba(249,115,22,.35); background: rgba(255,255,255,.92); }
-  .article-step.disabled { opacity: .35; pointer-events: none; }
   @media (max-width: 1023px) {
     .site-search-trigger { min-width: 0; width: 100%; }
     .site-search-trigger input { width: 100%; }
@@ -437,7 +434,7 @@
 <!-- ================= 우리의 발자취 (타임라인) ================= -->
 <!-- cambodiaOverlay 안의 글 카드(data-ovcam)를 그대로 읽어서 자동으로 그려집니다.
      즉, 새 글을 추가해도 이 섹션은 손댈 필요 없이 자동으로 타임라인에 반영됩니다. -->
-<section class="bg-warm-bg pb-28 sm:pb-36 px-6" id="missionTimeline">
+<section class="bg-warm-bg pt-16 sm:pt-20 pb-28 sm:pb-36 px-6" id="missionTimeline">
 <div class="max-w-6xl mx-auto">
 <div class="reveal text-center mb-10 sm:mb-14">
 <p class="text-ember text-xs font-bold tracking-[0.25em] uppercase mb-3">Time Line</p>
@@ -2224,8 +2221,6 @@
     instagramShare: { ko: '링크 복사 후 Instagram', en: 'Copy link, then Instagram', km: 'ចម្លងតំណ រួចទៅ Instagram' },
     threadsShare: { ko: 'Threads에 공유', en: 'Share on Threads', km: 'ចែករំលែកតាម Threads' },
     copyOnly: { ko: '링크만 복사', en: 'Copy link only', km: 'ចម្លងតំណតែប៉ុណ្ណោះ' },
-    prevStory: { ko: '이전 이야기', en: 'Previous story', km: 'រឿងមុន' },
-    nextStory: { ko: '다음 이야기', en: 'Next story', km: 'រឿងបន្ទាប់' },
   };
   function uiText(key) {
     const t = UI_TEXT[key];
@@ -2309,39 +2304,6 @@
       .slice(0, count);
   }
 
-  // 같은 종류의 글 안에서만 이전/다음으로 이동합니다.
-  // 날짜가 없는 글도 빠지지 않도록 JSON 원래 순서를 보조값으로 사용합니다.
-  function getAdjacentStories(prefix, idx) {
-    const ordered = buildArticleIndex()
-      .filter(a => a.prefix === prefix)
-      .slice()
-      .sort((a, b) => {
-        if (a.dateValue !== b.dateValue) {
-          return a.dateValue - b.dateValue;
-        }
-
-        const idxDiff = String(a.idx).localeCompare(
-          String(b.idx),
-          undefined,
-          { numeric: true }
-        );
-
-        if (idxDiff !== 0) return idxDiff;
-        return a.originalIndex - b.originalIndex;
-      });
-
-    const pos = ordered.findIndex(
-      a => a.idx === String(idx)
-    );
-
-    return {
-      prev: pos > 0 ? ordered[pos - 1] : null,
-      next:
-        pos >= 0 && pos < ordered.length - 1
-          ? ordered[pos + 1]
-          : null
-    };
-  }
 
   const OVERLAY_MAP_BY_PREFIX = { ovrpt: 'reportsOverlay', ovltr: 'lettersOverlay', ovcam: 'cambodiaOverlay' };
 
@@ -2700,40 +2662,6 @@
       modalBody.appendChild(relWrap);
     }
 
-    // ============================================================
-    // ⭐ 이전 이야기 / 다음 이야기
-    // 같은 카테고리 안에서 날짜순으로 연결합니다.
-    // 월까지만 있는 글도 1일로 계산하고, 같은 날짜는 idx로 구분합니다.
-    // ============================================================
-    const adjacent = getAdjacentStories(tmplPrefix, idx);
-    const prevStory = adjacent.prev;
-    const nextStory = adjacent.next;
-
-    const stepWrap = document.createElement('div');
-    stepWrap.className = 'mt-10 pt-8 border-t border-ink-900/10 no-print';
-    stepWrap.innerHTML = `
-      <div class="grid grid-cols-2 gap-3 sm:gap-4">
-        <button type="button" class="article-step ${prevStory ? '' : 'disabled'} text-left rounded-2xl border border-ink-900/10 bg-white/70 px-4 py-4 transition-all ${prevStory ? 'hover:-translate-y-0.5 hover:shadow-sm' : 'opacity-40 cursor-default'}" data-step="prev" ${prevStory ? '' : 'disabled'}>
-          <span class="block text-[10px] sm:text-[11px] font-bold tracking-[0.14em] uppercase text-ink-400">← ${uiText('prevStory')}</span>
-          <span class="block mt-2 text-sm font-semibold text-ink-900 leading-snug line-clamp-2">${prevStory ? prevStory.title : '—'}</span>
-        </button>
-        <button type="button" class="article-step ${nextStory ? '' : 'disabled'} text-right rounded-2xl border border-ink-900/10 bg-white/70 px-4 py-4 transition-all ${nextStory ? 'hover:-translate-y-0.5 hover:shadow-sm' : 'opacity-40 cursor-default'}" data-step="next" ${nextStory ? '' : 'disabled'}>
-          <span class="block text-[10px] sm:text-[11px] font-bold tracking-[0.14em] uppercase text-ink-400">${uiText('nextStory')} →</span>
-          <span class="block mt-2 text-sm font-semibold text-ink-900 leading-snug line-clamp-2">${nextStory ? nextStory.title : '—'}</span>
-        </button>
-      </div>`;
-
-    if (prevStory) {
-      stepWrap.querySelector('[data-step="prev"]').addEventListener('click', () => {
-        openDetail(prevStory.prefix, prevStory.idx);
-      });
-    }
-    if (nextStory) {
-      stepWrap.querySelector('[data-step="next"]').addEventListener('click', () => {
-        openDetail(nextStory.prefix, nextStory.idx);
-      });
-    }
-    modalBody.appendChild(stepWrap);
 
     // ⭐ "동역하기" 버튼 — 전체보기 버튼 바로 위, 글을 다 읽고 관련 글까지 본 다음
     // 마지막으로 마주치는 CTA가 되도록 배치함
@@ -2975,10 +2903,21 @@
     const PRINT_UNLOCK_PASSWORD = 'Missionhong1!';
 
     function showPrintButtons() {
-      ['ovrpt', 'ovltr', 'ovcam'].forEach(prefix => {
-        const btn = document.getElementById(prefix + 'PrintBtn');
-        if (btn) btn.classList.remove('hidden');
-      });
+      const show = () => {
+        ['ovrpt', 'ovltr', 'ovcam'].forEach(prefix => {
+          const btn = document.getElementById(prefix + 'PrintBtn');
+          if (!btn) return;
+          btn.classList.remove('hidden');
+          btn.style.display = 'inline-flex';
+          btn.dataset.printUnlocked = '1';
+        });
+      };
+
+      // 모달이 정적으로 존재하는 현재 구조에서는 즉시 표시되고,
+      // 혹시 Worker/브라우저 로딩 순서로 늦게 만들어진 경우에도 다시 한 번 표시합니다.
+      show();
+      requestAnimationFrame(show);
+      setTimeout(show, 100);
     }
 
     // 이미 잠금 해제된 적 있는 브라우저면 바로 보여줌
@@ -2994,6 +2933,7 @@
         localStorage.setItem('printAccess', '1');
         showPrintButtons();
         alert('인쇄 버튼이 켜졌어요. 이 브라우저에서는 계속 보여요.');
+        showPrintButtons();
       } else if (input !== null) {
         alert('비밀번호가 일치하지 않아요.');
       }
@@ -3006,11 +2946,21 @@
   // 거기서 "PDF로 저장"을 고르면 그대로 PDF 파일이 됩니다.
   ['ovrpt', 'ovltr', 'ovcam'].forEach(prefix => {
     const btn = document.getElementById(prefix + 'PrintBtn');
-    if (btn) {
+    if (btn && !btn.dataset.printWired) {
+      btn.dataset.printWired = '1';
       btn.addEventListener('click', () => {
         window.print();
       });
     }
+  });
+
+  // 혹시 버튼이 Worker/후속 렌더링 과정에서 새로 생겨도 인쇄가 작동하도록 보완합니다.
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest('[id$="PrintBtn"]');
+    if (!btn) return;
+    if (btn.dataset.printWired === '1') return;
+    btn.dataset.printWired = '1';
+    window.print();
   });
 
   // ============================================================
