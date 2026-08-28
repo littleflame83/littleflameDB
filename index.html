@@ -1560,6 +1560,7 @@
     const overlay = document.getElementById('mapTapOverlay');
     if (!canvas) return;
     window.GMAPS_READY.then(() => {
+      definePlaceLabelOverlay();
       const bounds = new google.maps.LatLngBounds();
       const map = new google.maps.Map(canvas, {
         center: { lat: 11.578, lng: 104.815 },
@@ -1570,12 +1571,18 @@
         fullscreenControl: false,
       });
       Object.values(PLACES).forEach((p) => {
-        const marker = new google.maps.Marker({ position: { lat: p.lat, lng: p.lng }, map, title: p.name });
-        const info = new google.maps.InfoWindow({ content: '<strong>' + p.name + '</strong>' });
+        const pos = new google.maps.LatLng(p.lat, p.lng);
+        const marker = new google.maps.Marker({ position: pos, map, title: p.name });
+        // ⭐ 항상 보이는 이름표 (짧은 이름) — 클릭 안 해도 바로 어디인지 보입니다
+        new window.PlaceLabelOverlay(pos, p.short).setMap(map);
+        // 클릭하면 정식 명칭도 볼 수 있음 (글씨색 고정 — 사이트 CSS 영향 안 받도록)
+        const info = new google.maps.InfoWindow({
+          content: '<div style="color:#1c1917;font-weight:700;font-size:13px;padding:2px 2px;">' + p.name + '</div>',
+        });
         marker.addListener('click', () => info.open(map, marker));
-        bounds.extend(marker.getPosition());
+        bounds.extend(pos);
       });
-      map.fitBounds(bounds, 60);
+      map.fitBounds(bounds, 80);
 
       overlay?.addEventListener('click', () => {
         map.setOptions({ gestureHandling: 'greedy' });
@@ -2033,15 +2040,52 @@
   //    aliases에 넣은 이름 중 아무거나 글에서 따옴표로 쓰면(예: "캄장신") 자동으로 지도가 나타납니다.
   // ============================================================
   const PLACES = {
-    camjangsin: { name: '캄보디아 장로교 신학교', lat: 11.560598, lng: 104.833593,
+    camjangsin: { name: '캄보디아 장로교 신학교', short: '캄장신', lat: 11.560598, lng: 104.833593,
       aliases: ['캄장신', '캄보디아장로교신학교', '캄보디아 장로교 신학교', '캄보디아장로회신학교'] },
-    hebron: { name: '헤브론 메디컬 센터', lat: 11.561763, lng: 104.8391636,
+    hebron: { name: '헤브론 메디컬 센터', short: '헤브론', lat: 11.561763, lng: 104.8391636,
       aliases: ['헤브론', '헤브론센터', '헤브론 센터', '헤브론메디컬센터', '헤브론 메디컬 센터'] },
-    npic: { name: '내셔널 폴리테크닉 인스티튜트 오브 캄보디아', lat: 11.598406, lng: 104.8007837,
+    npic: { name: '내셔널 폴리테크닉 인스티튜트 오브 캄보디아', short: 'NPIC', lat: 11.598406, lng: 104.8007837,
       aliases: ['NPIC', 'npic', '폴리텍', '내셔널폴리테크닉', '내셔널 폴리테크닉 인스티튜트 오브 캄보디아'] },
-    adulam: { name: '아둘람센터', lat: 11.5968859, lng: 104.8031447,
+    adulam: { name: '아둘람센터', short: '아둘람', lat: 11.5968859, lng: 104.8031447,
       aliases: ['아둘람', '아둘람센터', '아둘람 센터'] },
   };
+
+  // ⭐ 신규: 마커를 누르지 않아도 항상 이름표가 보이게 해주는 오버레이
+  //    (구글 기본 InfoWindow는 사이트 CSS 영향을 받아 글씨가 흐리게 보이는 문제가 있어서
+  //     직접 스타일을 고정한 작은 이름표를 마커 위에 항상 띄워둠)
+  function definePlaceLabelOverlay() {
+    if (window.PlaceLabelOverlay || !window.google?.maps?.OverlayView) return;
+    class PlaceLabelOverlay extends google.maps.OverlayView {
+      constructor(position, text) {
+        super();
+        this.position = position;
+        this.text = text;
+      }
+      onAdd() {
+        this.div = document.createElement('div');
+        this.div.textContent = this.text;
+        this.div.style.cssText = [
+          'position:absolute', 'transform:translate(-50%,-148%)',
+          'background:#ffffff', 'color:#1c1917', 'font-weight:700',
+          'font-size:11px', 'line-height:1', 'padding:4px 9px',
+          'border-radius:9999px', 'box-shadow:0 1px 5px rgba(0,0,0,.28)',
+          'white-space:nowrap', 'pointer-events:none', 'font-family:inherit',
+        ].join(';');
+        this.getPanes().overlayLayer.appendChild(this.div);
+      }
+      draw() {
+        const proj = this.getProjection();
+        if (!proj || !this.div) return;
+        const pos = proj.fromLatLngToDivPixel(this.position);
+        this.div.style.left = pos.x + 'px';
+        this.div.style.top = pos.y + 'px';
+      }
+      onRemove() {
+        if (this.div) { this.div.parentNode.removeChild(this.div); this.div = null; }
+      }
+    }
+    window.PlaceLabelOverlay = PlaceLabelOverlay;
+  }
 
   function normalizePlaceKey(s) {
     return String(s || '').trim().replace(/\s+/g, '');
@@ -2056,9 +2100,10 @@
     return PLACE_ALIAS_LOOKUP[normalizePlaceKey(text)] || null;
   }
 
-  // 등록된 장소 하나를 JS API 지도(한 손가락 팬)로 렌더링
+  // 등록된 장소 하나를 JS API 지도(한 손가락 팬 + 항상 보이는 이름표)로 렌더링
   function renderPlaceMap(el, place) {
     window.GMAPS_READY.then(() => {
+      definePlaceLabelOverlay();
       const map = new google.maps.Map(el, {
         center: { lat: place.lat, lng: place.lng },
         zoom: 15,
@@ -2067,7 +2112,9 @@
         mapTypeControl: false,
         fullscreenControl: false,
       });
-      new google.maps.Marker({ position: { lat: place.lat, lng: place.lng }, map, title: place.name });
+      const pos = new google.maps.LatLng(place.lat, place.lng);
+      new google.maps.Marker({ position: pos, map, title: place.name });
+      new window.PlaceLabelOverlay(pos, place.short || place.name).setMap(map);
     });
   }
 
