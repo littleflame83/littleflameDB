@@ -2122,8 +2122,63 @@
         ? '<div style="font-size:12px;color:#a8a29e;margin-bottom:6px;">정보를 불러오는 중…</div>'
         : (desc ? '<div style="font-size:12px;color:#57534e;line-height:1.45;margin-bottom:6px;">' + desc + '</div>' : '')) +
       '<div style="font-size:11px;">' +
-      '<a href="' + mapsUrl + '" target="_blank" rel="noopener" style="color:#0284c7;font-weight:700;text-decoration:underline;">구글 지도에서 보기</a>' +
+      '<button type="button" class="js-place-embed-trigger" style="color:#0284c7;font-weight:700;text-decoration:underline;background:none;border:none;padding:0;cursor:pointer;font:inherit;">구글 지도에서 보기</button>' +
       '</div></div></div>';
+  }
+
+  // ⭐ 신규: "구글 지도에서 보기"를 새 창 대신 홈페이지 위에 뜨는 모달로 엽니다.
+  //    (배경이 어두워지고, 그 위에 지도가 뜨고, 바깥을 누르면 다시 홈페이지로 돌아옴 —
+  //     사이트의 다른 글 상세보기 모달과 같은 방식)
+  function ensurePlaceEmbedModal() {
+    let modal = document.getElementById('placeMapModal');
+    if (modal) return modal;
+    modal = document.createElement('div');
+    modal.id = 'placeMapModal';
+    modal.className = 'hidden fixed inset-0 z-[200] flex items-center justify-center p-4 sm:p-8 bg-ink-900/60 backdrop-blur-sm';
+    modal.innerHTML = `
+      <div class="relative bg-warm-card w-full max-w-2xl rounded-3xl shadow-soft overflow-hidden" id="placeMapModalPanel">
+        <button type="button" id="placeMapModalClose" aria-label="닫기"
+          class="absolute top-3 right-3 z-10 w-9 h-9 rounded-full bg-white/95 hover:bg-white flex items-center justify-center shadow-md text-ink-900">✕</button>
+        <div id="placeMapModalBody"></div>
+      </div>`;
+    document.body.appendChild(modal);
+    modal.addEventListener('click', (e) => { if (e.target === modal) closePlaceEmbedModal(); });
+    modal.querySelector('#placeMapModalClose').addEventListener('click', closePlaceEmbedModal);
+    return modal;
+  }
+
+  function closePlaceEmbedModal() {
+    const modal = document.getElementById('placeMapModal');
+    if (!modal) return;
+    modal.classList.add('hidden');
+    document.body.style.overflow = '';
+  }
+
+  function openPlaceEmbedModal(place, googleInfo) {
+    const modal = ensurePlaceEmbedModal();
+    const body = modal.querySelector('#placeMapModalBody');
+    const desc = googleInfo?.summary || place.desc || googleInfo?.address || '';
+    body.innerHTML = `
+      <div class="w-full aspect-[4/3] sm:aspect-[16/9]">
+        <iframe class="w-full h-full" style="border:0;" loading="lazy"
+          src="https://www.google.com/maps?q=${encodeURIComponent(place.lat + ',' + place.lng)}&output=embed"
+          title="${place.name} 지도"></iframe>
+      </div>
+      <div class="p-5 sm:p-6">
+        <div class="font-bold text-ink-900 text-base">${place.name}</div>
+        ${desc ? '<p class="text-sm text-ink-500 mt-1.5 leading-relaxed">' + desc + '</p>' : ''}
+      </div>`;
+    modal.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+  }
+
+  // 카드 안 "구글 지도에서 보기" 버튼에 클릭 이벤트를 연결 (카드 내용이 새로 그려질 때마다 다시 연결)
+  function wirePlaceCardEmbedTrigger(contentEl, place, googleInfo) {
+    contentEl.querySelector('.js-place-embed-trigger')?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      closePlaceCard();
+      openPlaceEmbedModal(place, googleInfo);
+    });
   }
 
   // ⭐ 신규: 핀/이름표를 눌렀을 때 뜨는 소개 카드.
@@ -2166,6 +2221,7 @@
     const contentEl = document.createElement('div');
     contentEl.innerHTML = buildPlaceCardContent(place, null, true);
     card.appendChild(contentEl);
+    wirePlaceCardEmbedTrigger(contentEl, place, null);
     const closeBtn = document.createElement('button');
     closeBtn.type = 'button';
     closeBtn.setAttribute('aria-label', '닫기');
@@ -2184,6 +2240,7 @@
     fetchGooglePlaceInfo(place).then((info) => {
       if (ACTIVE_PLACE_CARD_EL !== card) return; // 그 사이에 카드가 닫혔거나 다른 장소로 바뀌었으면 무시
       contentEl.innerHTML = buildPlaceCardContent(place, info, false);
+      wirePlaceCardEmbedTrigger(contentEl, place, info);
     });
 
     // 화면 밖으로 넘치지 않도록 위치 살짝 보정
@@ -2228,14 +2285,16 @@
         this.div.style.cssText = [
           'position:absolute', 'transform:translate(-50%,10px)',
           'background:#ffffff', 'color:#1c1917', 'font-weight:700',
-          'font-size:11px', 'line-height:1', 'padding:4px 9px',
+          'font-size:12px', 'line-height:1', 'padding:8px 14px',
           'border-radius:9999px', 'box-shadow:0 1px 5px rgba(0,0,0,.28)',
           'white-space:nowrap', 'font-family:inherit',
           'z-index:' + this.zIndexVal,
           this.onClick ? 'pointer-events:auto;cursor:pointer;' : 'pointer-events:none;',
         ].join(';');
         if (this.onClick) this.div.addEventListener('click', this.onClick);
-        this.getPanes().overlayLayer.appendChild(this.div);
+        // ⭐ floatPane에 붙여서 마커(overlayMouseTarget)보다 항상 위에 오게 함 —
+        //    이름표 바로 위에 마커의 보이지 않는 클릭 영역이 겹쳐도 이름표 클릭이 항상 먼저 먹힘
+        this.getPanes().floatPane.appendChild(this.div);
       }
       draw() {
         const proj = this.getProjection();
