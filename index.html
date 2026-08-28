@@ -1572,14 +1572,10 @@
       });
       Object.values(PLACES).forEach((p) => {
         const pos = new google.maps.LatLng(p.lat, p.lng);
-        const marker = new google.maps.Marker({ position: pos, map, title: p.name });
-        // ⭐ 항상 보이는 이름표 (짧은 이름) — 클릭 안 해도 바로 어디인지 보입니다
+        new google.maps.Marker({ position: pos, map, title: p.name });
+        // ⭐ 항상 보이는 이름표 (화살표 아래쪽) — 클릭 안 해도 바로 어디인지 보이고,
+        //    따로 열고 닫을 팝업이 없어서 "안 없어진다"는 혼란도 없습니다.
         new window.PlaceLabelOverlay(pos, p.short).setMap(map);
-        // 클릭하면 정식 명칭도 볼 수 있음 (글씨색 고정 — 사이트 CSS 영향 안 받도록)
-        const info = new google.maps.InfoWindow({
-          content: '<div style="color:#1c1917;font-weight:700;font-size:13px;padding:2px 2px;">' + p.name + '</div>',
-        });
-        marker.addListener('click', () => info.open(map, marker));
         bounds.extend(pos);
       });
       map.fitBounds(bounds, 80);
@@ -2065,7 +2061,7 @@
         this.div = document.createElement('div');
         this.div.textContent = this.text;
         this.div.style.cssText = [
-          'position:absolute', 'transform:translate(-50%,-148%)',
+          'position:absolute', 'transform:translate(-50%,10px)',
           'background:#ffffff', 'color:#1c1917', 'font-weight:700',
           'font-size:11px', 'line-height:1', 'padding:4px 9px',
           'border-radius:9999px', 'box-shadow:0 1px 5px rgba(0,0,0,.28)',
