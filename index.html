@@ -216,6 +216,26 @@
 
   /* 포스트잇은 배경이 항상 밝은 파스텔이라 다크모드에서도 글자는 항상 어둡게 고정 */
   .postit p { color: #2A2521 !important; }
+
+
+  /* ============================================================
+     ⭐ 검색 / 공유 / 기도제목 / 이전·다음 이야기
+     ============================================================ */
+  .site-search-trigger { min-width: 150px; }
+  .site-search-trigger input { width: 108px; outline: none; }
+  .site-search-trigger:focus-within { border-color: rgba(249,115,22,.45); box-shadow: 0 0 0 3px rgba(249,115,22,.08); }
+  .search-backdrop, .share-backdrop { background: rgba(42,37,33,.38); backdrop-filter: blur(7px); -webkit-backdrop-filter: blur(7px); }
+  .search-panel { max-height: min(82vh, 900px); }
+  .share-sheet { width: min(92vw, 430px); }
+  .share-choice { transition: transform .18s ease, box-shadow .18s ease, background-color .18s ease; }
+  .share-choice:hover { transform: translateY(-2px); box-shadow: 0 10px 28px -12px rgba(42,37,33,.24); }
+  .article-step { transition: transform .18s ease, border-color .18s ease, background-color .18s ease; }
+  .article-step:hover { transform: translateY(-1px); border-color: rgba(249,115,22,.35); background: rgba(255,255,255,.92); }
+  .article-step.disabled { opacity: .35; pointer-events: none; }
+  @media (max-width: 1023px) {
+    .site-search-trigger { min-width: 0; width: 100%; }
+    .site-search-trigger input { width: 100%; }
+  }
 </style>
 <!-- ===== 다크모드: 기기(폰/패드/PC)의 시스템 설정을 그대로 따라감 (노션 방식) ===== -->
 <style>
@@ -286,6 +306,12 @@
 <a class="hover:text-ember transition-colors" href="javascript:void(0)" id="nav-support" onclick="openOverlay('supportOverlay')">후원 안내</a>
 </nav>
 <div class="flex items-center gap-3">
+<div class="site-search-trigger hidden xl:flex items-center gap-2 px-3 py-1.5 rounded-full border border-ink-900/10 bg-white/70 text-ink-700">
+  <button aria-label="검색 열기" class="text-ink-400 hover:text-ember transition-colors" id="searchTriggerBtn" type="button">
+    <svg fill="none" height="16" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="16"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5" stroke-linecap="round"></path></svg>
+  </button>
+  <input aria-label="검색" id="siteSearchInput" placeholder="검색" type="search"/>
+</div>
 <div class="relative">
 <button aria-label="언어 선택" class="flex items-center gap-1 text-sm font-semibold text-ink-700 hover:text-ember transition-colors px-2 py-1.5 rounded-full border border-ink-900/10" id="langBtn" onclick="toggleLangMenu()" type="button">
             🌐 <span id="langBtnLabel">한국어</span>
@@ -316,6 +342,10 @@
 <a class="py-2.5 border-b border-ink-900/5" href="javascript:void(0)" id="navm-reports" onclick="openOverlay('reportsOverlay')">가족 이야기</a>
 <a class="py-2.5 border-b border-ink-900/5" href="javascript:void(0)" id="navm-letters" onclick="openOverlay('lettersOverlay')">기도 편지</a>
 <a class="py-2.5" href="javascript:void(0)" id="navm-support" onclick="openOverlay('supportOverlay')">후원 안내</a>
+<div class="mt-2 flex items-center gap-2 px-3 py-2.5 rounded-2xl bg-warm-bg border border-ink-900/5">
+  <svg fill="none" height="17" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="17"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5" stroke-linecap="round"></path></svg>
+  <input aria-label="검색" class="min-w-0 flex-1 bg-transparent text-sm outline-none" id="mobileSearchInput" placeholder="글 검색" type="search"/>
+</div>
 <a class="mt-3 text-center bg-ember text-white font-semibold px-5 py-2.5 rounded-full" href="javascript:void(0)" id="navm-donate-btn" onclick="openOverlay('supportOverlay')">후원하기</a>
 </nav>
 </div>
@@ -371,6 +401,38 @@
 </div>
 </div>
 </section>
+<!-- ================= 현재 기도제목 ================= -->
+<section class="bg-[#FBF6EE] py-20 sm:py-24 px-6" id="currentPrayerTopics">
+  <div class="max-w-5xl mx-auto">
+    <div class="reveal text-center mb-10 sm:mb-12">
+      <p class="text-sky text-xs font-bold tracking-[0.25em] uppercase mb-3">Current Prayer</p>
+      <h2 class="text-2xl sm:text-3xl font-bold tracking-tight">함께 기도해주세요</h2>
+      <p class="mt-3 text-sm text-ink-500">지금 이 시간, 함께 품어주셨으면 하는 기도제목입니다.</p>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-5 sm:gap-6 max-w-4xl mx-auto">
+      <div class="reveal bg-white rounded-3xl shadow-card p-6 sm:p-7">
+        <span class="text-2xl">🙏</span>
+        <p class="mt-4 text-xs font-bold text-sky tracking-wide">01</p>
+        <h3 class="mt-1 font-bold text-base text-ink-900">소명과 은혜</h3>
+        <p class="mt-2 text-sm text-ink-500 leading-relaxed">캄보디아를 향한 주님의 부르심을 잊지 않고, 늘 기쁨으로 순종하며 나아가도록 기도해주세요.</p>
+      </div>
+      <div class="reveal bg-white rounded-3xl shadow-card p-6 sm:p-7">
+        <span class="text-2xl">🏠</span>
+        <p class="mt-4 text-xs font-bold text-sky tracking-wide">02</p>
+        <h3 class="mt-1 font-bold text-base text-ink-900">필요한 재정의 공급</h3>
+        <p class="mt-2 text-sm text-ink-500 leading-relaxed">현지의 높은 물가와 아이들 학비 등 사역과 생활에 필요한 재정이 은혜 가운데 순조롭게 채워지도록 기도해주세요.</p>
+      </div>
+      <div class="reveal bg-white rounded-3xl shadow-card p-6 sm:p-7">
+        <span class="text-2xl">👨‍👩‍👧‍👦</span>
+        <p class="mt-4 text-xs font-bold text-sky tracking-wide">03</p>
+        <h3 class="mt-1 font-bold text-base text-ink-900">가족과 아이들</h3>
+        <p class="mt-2 text-sm text-ink-500 leading-relaxed">남은 파송 준비 기간 동안 온 가족이 영육 간에 강건하고, 아이들도 캄보디아를 향한 하나님의 마음을 품고 기쁘게 준비하도록 기도해주세요.</p>
+      </div>
+    </div>
+    <p class="text-center mt-7 text-[11px] text-ink-400">※ 현재 기도제목은 새로운 기도편지와 함께 업데이트합니다.</p>
+  </div>
+</section>
+
 <!-- ================= 우리의 발자취 (타임라인) ================= -->
 <!-- cambodiaOverlay 안의 글 카드(data-ovcam)를 그대로 읽어서 자동으로 그려집니다.
      즉, 새 글을 추가해도 이 섹션은 손댈 필요 없이 자동으로 타임라인에 반영됩니다. -->
@@ -396,7 +458,7 @@
 <h2 class="text-2xl sm:text-3xl font-bold tracking-tight">사역지 지도</h2>
 <p class="mt-3 text-sm text-ink-400">캄보디아 현지에서 함께하는 주요 장소들을 소개합니다</p>
 </div>
-<div class="reveal relative rounded-3xl overflow-hidden shadow-card aspect-square max-w-2xl mx-auto">
+<div class="reveal relative rounded-3xl overflow-hidden shadow-card aspect-[4/3] sm:aspect-[16/8] max-w-4xl mx-auto">
 <iframe class="absolute inset-0 w-full h-full" loading="lazy" src="https://www.google.com/maps/d/embed?mid=1kuaMd0fUfX7Pch8oicYNSKtXKgKV2Xs" style="border:0;" title="작은불꽃 홍선교 사역지 지도"></iframe>
 <!-- ⭐ 신규: 처음엔 살짝 덮어두었다가, 한 번 터치하면 사라짐.
            페이지를 스크롤하려던 손가락이 실수로 지도를 건드려 이동/확대되는 걸 방지하고,
@@ -604,8 +666,8 @@
 </form>
 <!-- ================= FOOTER ================= -->
 <footer class="bg-ink-900 text-white/70" id="siteFooter">
-<div class="max-w-7xl mx-auto px-6 sm:px-8 py-7">
-<div class="flex flex-col md:flex-row md:items-start md:justify-between gap-10">
+<div class="max-w-7xl mx-auto px-6 sm:px-8 py-5">
+<div class="flex flex-col md:flex-row md:items-start md:justify-between gap-7">
 <div>
 <div class="flex items-center gap-2 mb-4">
 <svg class="flame-flicker" fill="none" height="20" viewbox="0 0 24 24" width="20">
@@ -766,6 +828,51 @@
 </div>
 </section>
 </div>
+<!-- ================= 검색 결과 오버레이 ================= -->
+<div class="hidden fixed inset-0 z-[125] search-backdrop p-4 sm:p-6" id="searchOverlay">
+  <div class="search-panel relative w-full max-w-6xl mx-auto mt-4 sm:mt-8 bg-warm-card rounded-3xl shadow-2xl overflow-y-auto">
+    <div class="sticky top-0 z-10 bg-white/90 backdrop-blur-md border-b border-ink-900/5 px-5 sm:px-8 py-4 sm:py-5">
+      <div class="flex items-center gap-3">
+        <svg class="shrink-0 text-ink-400" fill="none" height="19" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="19"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5" stroke-linecap="round"></path></svg>
+        <input aria-label="검색" class="min-w-0 flex-1 bg-transparent text-base sm:text-lg font-medium text-ink-900 outline-none" id="searchOverlayInput" placeholder="찾고 싶은 이야기를 검색해 보세요" type="search"/>
+        <button aria-label="검색 닫기" class="shrink-0 w-9 h-9 rounded-full bg-ink-900/5 hover:bg-ink-900/10 flex items-center justify-center" id="searchOverlayClose" type="button">
+          <svg fill="none" height="17" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="17"><path d="M6 6l12 12M18 6L6 18" stroke-linecap="round"></path></svg>
+        </button>
+      </div>
+    </div>
+    <div class="px-5 sm:px-8 py-6 sm:py-8">
+      <div class="flex items-end justify-between gap-4 mb-6">
+        <div>
+          <p class="text-ember text-xs font-bold tracking-[0.25em] uppercase mb-2" id="searchEyebrow">Search</p>
+          <h2 class="text-xl sm:text-2xl font-bold tracking-tight text-ink-900" id="searchResultTitle">검색어를 입력해 주세요</h2>
+        </div>
+        <span class="text-xs text-ink-400 whitespace-nowrap" id="searchResultCount"></span>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6" id="searchResults"></div>
+      <p class="hidden text-center text-sm text-ink-400 py-14" id="searchNoResult">검색 결과가 없습니다.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ================= 공유 선택창 ================= -->
+<div class="hidden fixed inset-0 z-[130] share-backdrop flex items-center justify-center p-4" id="shareSheet">
+  <div class="share-sheet relative bg-warm-card rounded-3xl shadow-2xl p-6 sm:p-7">
+    <button aria-label="공유창 닫기" class="absolute top-4 right-4 w-9 h-9 rounded-full bg-ink-900/5 hover:bg-ink-900/10 flex items-center justify-center" id="shareSheetClose" type="button">
+      <svg fill="none" height="17" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="17"><path d="M6 6l12 12M18 6L6 18" stroke-linecap="round"></path></svg>
+    </button>
+    <p class="text-ember text-xs font-bold tracking-[0.25em] uppercase mb-2" id="shareSheetEyebrow">Share</p>
+    <h3 class="text-lg sm:text-xl font-bold text-ink-900 pr-10" id="shareSheetTitle">이 글을 어디로 공유할까요?</h3>
+    <p class="mt-2 text-xs text-ink-400 line-clamp-2" id="shareSheetStoryTitle"></p>
+    <div class="grid grid-cols-2 gap-3 mt-6">
+      <button class="share-choice rounded-2xl bg-[#FEE500]/20 border border-[#FEE500]/30 px-4 py-4 text-left" id="shareKakao" type="button"><span class="block text-sm font-bold text-ink-900">💬 KakaoTalk</span><span class="mt-1 block text-[11px] text-ink-500" id="shareKakaoHint">카카오톡으로 공유</span></button>
+      <button class="share-choice rounded-2xl bg-[#1877F2]/10 border border-[#1877F2]/15 px-4 py-4 text-left" id="shareFacebook" type="button"><span class="block text-sm font-bold text-ink-900">f Facebook</span><span class="mt-1 block text-[11px] text-ink-500" id="shareFacebookHint">Facebook에 공유</span></button>
+      <button class="share-choice rounded-2xl bg-ink-900/5 border border-ink-900/10 px-4 py-4 text-left" id="shareInstagram" type="button"><span class="block text-sm font-bold text-ink-900">◎ Instagram</span><span class="mt-1 block text-[11px] text-ink-500" id="shareInstagramHint">링크 복사 후 Instagram</span></button>
+      <button class="share-choice rounded-2xl bg-ink-900/5 border border-ink-900/10 px-4 py-4 text-left" id="shareThreads" type="button"><span class="block text-sm font-bold text-ink-900">@ Threads</span><span class="mt-1 block text-[11px] text-ink-500" id="shareThreadsHint">Threads에 공유</span></button>
+    </div>
+    <button class="mt-5 w-full text-sm font-semibold text-ink-500 hover:text-ink-900 py-2" id="shareCopyOnly" type="button">🔗 링크만 복사</button>
+  </div>
+</div>
+
 <!-- ================= aboutOverlay 사역소개 오버레이 ================= -->
 <div class="hidden fixed inset-x-0 bottom-0 top-16 sm:top-20 z-[70] bg-warm-bg overflow-y-auto" id="aboutOverlay">
 <div class="sticky top-0 z-10 bg-white/80 backdrop-blur-md border-b border-ink-900/5">
@@ -1980,6 +2087,8 @@
   async function setLang(lang) {
     const requestId = ++languageRequestId;
     currentLang = lang;
+    updateSearchUi();
+    updateShareSheetLabels();
     document.getElementById('langMenu').classList.add('hidden');
     const label = document.getElementById('langBtnLabel');
 
@@ -2105,6 +2214,16 @@
     viewAll:    { ko: '전체보기', en: 'View All', km: 'មើលទាំងអស់' },
     share:      { ko: '공유', en: 'Share', km: 'ចែករំលែក' },
     copied:     { ko: '복사됨!', en: 'Copied!', km: 'បានចម្លង!' },
+    search:     { ko: '검색', en: 'Search', km: 'ស្វែងរក' },
+    searchHint: { ko: '찾고 싶은 이야기를 검색해 보세요', en: 'Search stories, letters, and family posts', km: 'ស្វែងរករឿងរ៉ាវ លិខិត និងរឿងគ្រួសារ' },
+    shareChoose:{ ko: '이 글을 어디로 공유할까요?', en: 'Where would you like to share this story?', km: 'តើអ្នកចង់ចែករំលែករឿងនេះទៅណា?' },
+    kakaoShare: { ko: '카카오톡으로 공유', en: 'Share on KakaoTalk', km: 'ចែករំលែកតាម KakaoTalk' },
+    facebookShare: { ko: 'Facebook에 공유', en: 'Share on Facebook', km: 'ចែករំលែកតាម Facebook' },
+    instagramShare: { ko: '링크 복사 후 Instagram', en: 'Copy link, then Instagram', km: 'ចម្លងតំណ រួចទៅ Instagram' },
+    threadsShare: { ko: 'Threads에 공유', en: 'Share on Threads', km: 'ចែករំលែកតាម Threads' },
+    copyOnly: { ko: '링크만 복사', en: 'Copy link only', km: 'ចម្លងតំណតែប៉ុណ្ណោះ' },
+    prevStory: { ko: '이전 이야기', en: 'Previous story', km: 'រឿងមុន' },
+    nextStory: { ko: '다음 이야기', en: 'Next story', km: 'រឿងបន្ទាប់' },
   };
   function uiText(key) {
     const t = UI_TEXT[key];
@@ -2130,6 +2249,7 @@
   }
 
   var ARTICLE_INDEX = null;
+  var ACTIVE_STORY = null;
   function buildArticleIndex() {
     const list = [];
     ['ovrpt', 'ovltr', 'ovcam'].forEach(prefix => {
@@ -2163,6 +2283,133 @@
 
   const OVERLAY_MAP_BY_PREFIX = { ovrpt: 'reportsOverlay', ovltr: 'lettersOverlay', ovcam: 'cambodiaOverlay' };
 
+  // ============================================================
+  // ⭐ 사이트 전체 검색
+  // 제목/요약/날짜/본문을 검색해서 기도편지 목록처럼 카드로 보여줍니다.
+  // 검색 결과를 클릭하면 메인 홈페이지를 배경에 둔 채 같은 상세 모달을 엽니다.
+  // ============================================================
+  const SEARCH_UI = {
+    ko: { placeholder: '찾고 싶은 이야기를 검색해 보세요', title: '검색어를 입력해 주세요', count: '개', none: '검색 결과가 없습니다.' },
+    en: { placeholder: 'Search stories, letters, and family posts', title: 'Type a search term', count: 'results', none: 'No matching stories found.' },
+    km: { placeholder: 'ស្វែងរករឿងរ៉ាវ លិខិត និងរឿងគ្រួសារ', title: 'សូមបញ្ចូលពាក្យស្វែងរក', count: 'លទ្ធផល', none: 'រកមិនឃើញរឿងដែលត្រូវគ្នាទេ។' }
+  };
+
+  function updateSearchUi() {
+    const t = SEARCH_UI[currentLang] || SEARCH_UI.ko;
+    ['siteSearchInput','mobileSearchInput','searchOverlayInput'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.placeholder = t.placeholder;
+    });
+    const no = document.getElementById('searchNoResult');
+    if (no) no.textContent = t.none;
+  }
+
+  function normalizeSearchText(text) {
+    return String(text || '').toLowerCase().replace(/\s+/g, ' ').trim();
+  }
+
+  function searchArticles(query) {
+    const q = normalizeSearchText(query);
+    if (!q) return [];
+    return buildArticleIndex().map(a => {
+      const data = (window.SITE_DATA[a.prefix] || []).find(x => String(x.idx) === String(a.idx));
+      const haystack = normalizeSearchText([
+        a.title, a.dateText, data?.excerpt || '', data?.detail_html || ''
+      ].join(' '));
+      return { ...a, data, score: haystack.includes(q) ? (normalizeSearchText(a.title).includes(q) ? 3 : 1) : 0 };
+    }).filter(a => a.score > 0).sort((a,b) => b.score - a.score || b.date - a.date);
+  }
+
+  function openSearchOverlay(initialQuery) {
+    const overlay = document.getElementById('searchOverlay');
+    const input = document.getElementById('searchOverlayInput');
+    if (!overlay || !input) return;
+    updateSearchUi();
+    overlay.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+    input.value = initialQuery || '';
+    renderSearchResults(input.value);
+    requestAnimationFrame(() => input.focus());
+  }
+
+  function closeSearchOverlay() {
+    const overlay = document.getElementById('searchOverlay');
+    if (!overlay) return;
+    overlay.classList.add('hidden');
+    const anyDetailOpen = ['ovrptModal','ovltrModal','ovcamModal'].some(mid => {
+      const el = document.getElementById(mid);
+      return el && !el.classList.contains('hidden');
+    });
+    const anyOverlayOpen = ALL_OVERLAYS.some(oid => {
+      const el = document.getElementById(oid);
+      return el && !el.classList.contains('hidden');
+    });
+    if (!anyDetailOpen && !anyOverlayOpen) document.body.style.overflow = '';
+  }
+
+  function renderSearchResults(query) {
+    const grid = document.getElementById('searchResults');
+    const title = document.getElementById('searchResultTitle');
+    const count = document.getElementById('searchResultCount');
+    const none = document.getElementById('searchNoResult');
+    if (!grid || !title || !count || !none) return;
+    grid.innerHTML = '';
+    const q = String(query || '').trim();
+    const t = SEARCH_UI[currentLang] || SEARCH_UI.ko;
+    if (!q) {
+      title.textContent = t.title;
+      count.textContent = '';
+      none.classList.add('hidden');
+      return;
+    }
+    const results = searchArticles(q);
+    title.textContent = '“' + q + '”';
+    count.textContent = results.length + ' ' + t.count;
+    none.classList.toggle('hidden', results.length > 0);
+    results.forEach(r => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      const cat = CATEGORY_INFO[r.prefix];
+      btn.className = 'search-result-card group text-left bg-white rounded-3xl overflow-hidden shadow-card hover:shadow-soft transition-shadow';
+      btn.innerHTML = `
+        <div class="aspect-[4/3] overflow-hidden bg-warm-bg"><img loading="lazy" src="${r.image || r.data?.image || ''}" alt="${r.title}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" /></div>
+        <div class="p-5">
+          <div class="flex items-center justify-between gap-3">
+            <span class="text-[10px] font-bold tracking-[0.14em] uppercase text-${cat?.color || 'ember'}">${cat?.label || ''}</span>
+            <span class="text-[10px] text-ink-400">${r.dateText || ''}</span>
+          </div>
+          <h3 class="mt-2 font-bold text-base leading-snug text-ink-900 line-clamp-2">${r.title}</h3>
+          <p class="mt-2 text-sm text-ink-500 leading-relaxed line-clamp-3">${r.data?.excerpt || ''}</p>
+        </div>`;
+      btn.addEventListener('click', () => {
+        closeSearchOverlay();
+        openDetail(r.prefix, r.idx);
+      });
+      grid.appendChild(btn);
+    });
+    if (currentLang !== 'ko' && results.length) {
+      translateSubtree(grid, currentLang, false);
+    }
+  }
+
+  document.getElementById('searchTriggerBtn')?.addEventListener('click', () => {
+    openSearchOverlay(document.getElementById('siteSearchInput')?.value || '');
+  });
+  document.getElementById('siteSearchInput')?.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') openSearchOverlay(e.currentTarget.value);
+  });
+  document.getElementById('mobileSearchInput')?.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      document.getElementById('mobileMenu')?.classList.add('hidden');
+      openSearchOverlay(e.currentTarget.value);
+    }
+  });
+  document.getElementById('searchOverlayInput')?.addEventListener('input', (e) => renderSearchResults(e.currentTarget.value));
+  document.getElementById('searchOverlayClose')?.addEventListener('click', closeSearchOverlay);
+  document.getElementById('searchOverlay')?.addEventListener('click', (e) => {
+    if (e.target.id === 'searchOverlay') closeSearchOverlay();
+  });
+
   async function openDetail(tmplPrefix, idx, skipHash) {
     await DATA_READY;
     const modal = document.getElementById(tmplPrefix + 'Modal');
@@ -2170,6 +2417,7 @@
     const modalBody = document.getElementById(tmplPrefix + 'ModalBody');
     const item = (window.SITE_DATA[tmplPrefix] || []).find(x => String(x.idx) === String(idx));
     if (!modal || !item) return;
+    ACTIVE_STORY = { prefix: tmplPrefix, idx: String(idx), item };
     modalBody.innerHTML = item.detail_html;
 
     // ⭐ 신규: 글 안에 장소 표시가 있으면 자동으로 작은 지도로 바꿔줌
@@ -2265,6 +2513,37 @@
       });
       modalBody.appendChild(relWrap);
     }
+
+    // ============================================================
+    // ⭐ 이전 이야기 / 다음 이야기
+    // 날짜 기준으로 모든 글을 한 줄로 연결합니다.
+    // 이전 = 더 오래된 글 / 다음 = 더 최근 글
+    // ============================================================
+    const ordered = buildArticleIndex().slice().sort((a, b) => a.date - b.date);
+    const currentPos = ordered.findIndex(a => a.prefix === tmplPrefix && a.idx === String(idx));
+    const prevStory = currentPos > 0 ? ordered[currentPos - 1] : null;
+    const nextStory = currentPos >= 0 && currentPos < ordered.length - 1 ? ordered[currentPos + 1] : null;
+
+    const stepWrap = document.createElement('div');
+    stepWrap.className = 'mt-10 pt-8 border-t border-ink-900/10 no-print';
+    stepWrap.innerHTML = `
+      <div class="grid grid-cols-2 gap-3 sm:gap-4">
+        <button type="button" class="article-step ${prevStory ? '' : 'disabled'} text-left rounded-2xl border border-ink-900/10 bg-white/70 px-4 py-4" data-step="prev">
+          <span class="block text-[11px] font-bold tracking-[0.14em] uppercase text-ink-400">← ${uiText('prevStory')}</span>
+          <span class="block mt-2 text-sm font-semibold text-ink-900 leading-snug line-clamp-2">${prevStory ? prevStory.title : ''}</span>
+        </button>
+        <button type="button" class="article-step ${nextStory ? '' : 'disabled'} text-right rounded-2xl border border-ink-900/10 bg-white/70 px-4 py-4" data-step="next">
+          <span class="block text-[11px] font-bold tracking-[0.14em] uppercase text-ink-400">${uiText('nextStory')} →</span>
+          <span class="block mt-2 text-sm font-semibold text-ink-900 leading-snug line-clamp-2">${nextStory ? nextStory.title : ''}</span>
+        </button>
+      </div>`;
+    if (prevStory) stepWrap.querySelector('[data-step="prev"]').addEventListener('click', () => {
+      openDetail(prevStory.prefix, prevStory.idx);
+    });
+    if (nextStory) stepWrap.querySelector('[data-step="next"]').addEventListener('click', () => {
+      openDetail(nextStory.prefix, nextStory.idx);
+    });
+    modalBody.appendChild(stepWrap);
 
     // ⭐ "동역하기" 버튼 — 전체보기 버튼 바로 위, 글을 다 읽고 관련 글까지 본 다음
     // 마지막으로 마주치는 CTA가 되도록 배치함
@@ -2508,31 +2787,169 @@
     }
   });
 
-  // 지금 보고 있는 글을 공유하는 버튼 (선교리포트/기도편지/캄보디아이야기 공용)
-  // 폰이면 카카오톡 등으로 바로 보낼 수 있는 공유창을 띄우고, 지원 안 하는 환경(PC 등)에서는 링크만 복사함
-  ['ovrpt', 'ovltr', 'ovcam'].forEach(prefix => {
-    const btn = document.getElementById(prefix + 'CopyLink');
-    const label = document.getElementById(prefix + 'CopyLinkText');
-    if (!btn) return;
-    btn.addEventListener('click', async () => {
-      // SNS 미리보기(사진/제목/설명)가 뜨도록 /share 경로를 붙인 주소를 공유함
-      const shareUrl = location.origin + '/share' + location.search;
+  // ============================================================
+  // ⭐ 공유 선택창
+  // 카카오톡 / Facebook / Instagram / Threads 4가지로 나누고,
+  // 실제 공유 주소는 Worker의 /share?story=... 를 사용합니다.
+  // ============================================================
+  const SHARE_TEXT = {
+    ko: {
+      choose: '이 글을 어디로 공유할까요?', kakao: '카카오톡으로 공유', facebook: 'Facebook에 공유',
+      instagram: '링크 복사 후 Instagram', threads: 'Threads에 공유', copy: '링크만 복사', copied: '복사됨!'
+    },
+    en: {
+      choose: 'Where would you like to share this story?', kakao: 'Share on KakaoTalk', facebook: 'Share on Facebook',
+      instagram: 'Copy link, then Instagram', threads: 'Share on Threads', copy: 'Copy link only', copied: 'Copied!'
+    },
+    km: {
+      choose: 'តើអ្នកចង់ចែករំលែករឿងនេះទៅណា?', kakao: 'ចែករំលែកតាម KakaoTalk', facebook: 'ចែករំលែកតាម Facebook',
+      instagram: 'ចម្លងតំណ រួចទៅ Instagram', threads: 'ចែករំលែកតាម Threads', copy: 'ចម្លងតំណតែប៉ុណ្ណោះ', copied: 'បានចម្លង!'
+    }
+  };
 
-      // OS 공유창(navigator.share)은 쓰지 않고, 항상 링크만 바로 클립보드에 복사함
-      try {
-        await navigator.clipboard.writeText(shareUrl);
-      } catch (e) {
-        const t = document.createElement('textarea');
-        t.value = shareUrl;
-        document.body.appendChild(t);
-        t.select();
-        document.execCommand('copy');
-        document.body.removeChild(t);
-      }
-      const original = label.textContent;
-      label.textContent = uiText('copied');
-      setTimeout(() => { label.textContent = original; }, 1500);
+  function getActiveShareUrl() {
+    if (!ACTIVE_STORY) return location.origin + '/';
+    const lang = currentLang && currentLang !== 'ko' ? '&lang=' + encodeURIComponent(currentLang) : '';
+    return location.origin + '/share?story=' + encodeURIComponent(ACTIVE_STORY.prefix + '-' + ACTIVE_STORY.idx) + lang;
+  }
+
+  async function copyShareUrl() {
+    const url = getActiveShareUrl();
+    try {
+      await navigator.clipboard.writeText(url);
+    } catch (e) {
+      const t = document.createElement('textarea');
+      t.value = url;
+      t.style.position = 'fixed';
+      t.style.opacity = '0';
+      document.body.appendChild(t);
+      t.select();
+      document.execCommand('copy');
+      document.body.removeChild(t);
+    }
+    showShareToast(SHARE_TEXT[currentLang]?.copied || 'Copied!');
+    return url;
+  }
+
+  let shareToastTimer = null;
+  function showShareToast(message) {
+    let toast = document.getElementById('shareToast');
+    if (!toast) {
+      toast = document.createElement('div');
+      toast.id = 'shareToast';
+      toast.className = 'fixed left-1/2 bottom-7 -translate-x-1/2 z-[150] bg-ink-900 text-white text-sm font-semibold px-5 py-3 rounded-full shadow-2xl';
+      document.body.appendChild(toast);
+    }
+    toast.textContent = message;
+    toast.classList.remove('hidden');
+    clearTimeout(shareToastTimer);
+    shareToastTimer = setTimeout(() => toast.classList.add('hidden'), 1800);
+  }
+
+  function updateShareSheetLabels() {
+    const t = SHARE_TEXT[currentLang] || SHARE_TEXT.ko;
+    const ids = {
+      shareSheetTitle: t.choose,
+      shareKakaoHint: t.kakao,
+      shareFacebookHint: t.facebook,
+      shareInstagramHint: t.instagram,
+      shareThreadsHint: t.threads,
+      shareCopyOnly: t.copy
+    };
+    Object.entries(ids).forEach(([id, text]) => {
+      const el = document.getElementById(id);
+      if (el) el.textContent = text;
     });
+  }
+
+  function openShareSheet() {
+    const sheet = document.getElementById('shareSheet');
+    if (!sheet) return;
+    updateShareSheetLabels();
+    const storyTitle = document.getElementById('shareSheetStoryTitle');
+    if (storyTitle) storyTitle.textContent = ACTIVE_STORY?.item?.title || '';
+    sheet.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeShareSheet() {
+    const sheet = document.getElementById('shareSheet');
+    if (!sheet) return;
+    sheet.classList.add('hidden');
+    const anyOverlayOpen = ALL_OVERLAYS.some(oid => {
+      const el = document.getElementById(oid);
+      return el && !el.classList.contains('hidden');
+    });
+    const anyDetailOpen = ['ovrptModal','ovltrModal','ovcamModal'].some(mid => {
+      const el = document.getElementById(mid);
+      return el && !el.classList.contains('hidden');
+    });
+    if (anyDetailOpen || anyOverlayOpen) document.body.style.overflow = 'hidden';
+    else document.body.style.overflow = '';
+  }
+
+  ['ovrpt','ovltr','ovcam'].forEach(prefix => {
+    const btn = document.getElementById(prefix + 'CopyLink');
+    if (!btn) return;
+    btn.addEventListener('click', () => {
+      if (typeof gtag === 'function') gtag('event', 'click_share', { event_category: prefix });
+      openShareSheet();
+    });
+  });
+
+  document.getElementById('shareSheetClose')?.addEventListener('click', closeShareSheet);
+  document.getElementById('shareSheet')?.addEventListener('click', (e) => {
+    if (e.target.id === 'shareSheet') closeShareSheet();
+  });
+
+  document.getElementById('shareFacebook')?.addEventListener('click', async () => {
+    const url = await copyShareUrl();
+    window.open('https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(url), '_blank', 'noopener,noreferrer');
+  });
+
+  document.getElementById('shareThreads')?.addEventListener('click', () => {
+    const url = getActiveShareUrl();
+    const title = ACTIVE_STORY?.item?.title || '';
+    const intent = 'https://www.threads.com/intent/post?text=' + encodeURIComponent(title) + '&url=' + encodeURIComponent(url);
+    window.open(intent, '_blank', 'noopener,noreferrer');
+  });
+
+  document.getElementById('shareInstagram')?.addEventListener('click', async () => {
+    await copyShareUrl();
+    showShareToast(currentLang === 'en' ? 'Link copied. Paste it into Instagram.' : currentLang === 'km' ? 'បានចម្លងតំណ។ សូមបិទភ្ជាប់ក្នុង Instagram។' : '링크를 복사했습니다. Instagram에서 붙여넣어 주세요.');
+    window.open('https://www.instagram.com/', '_blank', 'noopener,noreferrer');
+  });
+
+  document.getElementById('shareKakao')?.addEventListener('click', async () => {
+    // Kakao SDK를 아직 연결하지 않은 경우에는 휴대폰의 OS 공유창을 엽니다.
+    // 이 공유창에서 카카오톡을 선택하면 해당 사용자의 카카오톡으로 보낼 수 있습니다.
+    const url = getActiveShareUrl();
+    const title = ACTIVE_STORY?.item?.title || '작은불꽃 홍선교';
+    if (window.Kakao && Kakao.Share && Kakao.isInitialized && Kakao.isInitialized()) {
+      Kakao.Share.sendDefault({
+        objectType: 'feed',
+        content: {
+          title,
+          description: ACTIVE_STORY?.item?.excerpt || '',
+          imageUrl: new URL(ACTIVE_STORY?.item?.image || 'images/img-809ccadbb89a.jpg', location.href).href,
+          link: { mobileWebUrl: url, webUrl: url }
+        }
+      });
+      return;
+    }
+    if (navigator.share) {
+      try {
+        await navigator.share({ title, text: title, url });
+        return;
+      } catch (e) {}
+    }
+    await copyShareUrl();
+    showShareToast(currentLang === 'en' ? 'Link copied. Open KakaoTalk and paste it.' : currentLang === 'km' ? 'បានចម្លងតំណ។ សូមបើក KakaoTalk ហើយបិទភ្ជាប់។' : '링크를 복사했습니다. 카카오톡에서 붙여넣어 주세요.');
+  });
+
+  document.getElementById('shareCopyOnly')?.addEventListener('click', async () => {
+    await copyShareUrl();
+    closeShareSheet();
   });
 
   // 글 안의 사진을 누르면 크게 보고 다운로드할 수 있는 라이트박스 (한 글에 사진이 여러 장이면 화살표로 넘김)
