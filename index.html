@@ -604,7 +604,7 @@
 </form>
 <!-- ================= FOOTER ================= -->
 <footer class="bg-ink-900 text-white/70" id="siteFooter">
-<div class="max-w-7xl mx-auto px-6 sm:px-8 py-10">
+<div class="max-w-7xl mx-auto px-6 sm:px-8 py-7">
 <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-10">
 <div>
 <div class="flex items-center gap-2 mb-4">
@@ -639,7 +639,7 @@
 </div>
 </div>
 </div>
-<div class="mt-10 pt-7 border-t border-white/10 flex items-center justify-center">
+<div class="mt-7 pt-5 border-t border-white/10 flex items-center justify-center">
 <p class="text-xs text-white/35">© <span id="footerYear"></span> 작은불꽃 홍선교. All rights reserved.</p>
 </div>
 </div>
@@ -1107,24 +1107,68 @@
   // ============================================================
   window.SITE_DATA = { ovrpt: [], ovltr: [], ovcam: [] };
 
+  // JSON은 하나라도 실패하면 조용히 빈 배열로 넘어가지 않습니다.
+  // 어떤 파일에서 문제가 생겼는지 정확히 알려주고, 모든 데이터가 준비된 뒤에만
+  // 메인/전체보기/관련글/타임라인이 움직이도록 하나의 준비 Promise로 관리합니다.
+  async function loadSiteJson(path, label) {
+    let response;
+    try {
+      response = await fetch(path, { cache: 'no-store' });
+    } catch (error) {
+      throw new Error(label + ' 로딩 실패: 네트워크 오류 (' + path + ')');
+    }
+    if (!response.ok) {
+      throw new Error(label + ' 로딩 실패: HTTP ' + response.status + ' (' + path + ')');
+    }
+    let data;
+    try {
+      data = await response.json();
+    } catch (error) {
+      throw new Error(label + ' 로딩 실패: JSON 형식이 올바르지 않습니다 (' + path + ')');
+    }
+    if (!Array.isArray(data)) {
+      throw new Error(label + ' 로딩 실패: JSON 최상위가 배열이 아닙니다 (' + path + ')');
+    }
+    return data;
+  }
+
+  function showDataLoadError(error) {
+    console.error('[글 데이터 오류]', error);
+    let box = document.getElementById('dataLoadError');
+    if (!box) {
+      box = document.createElement('div');
+      box.id = 'dataLoadError';
+      box.className = 'fixed left-4 right-4 bottom-4 z-[200] rounded-2xl bg-rose-700 text-white px-5 py-4 text-sm shadow-2xl';
+      document.body.appendChild(box);
+    }
+    box.textContent = '⚠️ 글 데이터를 불러오지 못했습니다. ' + (error?.message || '알 수 없는 오류');
+  }
+
   const DATA_READY = Promise.all([
-    fetch('data/reports.json').then(r => r.json()).catch(() => []),
-    fetch('data/letters.json').then(r => r.json()).catch(() => []),
-    fetch('data/cambodia.json').then(r => r.json()).catch(() => []),
+    loadSiteJson('data/reports.json', '가족 이야기'),
+    loadSiteJson('data/letters.json', '기도 편지'),
+    loadSiteJson('data/cambodia.json', '캄보디아 이야기'),
   ]).then(([reports, letters, cambodia]) => {
     window.SITE_DATA.ovrpt = reports;
     window.SITE_DATA.ovltr = letters;
     window.SITE_DATA.ovcam = cambodia;
+
+    // 세 JSON이 모두 준비된 다음에만 화면을 생성합니다.
     renderFullGrid('ovrpt', 'ovrptGrid', 'ovrpt-card', 'data-ovrpt', 'rose-500');
     renderFullGrid('ovltr', 'ovltrGrid', 'ovltr-card', 'data-ovltr', 'violet-500');
     renderFullGrid('ovcam', 'ovcamGrid', 'ovcam-card', 'data-ovcam', 'ember');
     renderOvrptMainPreview();
     renderOvltrMainPreview();
     renderOvcamMainPreview();
+
+    // 관련 글과 타임라인이 같은 완성된 데이터셋을 사용하도록 미리 인덱스를 생성합니다.
+    buildArticleIndex();
     return window.SITE_DATA;
-  }).catch(err => {
-    console.error('글 데이터를 불러오지 못했습니다:', err);
   });
+
+  // 시작 시에도 오류를 사용자에게 보여주되, DATA_READY 자체의 reject 상태는 유지합니다.
+  // 따라서 이후 기능은 데이터가 준비되지 않은 상태에서 실행되지 않습니다.
+  DATA_READY.catch(showDataLoadError);
 
   // 가족이야기/기도편지/캄보디아이야기 "전체보기" 목록의 카드 그리드를 데이터로부터 그려줌
   function renderFullGrid(prefix, gridId, cardClass, dataAttr, accent) {
@@ -1388,16 +1432,18 @@
   // ============================================================
   // 우리의 발자취 (타임라인)
   //
-  // cambodiaOverlay 안의 [data-ovcam] 카드들을 그대로 읽어서
-  // 연도별로 묶고, 시간순으로 자동 배치합니다.
-  // 새 글을 추가해도 이 코드는 손댈 필요 없습니다 —
-  // cambodiaOverlay 목록에 카드만 추가하면 타임라인도 자동으로 갱신됩니다.
+  // data/*.json에서 불러온 가족이야기 + 기도편지 + 캄보디아이야기를
+  // buildArticleIndex()로 모아 연도별로 묶고, 시간순으로 자동 배치합니다.
+  // 새 글은 JSON에 추가하면 타임라인에도 자동으로 반영됩니다.
   //
   // 마우스 휠(PC) 또는 두 손가락 핀치(모바일)로 확대/축소 (제자리에서, 페이지는 스크롤되지 않음)
   // 확대하면 사진+제목이 보이고, 축소하면 연도별 점으로 요약됩니다.
   // 점을 클릭하면 해당 글이 열립니다.
   // ============================================================
-  (function initMissionTimeline() {
+  async function initMissionTimeline() {
+
+    // JSON 세 파일이 모두 준비된 뒤에만 타임라인을 만듭니다.
+    await DATA_READY;
 
     const track = document.getElementById('tlTrack');
     const scrollWrap = document.getElementById('tlScroll');
@@ -1563,7 +1609,13 @@
       scrollWrap.scrollLeft = startScrollLeft - (e.pageX - startX) * 1.2;
     });
 
-  })();
+  }
+
+  DATA_READY.then(() => initMissionTimeline()).catch(err => {
+    console.error('[타임라인 오류]', err);
+  });
+
+
 
   // 스크롤 리빌
   const revealEls = document.querySelectorAll('.reveal');
@@ -1881,7 +1933,7 @@
     return nodes;
   }
 
-  async function translateSubtree(root, target, excludeOverlays) {
+  async function translateSubtree(root, target, excludeOverlays, isCurrent) {
     const nodes = collectTextNodes(root, excludeOverlays);
     const uniqueTexts = [...new Set(nodes.map(n => (n.__originalKo || n.nodeValue).trim()))];
 
@@ -1899,6 +1951,7 @@
 
     let ok = 0, fail = 0;
     nodes.forEach(node => {
+      if (typeof isCurrent === 'function' && !isCurrent()) return;
       const original = node.__originalKo || node.nodeValue;
       node.__originalKo = original; // 나중에 '한국어'로 되돌릴 때 사용
       const leading = original.match(/^\s*/)[0];
@@ -1922,26 +1975,46 @@
     });
   }
 
+  let languageRequestId = 0;
+
   async function setLang(lang) {
+    const requestId = ++languageRequestId;
     currentLang = lang;
     document.getElementById('langMenu').classList.add('hidden');
     const label = document.getElementById('langBtnLabel');
+
+    // JSON이 아직 로딩 중이면 번역부터 시작하지 않고, 모든 글 데이터가 준비될 때까지 기다립니다.
+    // 그래야 빠르게 언어를 눌러도 새로 생성되는 카드가 번역 대상에서 빠지지 않습니다.
+    try {
+      await DATA_READY;
+    } catch (error) {
+      if (requestId === languageRequestId && label) {
+        label.textContent = '⚠️ 글 데이터 오류';
+      }
+      return;
+    }
+
+    // 기다리는 동안 다른 언어를 선택했다면, 이전 요청은 더 이상 화면을 덮어쓰지 않습니다.
+    if (requestId !== languageRequestId) return;
 
     // 1) 메뉴는 네트워크와 무관하게 즉시, 100% 확실하게 바뀜
     applyNavTranslations(lang);
 
     if (lang === 'ko') {
       restoreOriginal(document.body);
-      label.textContent = '한국어';
+      if (label) label.textContent = '한국어';
       return;
     }
 
-    label.textContent = lang === 'en' ? 'Translating…' : 'កំពុងបកប្រែ…';
+    if (label) label.textContent = lang === 'en' ? 'Translating…' : 'កំពុងបកប្រែ…';
 
-    // 2) 나머지 홈 화면 내용(히어로, 소개, 하이라이트 카드, 방명록)을 번역
-    //    푸터(맨 아래)와 오버레이(메뉴창)는 여기서는 건너뜀
-    //    실제 성공/실패 개수를 그대로 보여줌 (가짜 100%가 안 뜨도록)
-    const result = await translateSubtree(document.body, lang, true);
+    // 2) JSON으로 생성된 메인 카드까지 모두 만들어진 상태에서 번역을 시작합니다.
+    //    푸터와 닫혀 있는 오버레이는 건너뜁니다.
+    const result = await translateSubtree(document.body, lang, true, () => requestId === languageRequestId);
+
+    // 번역 중에 다른 언어를 선택했다면 오래 걸린 이전 요청의 결과를 적용하지 않습니다.
+    if (requestId !== languageRequestId) return;
+
     if (result.total === 0) {
       label.textContent = '⚠️ 대상 0개';
     } else if (result.fail === 0) {
@@ -1950,9 +2023,11 @@
       label.textContent = (lang === 'en' ? 'English' : 'ខ្មែរ') + ' (실패 ' + result.fail + '/' + result.total + ')';
     }
 
-    // 3) 지금 열려있는 메뉴(오버레이)가 있다면 그것도 이어서 번역
+    // 3) 지금 열려있는 메뉴(오버레이)가 있다면 그 메뉴도 현재 선택 언어로 번역합니다.
     const openOverlayEl = ALL_OVERLAYS.map(id => document.getElementById(id)).find(el => el && !el.classList.contains('hidden'));
-    if (openOverlayEl) translateSubtree(openOverlayEl, lang, false);
+    if (openOverlayEl) {
+      await translateSubtree(openOverlayEl, lang, false, () => requestId === languageRequestId);
+    }
   }
   window.setLang = setLang;
 
