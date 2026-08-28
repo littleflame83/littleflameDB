@@ -651,7 +651,7 @@
 <span class="font-bold text-ink-900">가족 이야기</span>
 </div>
 </div>
-<section class="pt-12 pb-16 sm:pt-16 sm:pb-20 px-6">
+<section class="pt-12 pb-32 sm:pt-16 sm:pb-40 px-6">
 <div class="max-w-3xl mx-auto text-center mb-12">
 <p class="text-rose-500 text-xs font-bold tracking-[0.25em] uppercase mb-3">Family Story</p>
 <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-ink-900">가족 이야기</h1>
@@ -683,7 +683,7 @@
 <span class="font-bold text-ink-900">기도 편지</span>
 </div>
 </div>
-<section class="pt-12 pb-16 sm:pt-16 sm:pb-20 px-6">
+<section class="pt-12 pb-32 sm:pt-16 sm:pb-40 px-6">
 <div class="max-w-3xl mx-auto text-center mb-12">
 <p class="text-violet-500 text-xs font-bold tracking-[0.25em] uppercase mb-3">Prayer Letter</p>
 <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-ink-900">기도 편지</h1>
@@ -865,7 +865,7 @@
 <span class="font-bold text-ink-900">캄보디아 이야기</span>
 </div>
 </div>
-<section class="pt-14 pb-28 sm:pt-16 sm:pb-36 px-6">
+<section class="pt-14 pb-32 sm:pt-16 sm:pb-40 px-6">
 <div class="max-w-3xl mx-auto text-center mb-14">
 <p class="text-ember text-xs font-bold tracking-[0.25em] uppercase mb-3">Cambodia Story</p>
 <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-ink-900">캄보디아 이야기</h1>
@@ -899,17 +899,15 @@
 
 <div class="hidden fixed inset-0 z-[105] flex items-start sm:items-center justify-center p-0 sm:p-6 bg-ink-900/60 backdrop-blur-sm" id="ovcamModal">
 <div class="relative bg-warm-card w-full sm:max-w-2xl sm:rounded-3xl shadow-soft h-full sm:h-auto sm:max-h-[85vh] overflow-y-auto p-7 sm:p-10" id="ovcamModalPanel">
-<button aria-label="인쇄 / PDF로 저장" class="hidden no-print absolute top-5 right-36 h-9 px-3 rounded-full bg-ink-900/5 hover:bg-ink-900/10 flex items-center gap-1.5 text-xs font-semibold text-ink-700 transition-colors" id="ovcamPrintBtn" type="button">
+<div class="no-print absolute top-5 right-5 flex items-center gap-2 max-w-[calc(100%-2.5rem)]"><button aria-label="인쇄 / PDF로 저장" class="hidden shrink-0 h-9 px-3 rounded-full bg-ink-900/5 hover:bg-ink-900/10 flex items-center gap-1.5 text-xs font-semibold text-ink-700 transition-colors" id="ovcamPrintBtn" type="button">
 <svg fill="none" height="14" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="14"><path d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2M6 14h12v8H6v-8z" stroke-linecap="round" stroke-linejoin="round"></path></svg>
 <span>인쇄</span>
-</button>
-<button aria-label="공유하기" class="no-print absolute top-5 right-16 h-9 px-3 rounded-full bg-ink-900/5 hover:bg-ink-900/10 flex items-center gap-1.5 text-xs font-semibold text-ink-700 transition-colors" id="ovcamCopyLink" type="button">
+</button><button aria-label="공유하기" class="shrink-0 h-9 px-3 rounded-full bg-ink-900/5 hover:bg-ink-900/10 flex items-center gap-1.5 text-xs font-semibold text-ink-700 transition-colors" id="ovcamCopyLink" type="button">
 <svg fill="none" height="14" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="14"><path d="M12 16V4m0 0L7 9m5-5l5 5" stroke-linecap="round" stroke-linejoin="round"></path><path d="M5 14v4a2 2 0 002 2h10a2 2 0 002-2v-4" stroke-linecap="round" stroke-linejoin="round"></path></svg>
 <span id="ovcamCopyLinkText">공유</span>
-</button>
-<button aria-label="닫기" class="no-print absolute top-5 right-5 w-9 h-9 rounded-full bg-ink-900/5 hover:bg-ink-900/10 flex items-center justify-center transition-colors" id="ovcamModalClose" type="button">
+</button><button aria-label="닫기" class="shrink-0 w-9 h-9 rounded-full bg-ink-900/5 hover:bg-ink-900/10 flex items-center justify-center transition-colors" id="ovcamModalClose" type="button">
 <svg fill="none" height="16" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="16"><path d="M6 6l12 12M18 6L6 18" stroke-linecap="round"></path></svg>
-</button>
+</button></div>
 <div id="ovcamModalBody"></div>
 </div>
 </div>
@@ -920,7 +918,7 @@
 <span class="font-bold text-ink-900">사진과 영상</span>
 </div>
 </div>
-<section class="pt-14 pb-28 sm:pt-16 sm:pb-36 px-6">
+<section class="pt-14 pb-32 sm:pt-16 sm:pb-40 px-6">
 <div class="max-w-3xl mx-auto text-center mb-10">
 <p class="text-sky text-xs font-bold tracking-[0.25em] uppercase mb-3">Mission Media</p>
 <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-ink-900">사진과 영상</h1>
@@ -991,33 +989,29 @@
 <!-- 상세보기 모달 (독립적으로 항상 사용 가능) -->
 <div class="hidden fixed inset-0 z-[105] flex items-start sm:items-center justify-center p-0 sm:p-6 bg-ink-900/60 backdrop-blur-sm" id="ovrptModal">
 <div class="relative bg-warm-card w-full sm:max-w-2xl sm:rounded-3xl shadow-soft h-full sm:h-auto sm:max-h-[85vh] overflow-y-auto p-7 sm:p-10" id="ovrptModalPanel">
-<button aria-label="인쇄 / PDF로 저장" class="hidden no-print absolute top-5 right-36 h-9 px-3 rounded-full bg-ink-900/5 hover:bg-ink-900/10 flex items-center gap-1.5 text-xs font-semibold text-ink-700 transition-colors" id="ovrptPrintBtn" type="button">
+<div class="no-print absolute top-5 right-5 flex items-center gap-2 max-w-[calc(100%-2.5rem)]"><button aria-label="인쇄 / PDF로 저장" class="hidden shrink-0 h-9 px-3 rounded-full bg-ink-900/5 hover:bg-ink-900/10 flex items-center gap-1.5 text-xs font-semibold text-ink-700 transition-colors" id="ovrptPrintBtn" type="button">
 <svg fill="none" height="14" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="14"><path d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2M6 14h12v8H6v-8z" stroke-linecap="round" stroke-linejoin="round"></path></svg>
 <span>인쇄</span>
-</button>
-<button aria-label="공유하기" class="no-print absolute top-5 right-16 h-9 px-3 rounded-full bg-ink-900/5 hover:bg-ink-900/10 flex items-center gap-1.5 text-xs font-semibold text-ink-700 transition-colors" id="ovrptCopyLink" type="button">
+</button><button aria-label="공유하기" class="shrink-0 h-9 px-3 rounded-full bg-ink-900/5 hover:bg-ink-900/10 flex items-center gap-1.5 text-xs font-semibold text-ink-700 transition-colors" id="ovrptCopyLink" type="button">
 <svg fill="none" height="14" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="14"><path d="M12 16V4m0 0L7 9m5-5l5 5" stroke-linecap="round" stroke-linejoin="round"></path><path d="M5 14v4a2 2 0 002 2h10a2 2 0 002-2v-4" stroke-linecap="round" stroke-linejoin="round"></path></svg>
 <span id="ovrptCopyLinkText">공유</span>
-</button>
-<button aria-label="닫기" class="no-print absolute top-5 right-5 w-9 h-9 rounded-full bg-ink-900/5 hover:bg-ink-900/10 flex items-center justify-center transition-colors" id="ovrptModalClose" type="button">
+</button><button aria-label="닫기" class="shrink-0 w-9 h-9 rounded-full bg-ink-900/5 hover:bg-ink-900/10 flex items-center justify-center transition-colors" id="ovrptModalClose" type="button">
 <svg fill="none" height="16" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="16"><path d="M6 6l12 12M18 6L6 18" stroke-linecap="round"></path></svg>
-</button>
+</button></div>
 <div id="ovrptModalBody"></div>
 </div>
 </div>
 <div class="hidden fixed inset-0 z-[105] flex items-start sm:items-center justify-center p-0 sm:p-6 bg-ink-900/60 backdrop-blur-sm" id="ovltrModal">
 <div class="relative bg-warm-card w-full sm:max-w-2xl sm:rounded-3xl shadow-soft h-full sm:h-auto sm:max-h-[85vh] overflow-y-auto p-7 sm:p-10" id="ovltrModalPanel">
-<button aria-label="인쇄 / PDF로 저장" class="hidden no-print absolute top-5 right-36 h-9 px-3 rounded-full bg-ink-900/5 hover:bg-ink-900/10 flex items-center gap-1.5 text-xs font-semibold text-ink-700 transition-colors" id="ovltrPrintBtn" type="button">
+<div class="no-print absolute top-5 right-5 flex items-center gap-2 max-w-[calc(100%-2.5rem)]"><button aria-label="인쇄 / PDF로 저장" class="hidden shrink-0 h-9 px-3 rounded-full bg-ink-900/5 hover:bg-ink-900/10 flex items-center gap-1.5 text-xs font-semibold text-ink-700 transition-colors" id="ovltrPrintBtn" type="button">
 <svg fill="none" height="14" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="14"><path d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2M6 14h12v8H6v-8z" stroke-linecap="round" stroke-linejoin="round"></path></svg>
 <span>인쇄</span>
-</button>
-<button aria-label="공유하기" class="no-print absolute top-5 right-16 h-9 px-3 rounded-full bg-ink-900/5 hover:bg-ink-900/10 flex items-center gap-1.5 text-xs font-semibold text-ink-700 transition-colors" id="ovltrCopyLink" type="button">
+</button><button aria-label="공유하기" class="shrink-0 h-9 px-3 rounded-full bg-ink-900/5 hover:bg-ink-900/10 flex items-center gap-1.5 text-xs font-semibold text-ink-700 transition-colors" id="ovltrCopyLink" type="button">
 <svg fill="none" height="14" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="14"><path d="M12 16V4m0 0L7 9m5-5l5 5" stroke-linecap="round" stroke-linejoin="round"></path><path d="M5 14v4a2 2 0 002 2h10a2 2 0 002-2v-4" stroke-linecap="round" stroke-linejoin="round"></path></svg>
 <span id="ovltrCopyLinkText">공유</span>
-</button>
-<button aria-label="닫기" class="no-print absolute top-5 right-5 w-9 h-9 rounded-full bg-ink-900/5 hover:bg-ink-900/10 flex items-center justify-center transition-colors" id="ovltrModalClose" type="button">
+</button><button aria-label="닫기" class="shrink-0 w-9 h-9 rounded-full bg-ink-900/5 hover:bg-ink-900/10 flex items-center justify-center transition-colors" id="ovltrModalClose" type="button">
 <svg fill="none" height="16" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="16"><path d="M6 6l12 12M18 6L6 18" stroke-linecap="round"></path></svg>
-</button>
+</button></div>
 <div id="ovltrModalBody"></div>
 </div>
 </div>
@@ -1859,8 +1853,8 @@
 
   async function translateSubtree(root, target, excludeOverlays) {
     const nodes = collectTextNodes(root, excludeOverlays);
-    // 너무 많은 요청이 한꺼번에 나가지 않도록 10개씩 묶어서 처리
-    const chunkSize = 10;
+    // 너무 많은 요청이 한꺼번에 나가지 않으면서도 왕복 횟수를 줄이도록 20개씩 묶어서 처리
+    const chunkSize = 20;
     let ok = 0, fail = 0;
     for (let i = 0; i < nodes.length; i += chunkSize) {
       const chunk = nodes.slice(i, i + chunkSize);
@@ -2350,30 +2344,24 @@
       });
     }
 
-    // 이미 잠금 해제된 적 있는 브라우저면 바로 보여줌
-    if (localStorage.getItem('printAccess') === '1') {
-      showPrintButtons();
-    }
-
-    // ?admin=1 로 들어오면 비밀번호 확인
+    // ⭐ 평소 홈페이지 방문에서는 항상 꺼진 상태입니다 (기억해두지 않음).
+    // https://cammission.com/?admin=1 로 들어와서 비밀번호를 맞게 입력했을 때만,
+    // 그 페이지를 보고 있는 동안에만 인쇄 버튼이 보입니다.
     const params = new URLSearchParams(location.search);
     if (params.get('admin') === '1') {
       const input = window.prompt('인쇄 기능을 켜려면 비밀번호를 입력하세요');
       if (input === PRINT_UNLOCK_PASSWORD) {
-        localStorage.setItem('printAccess', '1');
         showPrintButtons();
-        alert('인쇄 버튼이 켜졌어요. 이 브라우저에서는 계속 보여요.');
+        alert('인쇄 버튼이 켜졌어요. (이 페이지를 새로고침하거나 나가면 다시 꺼집니다)');
       } else if (input !== null) {
         alert('비밀번호가 일치하지 않아요.');
       }
       // 주소창에 ?admin=1 이 계속 남아있지 않도록 깨끗하게 정리
       history.replaceState(null, '', location.pathname);
     }
-    // ⭐ ?admin=0 으로 들어오면 이 브라우저의 인쇄 접근 기억을 지워줌 (끄기)
-    if (params.get('admin') === '0') {
+    // 혹시 예전 버전에서 남아있는 "계속 기억하기" 흔적이 있다면 지워줌 (1회성 정리)
+    if (localStorage.getItem('printAccess')) {
       localStorage.removeItem('printAccess');
-      alert('인쇄 버튼 접근을 껐어요. 이 브라우저에서는 이제 안 보여요.');
-      history.replaceState(null, '', location.pathname);
     }
   })();
 
