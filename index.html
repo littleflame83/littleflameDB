@@ -3,6 +3,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8"/>
+<base href="/"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>작은불꽃 홍선교 | 캄보디아 프놈펜 선교사 홍성화 목사</title>
 <!-- ⭐ 신규: 외부 사이트 미리 연결 (유튜브/구글맵/폰트가 실제로 로드되기 전에
@@ -1939,7 +1940,7 @@
     closeAllDetailModalsInstantly();
     closeAllOverlays();
     if (!SUPPRESS_HISTORY_PUSH) {
-      history.pushState({ overlay: null, detail: null }, '', location.pathname);
+      history.pushState({ overlay: null, detail: null }, '', '/');
     }
   }
   window.goHome = goHome;
@@ -1955,6 +1956,7 @@
   const DEFAULT_META = {
     title: document.title,
     url: 'https://cammission.com/',
+    ogImage: 'https://cammission.com/images/img-809ccadbb89a.jpg',
     description: (document.querySelector('meta[name="description"]') || {}).content || '',
     ogDescription: (document.querySelector('meta[property="og:description"]') || {}).content || '',
     twitterDescription: (document.querySelector('meta[name="twitter:description"]') || {}).content || '',
@@ -2410,6 +2412,62 @@
     if (e.target.id === 'searchOverlay') closeSearchOverlay();
   });
 
+  // ============================================================
+  // ⭐ 예쁜 글 주소
+  // 예: /story/2026/08/01/프놈펜-답사기/
+  // 실제 폴더/HTML 파일을 만들지 않아도 Worker가 index.html을 보여주고,
+  // 아래 함수가 JSON에서 해당 글을 찾아 홈페이지 위에 모달로 엽니다.
+  // ============================================================
+  function slugifyStoryTitle(title) {
+    return String(title || '')
+      .replace(/<[^>]*>/g, ' ')
+      .normalize('NFKC')
+      .toLowerCase()
+      .replace(/[^\p{L}\p{N}]+/gu, '-')
+      .replace(/^-+|-+$/g, '');
+  }
+
+  function getStoryDateParts(item) {
+    const text = String(item?.date_parse || item?.date || '');
+    let m = text.match(/(\d{4})년\s*(\d{1,2})월\s*(\d{1,2})일/);
+    if (!m) m = text.match(/(\d{4})[.\-/](\d{1,2})[.\-/](\d{1,2})/);
+    if (!m) return null;
+    return {
+      year: m[1],
+      month: String(m[2]).padStart(2, '0'),
+      day: String(m[3]).padStart(2, '0')
+    };
+  }
+
+  function getPrettyStoryPath(tmplPrefix, idx, item) {
+    const data = item || (window.SITE_DATA[tmplPrefix] || []).find(x => String(x.idx) === String(idx));
+    const parts = getStoryDateParts(data);
+    const slug = slugifyStoryTitle(data?.title || (tmplPrefix + '-' + idx)) || (tmplPrefix + '-' + idx);
+    if (!parts) return '/story/' + encodeURIComponent(tmplPrefix + '-' + idx) + '/';
+    return '/story/' + parts.year + '/' + parts.month + '/' + parts.day + '/' + encodeURIComponent(slug) + '/';
+  }
+
+  function getPrettyStoryTargetFromLocation() {
+    const m = location.pathname.match(/^\/story\/(\d{4})\/(\d{1,2})\/(\d{1,2})\/([^/]+)\/?$/);
+    if (!m) return null;
+    const year = m[1];
+    const month = String(m[2]).padStart(2, '0');
+    const day = String(m[3]).padStart(2, '0');
+    let slug = '';
+    try { slug = decodeURIComponent(m[4]); } catch (e) { slug = m[4]; }
+
+    for (const prefix of ['ovrpt', 'ovltr', 'ovcam']) {
+      for (const item of (window.SITE_DATA[prefix] || [])) {
+        const parts = getStoryDateParts(item);
+        if (!parts || parts.year !== year || parts.month !== month || parts.day !== day) continue;
+        if (slugifyStoryTitle(item.title) === slug) {
+          return { prefix, idx: String(item.idx) };
+        }
+      }
+    }
+    return null;
+  }
+
   async function openDetail(tmplPrefix, idx, skipHash) {
     await DATA_READY;
     const modal = document.getElementById(tmplPrefix + 'Modal');
@@ -2587,11 +2645,12 @@
     // 현재 정적 호스팅에서도 새로고침 시 404가 나지 않는 방식이라 안정적입니다.
     try {
       if (!skipHash && !SUPPRESS_HISTORY_PUSH) {
-        const langParam = (typeof currentLang !== 'undefined' && currentLang !== 'ko') ? '&lang=' + currentLang : '';
+        const prettyPath = getPrettyStoryPath(tmplPrefix, idx, item);
+        const langParam = (typeof currentLang !== 'undefined' && currentLang !== 'ko') ? '?lang=' + encodeURIComponent(currentLang) : '';
         history.pushState(
           { overlay: getOpenOverlayId(), detail: tmplPrefix + '-' + idx },
           '',
-          '?story=' + encodeURIComponent(tmplPrefix + '-' + idx) + langParam
+          prettyPath + langParam
         );
       }
       const titleEl = modalBody.querySelector('h2');
@@ -2608,6 +2667,17 @@
         if (ogTitle) ogTitle.content = document.title;
         const twTitle = document.querySelector('meta[name="twitter:title"]');
         if (twTitle) twTitle.content = document.title;
+        const storyImage = item.image ? new URL(item.image, location.origin + '/').href : '';
+        const ogImage = document.querySelector('meta[property="og:image"]');
+        const ogSecureImage = document.querySelector('meta[property="og:image:secure_url"]');
+        const twImage = document.querySelector('meta[name="twitter:image"]');
+        const ogImageAlt = document.querySelector('meta[property="og:image:alt"]');
+        if (storyImage) {
+          if (ogImage) ogImage.content = storyImage;
+          if (ogSecureImage) ogSecureImage.content = storyImage;
+          if (twImage) twImage.content = storyImage;
+          if (ogImageAlt) ogImageAlt.content = storyTitle;
+        }
         if (descEl) {
           const storyDesc = descEl.textContent.trim().replace(/\s+/g, ' ').slice(0, 160);
           const desc = document.querySelector('meta[name="description"]');
@@ -2638,7 +2708,7 @@
     // 글 상세 URL 정리 및 기본 페이지 제목·SEO 메타정보 복원 (canonical, OG, twitter 전부)
     try {
       if (!SUPPRESS_HISTORY_PUSH) {
-        history.pushState({ overlay: anyOverlayOpen ? getOpenOverlayId() : null, detail: null }, '', location.pathname);
+        history.pushState({ overlay: anyOverlayOpen ? getOpenOverlayId() : null, detail: null }, '', '/');
       }
       document.title = DEFAULT_META.title;
       const canonical = document.querySelector('link[rel="canonical"]');
@@ -2649,6 +2719,14 @@
       if (ogTitle) ogTitle.content = DEFAULT_META.title;
       const twTitle = document.querySelector('meta[name="twitter:title"]');
       if (twTitle) twTitle.content = DEFAULT_META.title;
+      const ogImage = document.querySelector('meta[property="og:image"]');
+      const ogSecureImage = document.querySelector('meta[property="og:image:secure_url"]');
+      const twImage = document.querySelector('meta[name="twitter:image"]');
+      const ogImageAlt = document.querySelector('meta[property="og:image:alt"]');
+      if (ogImage) ogImage.content = DEFAULT_META.ogImage;
+      if (ogSecureImage) ogSecureImage.content = DEFAULT_META.ogImage;
+      if (twImage) twImage.content = DEFAULT_META.ogImage;
+      if (ogImageAlt) ogImageAlt.content = '앙코르와트 앞 작은 촛불 이미지';
       const desc = document.querySelector('meta[name="description"]');
       if (desc) desc.content = DEFAULT_META.description;
       const ogDesc = document.querySelector('meta[property="og:description"]');
@@ -2662,11 +2740,18 @@
   // 공유 주소로 직접 들어왔을 때 상세 글을 자동으로 열어줌.
   // 새 주소는 ?story=ovrpt-3 형식이며, 기존 #ovrpt-3 링크도 계속 호환합니다.
   async function openFromHash() {
+    try {
+      await DATA_READY;
+    } catch (e) {
+      return;
+    }
+
     const params = new URLSearchParams(location.search);
     const storyParam = params.get('story');
-    const langParam = params.get('lang'); // 링크에 언어 정보(?lang=km)가 담겨 있으면 그 언어로 자동 전환
+    const langParam = params.get('lang');
     const legacyHash = (location.hash || '').replace('#', '');
-    const target = storyParam || legacyHash;
+    const prettyTarget = getPrettyStoryTargetFromLocation();
+    const target = storyParam || legacyHash || (prettyTarget ? prettyTarget.prefix + '-' + prettyTarget.idx : '');
 
     if (langParam === 'en' || langParam === 'km') {
       await setLang(langParam);
@@ -2678,15 +2763,21 @@
       const prefix = detailMatch[1];
       const idx = detailMatch[2];
       const overlayMap = { ovrpt: 'reportsOverlay', ovltr: 'lettersOverlay', ovcam: 'cambodiaOverlay' };
-      // ⭐ 신규: "홈 → 메뉴 → 글" 단계가 뒤로가기에서도 그대로 느껴지도록,
-      // 지금 이 진입 자체를 기준점(홈)으로 바꿔두고 그 위에 단계를 쌓습니다.
-      history.replaceState({ overlay: null, detail: null }, '', location.pathname);
-      if (overlayMap[prefix]) openOverlay(overlayMap[prefix]);
-      openDetail(prefix, idx, false);
+
+      if (overlayMap[prefix]) {
+        if (prettyTarget) {
+          closeAllOverlays();
+        } else {
+          openOverlay(overlayMap[prefix]);
+        }
+      }
+
+      await openDetail(prefix, idx, !!prettyTarget);
       return;
     }
+
     if (ALL_OVERLAYS.includes(target)) {
-      history.replaceState({ overlay: null, detail: null }, '', location.pathname);
+      history.replaceState({ overlay: null, detail: null }, '', '/');
       openOverlay(target);
     }
   }
@@ -2717,6 +2808,12 @@
         document.title = DEFAULT_META.title;
         const canonical = document.querySelector('link[rel="canonical"]');
         if (canonical) canonical.href = DEFAULT_META.url;
+        const ogImage = document.querySelector('meta[property="og:image"]');
+        const ogSecureImage = document.querySelector('meta[property="og:image:secure_url"]');
+        const twImage = document.querySelector('meta[name="twitter:image"]');
+        if (ogImage) ogImage.content = DEFAULT_META.ogImage;
+        if (ogSecureImage) ogSecureImage.content = DEFAULT_META.ogImage;
+        if (twImage) twImage.content = DEFAULT_META.ogImage;
       }
     } finally {
       SUPPRESS_HISTORY_PUSH = false;
@@ -2809,8 +2906,9 @@
 
   function getActiveShareUrl() {
     if (!ACTIVE_STORY) return location.origin + '/';
-    const lang = currentLang && currentLang !== 'ko' ? '&lang=' + encodeURIComponent(currentLang) : '';
-    return location.origin + '/share?story=' + encodeURIComponent(ACTIVE_STORY.prefix + '-' + ACTIVE_STORY.idx) + lang;
+    const prettyPath = getPrettyStoryPath(ACTIVE_STORY.prefix, ACTIVE_STORY.idx, ACTIVE_STORY.item);
+    const lang = currentLang && currentLang !== 'ko' ? '?lang=' + encodeURIComponent(currentLang) : '';
+    return location.origin + prettyPath + lang;
   }
 
   async function copyShareUrl() {
