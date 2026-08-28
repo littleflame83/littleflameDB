@@ -1,4 +1,13 @@
 User-agent: *
 Allow: /
 
+# 색인할 가치가 없는 내부 주소
+Disallow: /share
+Disallow: /purge
+Disallow: /*?admin=
+Disallow: /*?story=
+
+# 이미지는 검색 노출에 도움이 되므로 열어둡니다
+Allow: /images/
+
 Sitemap: https://cammission.com/sitemap.xml

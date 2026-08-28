@@ -32,7 +32,17 @@
 <meta content="캄보디아 프놈펜에서 사역하는 작은불꽃 홍선교(홍성화 목사)의 공식 홈페이지. 캄장신 교육사역, 선교 이야기, 기도편지, 사진, 후원 안내를 전합니다." property="og:description"/>
 <meta content="https://cammission.com/" property="og:url"/>
 <meta content="https://cammission.com/images/img-809ccadbb89a.jpg" property="og:image"/>
+<!-- ⭐ 추가: JS가 og:image:secure_url을 바꾸려 했지만 태그 자체가 없어서
+     그동안 아무 일도 일어나지 않았습니다. -->
+<meta content="https://cammission.com/images/img-809ccadbb89a.jpg" property="og:image:secure_url"/>
 <meta content="앙코르와트 앞 작은 촛불 이미지" property="og:image:alt"/>
+<!-- ⭐ 추가: 한국어/영어/크메르어가 같은 글의 다른 언어판임을 검색엔진에 알려줍니다 -->
+<link href="https://cammission.com/" hreflang="ko" rel="alternate"/>
+<link href="https://cammission.com/?lang=en" hreflang="en" rel="alternate"/>
+<link href="https://cammission.com/?lang=km" hreflang="km" rel="alternate"/>
+<link href="https://cammission.com/" hreflang="x-default" rel="alternate"/>
+<!-- ⭐ 추가: RSS 구독 (Feedly 등에서 자동 인식) -->
+<link href="https://cammission.com/feed.xml" rel="alternate" title="작은불꽃 홍선교" type="application/rss+xml"/>
 <meta content="ko_KR" property="og:locale"/>
 <meta content="summary_large_image" name="twitter:card"/>
 <meta content="작은불꽃 홍선교 | 캄보디아 프놈펜 선교사 홍성화 목사" name="twitter:title"/>
@@ -288,7 +298,9 @@
 <div class="max-w-7xl mx-auto px-5 sm:px-8">
 <div class="flex items-center justify-between h-16 sm:h-20">
 <!-- 로고 -->
-<a class="flex items-center gap-2 shrink-0" href="#top" onclick="goHome()">
+<!-- ⭐ 수정: href="#top"은 <base href="/"> 때문에 예쁜 주소에서
+     같은 페이지 앵커가 아니라 홈으로 "페이지 이동"이 되어버렸습니다. -->
+<a class="flex items-center gap-2 shrink-0" href="javascript:void(0)" onclick="goHome(); window.scrollTo({top:0,behavior:'smooth'})">
 <svg class="flame-flicker" fill="none" height="22" viewbox="0 0 24 24" width="22">
 <path d="M12 2C12 2 6 8.5 6 14a6 6 0 0012 0c0-2.2-1-4-2.2-5.6.2 1.4-.4 2.6-1.3 3-.3-2.6-1.7-5-2.5-9.4z" fill="#F97316"></path>
 </svg>
@@ -374,7 +386,7 @@
 </div>
 </div>
 <!-- 스크롤 유도 아이콘 -->
-<a aria-label="아래로 스크롤" class="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-2 text-white/80 bob" href="#about">
+<a aria-label="아래로 스크롤" class="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-2 text-white/80 bob" href="javascript:void(0)" onclick="document.getElementById('about').scrollIntoView({behavior:'smooth'})">
 <span class="text-[11px] tracking-[0.2em] uppercase font-medium">Scroll</span>
 <svg fill="none" height="18" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="18"><path d="M12 4v16m0 0l-6-6m6 6l6-6" stroke-linecap="round" stroke-linejoin="round"></path></svg>
 </a>
@@ -1855,6 +1867,17 @@
   // 선교리포트 / 기도 편지 전체보기 오버레이
   const ALL_OVERLAYS = ['reportsOverlay', 'lettersOverlay', 'supportOverlay', 'aboutOverlay', 'galleryOverlay', 'cambodiaOverlay'];
 
+  // ⭐ 신규: 각 "전체보기"가 가지는 고유 주소.
+  // Worker가 이 주소들을 모두 처리하므로 새로고침·공유해도 그대로 열립니다.
+  const OVERLAY_PATHS = {
+    cambodiaOverlay: '/cambodia/',
+    lettersOverlay: '/letter/',
+    reportsOverlay: '/family/',
+    aboutOverlay: '/about/',
+    galleryOverlay: '/media/',
+    supportOverlay: '/support/'
+  };
+
   // ============================================================
   // ⭐ 신규: 뒤로가기/앞으로가기(popstate) 대응
   //
@@ -1915,9 +1938,14 @@
       });
     }
     // ⭐ 신규: 뒤로가기 기록에 이 메뉴를 하나의 "단계"로 등록
+    //
+    // 변경점: 예전에는 location.pathname을 그대로 다시 넣었습니다.
+    // 그래서 글에서 "전체보기"를 누르면 주소는 여전히 그 글 주소인데
+    // 화면은 목록인 상태가 되고, 새로고침하면 엉뚱하게 글이 다시 열렸습니다.
+    // 이제 각 목록이 자기 주소(/cambodia/ 등)를 갖습니다.
     if (!SUPPRESS_HISTORY_PUSH) {
       closeAllDetailModalsInstantly();
-      history.pushState({ overlay: id, detail: null }, '', location.pathname);
+      history.pushState({ overlay: id, detail: null }, '', OVERLAY_PATHS[id] || location.pathname);
     }
   }
   function closeOverlay(id) {
@@ -2768,7 +2796,15 @@
     // 글 상세 URL 정리 및 기본 페이지 제목·SEO 메타정보 복원 (canonical, OG, twitter 전부)
     try {
       if (!SUPPRESS_HISTORY_PUSH) {
-        history.pushState({ overlay: anyOverlayOpen ? getOpenOverlayId() : null, detail: null }, '', '/');
+        // ⭐ 수정: 글을 닫았을 때 뒤에 목록이 열려 있으면 주소도 그 목록 주소로
+        // 돌려놓습니다. 예전에는 무조건 '/'가 되어, 화면은 캄보디아 목록인데
+        // 주소는 홈인 상태가 됐습니다.
+        const backOverlay = anyOverlayOpen ? getOpenOverlayId() : null;
+        history.pushState(
+          { overlay: backOverlay, detail: null },
+          '',
+          (backOverlay && OVERLAY_PATHS[backOverlay]) || '/'
+        );
       }
       document.title = DEFAULT_META.title;
       const canonical = document.querySelector('link[rel="canonical"]');
@@ -2824,12 +2860,42 @@
       const idx = detailMatch[2];
       const overlayMap = { ovrpt: 'reportsOverlay', ovltr: 'lettersOverlay', ovcam: 'cambodiaOverlay' };
 
+      // ⭐ 수정: 공유 링크로 처음 들어왔을 때는 히스토리를 "쌓지" 않고
+      // 지금 있는 항목을 덮어씁니다(replaceState).
+      //
+      // 예전에는 openOverlay()가 pushState를 해서, 카톡 링크로 들어온
+      // 방문자의 히스토리에 같은 주소가 2~3개 겹쳐 쌓였고
+      // 뒤로가기를 세 번 눌러야 사이트를 나갈 수 있었습니다.
       if (overlayMap[prefix]) {
-        closeAllOverlays();
-        openOverlay(overlayMap[prefix]);
+        SUPPRESS_HISTORY_PUSH = true;
+        try {
+          closeAllOverlays();
+          openOverlay(overlayMap[prefix]);
+        } finally {
+          SUPPRESS_HISTORY_PUSH = false;
+        }
       }
 
-      await openDetail(prefix, idx, !!prettyTarget);
+      await openDetail(prefix, idx, true);
+
+      // 옛 ?story=... 링크로 들어왔더라도 주소창은 예쁜 주소로 정리해줍니다.
+      // (히스토리를 늘리지 않고 현재 항목만 교체합니다)
+      let finalUrl = location.pathname + location.search;
+      if (!prettyTarget) {
+        try {
+          const p = getPrettyStoryPath(prefix, idx);
+          if (p) {
+            finalUrl = p + (langParam && langParam !== 'ko'
+              ? '?lang=' + encodeURIComponent(langParam) : '');
+          }
+        } catch (e) {}
+      }
+
+      history.replaceState(
+        { overlay: overlayMap[prefix] || null, detail: prefix + '-' + idx },
+        '',
+        finalUrl
+      );
       return;
     }
 
@@ -2847,7 +2913,10 @@
     SUPPRESS_HISTORY_PUSH = true;
     try {
       if (state.detail) {
-        const m = String(state.detail).match(/^(ovrpt|ovltr|ovcam)-(\d+)$/);
+        // ⭐ 수정: 예전엔 \d+ 라서 숫자 idx만 받았습니다.
+        // Worker 쪽은 이미 문자열 idx를 허용하고 있어서,
+        // idx를 숫자가 아닌 값으로 바꾸는 순간 뒤로가기가 조용히 죽습니다.
+        const m = String(state.detail).match(/^(ovrpt|ovltr|ovcam)-([^/]+)$/);
         if (m) {
           if (state.overlay) {
             openOverlay(state.overlay);
