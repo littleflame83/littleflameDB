@@ -291,6 +291,15 @@
   gtag('js', new Date());
   gtag('config', 'G-QTM6P3B9BK');
 </script>
+<!-- ⭐ 신규: Google Maps JavaScript API
+     - 사역지 지도(한 손가락 팬) + 글 속 "장소명" 자동 지도 삽입에 사용됩니다.
+     - Cloud Console에서 이 키에 "Maps JavaScript API" 권한이 켜져 있어야 합니다. -->
+<script>
+  window.__gmapsResolve = null;
+  window.GMAPS_READY = new Promise(res => { window.__gmapsResolve = res; });
+  window.initGoogleMaps = function () { window.__gmapsResolve(); };
+</script>
+<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAHeBwXr6kEiMO_bh5LdPWQu4GS5B9WXEs&callback=initGoogleMaps&loading=async"></script>
 </head>
 <body class="bg-warm-bg text-ink-900 antialiased">
 <!-- ================= NAV ================= -->
@@ -335,6 +344,10 @@
 <a class="hidden sm:inline-flex items-center gap-1.5 bg-ember hover:bg-ember-dark text-white text-sm font-semibold px-5 py-2.5 rounded-full shadow-soft transition-colors" href="javascript:void(0)" id="nav-donate-btn" onclick="openOverlay('supportOverlay')">
           후원하기
         </a>
+<!-- ⭐ 신규: 모바일 헤더 검색 아이콘 (탭하면 PC와 같은 사진+제목 검색 오버레이가 전체화면으로 열림) -->
+<button aria-label="검색 열기" class="lg:hidden p-2 rounded-lg text-ink-900 hover:text-ember transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ember" id="mobileSearchIconBtn" type="button">
+<svg fill="none" height="20" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="20"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5" stroke-linecap="round"></path></svg>
+</button>
 <!-- 모바일 메뉴 버튼 -->
 <button aria-expanded="false" aria-label="메뉴 열기" class="lg:hidden p-2 -mr-2 rounded-lg text-ink-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-ember" id="menuBtn">
 <svg fill="none" height="24" id="iconOpen" stroke="currentColor" stroke-width="1.8" viewbox="0 0 24 24" width="24"><path d="M4 7h16M4 12h16M4 17h16" stroke-linecap="round"></path></svg>
@@ -469,8 +482,10 @@
 <p class="mt-3 text-sm text-ink-400">캄보디아 현지에서 함께하는 주요 장소들을 소개합니다</p>
 </div>
 <div class="reveal relative rounded-3xl overflow-hidden shadow-card aspect-[4/3] sm:aspect-[16/8] max-w-4xl mx-auto">
-<iframe class="absolute inset-0 w-full h-full" loading="lazy" src="https://www.google.com/maps/d/embed?mid=1kuaMd0fUfX7Pch8oicYNSKtXKgKV2Xs" style="border:0;" title="작은불꽃 홍선교 사역지 지도"></iframe>
-<!-- ⭐ 신규: 처음엔 살짝 덮어두었다가, 한 번 터치하면 사라짐.
+<!-- ⭐ 변경: My Maps iframe 대신 Google Maps JS API로 직접 렌더링.
+     이러면 한 번 터치한 뒤에는 다른 교회 사이트들처럼 손가락 하나로 지도를 움직일 수 있습니다. -->
+<div class="absolute inset-0 w-full h-full bg-warm-bg" id="missionMapCanvas"></div>
+<!-- ⭐ 처음엔 살짝 덮어두었다가, 한 번 터치하면 사라짐 + 그 순간부터 한 손가락 팬이 켜짐.
            페이지를 스크롤하려던 손가락이 실수로 지도를 건드려 이동/확대되는 걸 방지하고,
            지도를 보려는 의도가 분명할 때만 자연스럽게 조작할 수 있게 해줍니다. -->
 <button class="absolute inset-0 flex items-center justify-center bg-ink-900/5 hover:bg-ink-900/0 transition-colors" id="mapTapOverlay" type="button">
@@ -1537,12 +1552,35 @@
       }
     });
 
-  // 사역지 지도: 처음 터치하면 안내 오버레이가 사라지고 지도를 바로 조작할 수 있음
-  (function initMapTapOverlay() {
+  // ⭐ 변경: 사역지 지도 — Google Maps JS API로 4개 사역지 마커를 직접 그림.
+  // 처음엔 두 손가락(cooperative)으로 시작해서 페이지 스크롤을 방해하지 않다가,
+  // 안내 오버레이를 한 번 터치하면 그 순간부터 손가락 하나로도 지도를 움직일 수 있게 바뀝니다.
+  (function initMissionMap() {
+    const canvas = document.getElementById('missionMapCanvas');
     const overlay = document.getElementById('mapTapOverlay');
-    if (!overlay) return;
-    overlay.addEventListener('click', () => {
-      overlay.style.display = 'none';
+    if (!canvas) return;
+    window.GMAPS_READY.then(() => {
+      const bounds = new google.maps.LatLngBounds();
+      const map = new google.maps.Map(canvas, {
+        center: { lat: 11.578, lng: 104.815 },
+        zoom: 13,
+        gestureHandling: 'cooperative',
+        streetViewControl: false,
+        mapTypeControl: false,
+        fullscreenControl: false,
+      });
+      Object.values(PLACES).forEach((p) => {
+        const marker = new google.maps.Marker({ position: { lat: p.lat, lng: p.lng }, map, title: p.name });
+        const info = new google.maps.InfoWindow({ content: '<strong>' + p.name + '</strong>' });
+        marker.addListener('click', () => info.open(map, marker));
+        bounds.extend(marker.getPosition());
+      });
+      map.fitBounds(bounds, 60);
+
+      overlay?.addEventListener('click', () => {
+        map.setOptions({ gestureHandling: 'greedy' });
+        overlay.style.display = 'none';
+      }, { once: true });
     });
   })();
 
@@ -1989,6 +2027,91 @@
 
   // 푸터 저작권 연도를 매년 자동으로 최신 연도로 표시 (수동으로 안 고쳐도 됨)
   // ============================================================
+  // ============================================================
+  // 📍 사역지 장소 등록 (지도 자동 삽입에 사용)
+  //    새 장소를 추가하려면 아래에 한 줄만 추가하면 됩니다.
+  //    aliases에 넣은 이름 중 아무거나 글에서 따옴표로 쓰면(예: "캄장신") 자동으로 지도가 나타납니다.
+  // ============================================================
+  const PLACES = {
+    camjangsin: { name: '캄보디아 장로교 신학교', lat: 11.560598, lng: 104.833593,
+      aliases: ['캄장신', '캄보디아장로교신학교', '캄보디아 장로교 신학교', '캄보디아장로회신학교'] },
+    hebron: { name: '헤브론 메디컬 센터', lat: 11.561763, lng: 104.8391636,
+      aliases: ['헤브론', '헤브론센터', '헤브론 센터', '헤브론메디컬센터', '헤브론 메디컬 센터'] },
+    npic: { name: '내셔널 폴리테크닉 인스티튜트 오브 캄보디아', lat: 11.598406, lng: 104.8007837,
+      aliases: ['NPIC', 'npic', '폴리텍', '내셔널폴리테크닉', '내셔널 폴리테크닉 인스티튜트 오브 캄보디아'] },
+    adulam: { name: '아둘람센터', lat: 11.5968859, lng: 104.8031447,
+      aliases: ['아둘람', '아둘람센터', '아둘람 센터'] },
+  };
+
+  function normalizePlaceKey(s) {
+    return String(s || '').trim().replace(/\s+/g, '');
+  }
+
+  const PLACE_ALIAS_LOOKUP = {};
+  Object.entries(PLACES).forEach(([key, p]) => {
+    [p.name, ...p.aliases].forEach(a => { PLACE_ALIAS_LOOKUP[normalizePlaceKey(a)] = key; });
+  });
+
+  function findRegisteredPlace(text) {
+    return PLACE_ALIAS_LOOKUP[normalizePlaceKey(text)] || null;
+  }
+
+  // 등록된 장소 하나를 JS API 지도(한 손가락 팬)로 렌더링
+  function renderPlaceMap(el, place) {
+    window.GMAPS_READY.then(() => {
+      const map = new google.maps.Map(el, {
+        center: { lat: place.lat, lng: place.lng },
+        zoom: 15,
+        gestureHandling: 'greedy',
+        streetViewControl: false,
+        mapTypeControl: false,
+        fullscreenControl: false,
+      });
+      new google.maps.Marker({ position: { lat: place.lat, lng: place.lng }, map, title: place.name });
+    });
+  }
+
+  // 글 본문 텍스트에서 "등록된 장소명" 을 찾아, 따옴표째로 지도로 치환
+  function applyInlinePlaceMaps(container) {
+    const quoteRe = /["“]([^"”<>]{1,40})["”]/g;
+    const walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT, null);
+    const targets = [];
+    let node;
+    while ((node = walker.nextNode())) {
+      if (node.parentElement && node.parentElement.closest('script,style')) continue;
+      quoteRe.lastIndex = 0;
+      if (quoteRe.test(node.textContent)) targets.push(node);
+    }
+    targets.forEach((textNode) => {
+      const text = textNode.textContent;
+      const frag = document.createDocumentFragment();
+      let lastIndex = 0;
+      let matchedAny = false;
+      quoteRe.lastIndex = 0;
+      let match;
+      while ((match = quoteRe.exec(text))) {
+        const placeKey = findRegisteredPlace(match[1]);
+        if (!placeKey) continue;
+        matchedAny = true;
+        frag.appendChild(document.createTextNode(text.slice(lastIndex, match.index)));
+        const mapDiv = document.createElement('div');
+        mapDiv.className = 'inline-place-map my-4 rounded-2xl overflow-hidden shadow-card w-full';
+        mapDiv.style.height = '220px';
+        mapDiv.setAttribute('data-place-key', placeKey);
+        mapDiv.setAttribute('aria-label', PLACES[placeKey].name + ' 지도');
+        frag.appendChild(mapDiv);
+        lastIndex = match.index + match[0].length;
+      }
+      if (!matchedAny) return;
+      frag.appendChild(document.createTextNode(text.slice(lastIndex)));
+      textNode.parentNode.replaceChild(frag, textNode);
+    });
+    container.querySelectorAll('.inline-place-map[data-place-key]').forEach((el) => {
+      const key = el.getAttribute('data-place-key');
+      if (PLACES[key]) renderPlaceMap(el, PLACES[key]);
+    });
+  }
+
   // 🌐 실시간 번역 (MyMemory 무료 API — 키 없이 브라우저에서 바로 호출 가능)
   //    카카오톡 인앱브라우저 등에서도 항상 보이도록, 브라우저 내장 번역 대신
   //    홈페이지 안에 직접 버튼을 둠. 번역 결과는 메모리에 캐싱해서
@@ -2447,6 +2570,10 @@
   document.getElementById('searchTriggerBtn')?.addEventListener('click', () => {
     openSearchOverlay(document.getElementById('siteSearchInput')?.value || '');
   });
+  // ⭐ 신규: 모바일 헤더의 돋보기 아이콘 → 바로 검색 오버레이 전체화면으로 열기
+  document.getElementById('mobileSearchIconBtn')?.addEventListener('click', () => {
+    openSearchOverlay('');
+  });
   document.getElementById('siteSearchInput')?.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') openSearchOverlay(e.currentTarget.value);
   });
@@ -2596,23 +2723,34 @@
     ACTIVE_STORY = { prefix: tmplPrefix, idx: String(idx), item };
     modalBody.innerHTML = item.detail_html;
 
-    // ⭐ 신규: 글 안에 장소 표시가 있으면 자동으로 작은 지도로 바꿔줌
-    // 글을 쓸 때 원하는 위치에 아래처럼 한 줄만 넣으면 됩니다:
-    //   <div data-place-map="캄보디아장로교신학교"></div>
-    // API 키 없이 작동하는 방식이라 장소명이 정확할수록 잘 찾습니다
-    // (주소나 "구글맵에 검색했을 때 나오는 이름"을 그대로 쓰면 가장 정확해요).
+    // ⭐ 신규: 글 본문에 등록된 장소명을 따옴표로 쓰면("캄장신") 그 자리가 통째로 작은 지도로 바뀝니다.
+    // 예) ...오늘은 "캄장신"에 방문했습니다... → "캄장신" 부분이 사라지고 그 자리에 지도가 나타남
+    // 새 장소를 추가하고 싶으면 아래 PLACES 객체에 한 줄만 추가하면 이후 모든 글에서 바로 인식됩니다.
+    applyInlinePlaceMaps(modalBody);
+
+    // (예전 방식과의 호환) <div data-place-map="장소명이나 주소"></div> 를 글에 남겨둔 경우에도
+    // 계속 작동하도록 유지합니다. PLACES에 등록 안 된 장소도 이름만으로 지도를 붙일 수 있어요.
     modalBody.querySelectorAll('[data-place-map]').forEach(el => {
       const place = el.getAttribute('data-place-map');
       if (!place) return;
-      const iframe = document.createElement('iframe');
-      iframe.src = 'https://www.google.com/maps?q=' + encodeURIComponent(place) + '&output=embed';
-      iframe.width = '100%';
-      iframe.height = '260';
-      iframe.style.border = '0';
-      iframe.loading = 'lazy';
-      iframe.className = 'rounded-2xl w-full';
-      iframe.title = place + ' 지도';
-      el.replaceWith(iframe);
+      const registeredKey = findRegisteredPlace(place);
+      const mapEl = document.createElement('div');
+      mapEl.className = 'inline-place-map rounded-2xl overflow-hidden shadow-card w-full';
+      mapEl.style.height = '260px';
+      el.replaceWith(mapEl);
+      if (registeredKey) {
+        renderPlaceMap(mapEl, PLACES[registeredKey]);
+      } else {
+        // 등록 안 된 장소는 이름 검색 기반 iframe으로 예전처럼 표시 (API 키 불필요)
+        const iframe = document.createElement('iframe');
+        iframe.src = 'https://www.google.com/maps?q=' + encodeURIComponent(place) + '&output=embed';
+        iframe.width = '100%';
+        iframe.height = '260';
+        iframe.style.border = '0';
+        iframe.loading = 'lazy';
+        iframe.title = place + ' 지도';
+        mapEl.replaceWith(iframe);
+      }
     });
 
     // 지금 한국어가 아닌 언어가 선택되어 있으면, 이 글의 본문(고정문구 아닌 실제 글 내용)도 바로 번역함
