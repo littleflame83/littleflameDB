@@ -289,12 +289,12 @@
 
       <!-- 데스크톱 메뉴 -->
       <nav class="hidden lg:flex items-center gap-9 text-[15px] font-medium text-ink-700">
-        <a id="nav-about" href="javascript:void(0)" onclick="openOverlay('aboutOverlay')" class="hover:text-ember transition-colors">사역 소개</a>
-        <a id="nav-cambodia" href="javascript:void(0)" onclick="openOverlay('cambodiaOverlay')" class="hover:text-ember transition-colors">캄보디아 이야기</a>
-        <a id="nav-gallery" href="javascript:void(0)" onclick="openOverlay('galleryOverlay')" class="hover:text-ember transition-colors">사진과 영상</a>
-        <a id="nav-reports" href="javascript:void(0)" onclick="openOverlay('reportsOverlay')" class="hover:text-ember transition-colors">가족 이야기</a>
-        <a id="nav-letters" href="javascript:void(0)" onclick="openOverlay('lettersOverlay')" class="hover:text-ember transition-colors">기도 편지</a>
-        <a id="nav-support" href="javascript:void(0)" onclick="openOverlay('supportOverlay')" class="hover:text-ember transition-colors">후원 안내</a>
+        <a id="nav-about" href="/about/" class="hover:text-ember transition-colors">사역 소개</a>
+        <a id="nav-cambodia" href="/cambodia/" class="hover:text-ember transition-colors">캄보디아 이야기</a>
+        <a id="nav-gallery" href="/media/" class="hover:text-ember transition-colors">사진과 영상</a>
+        <a id="nav-reports" href="/family/" class="hover:text-ember transition-colors">가족 이야기</a>
+        <a id="nav-letters" href="/letter/" class="hover:text-ember transition-colors">기도 편지</a>
+        <a id="nav-support" href="/support/" class="hover:text-ember transition-colors">후원 안내</a>
       </nav>
 
       <div class="flex items-center gap-3">
@@ -308,7 +308,7 @@
             <button type="button" onclick="setLang('km')" class="w-full text-left px-4 py-2 text-sm hover:bg-warm-bg text-ink-800">🇰🇭 ខ្មែរ</button>
           </div>
         </div>
-        <a id="nav-donate-btn" href="javascript:void(0)" onclick="openOverlay('supportOverlay')" class="hidden sm:inline-flex items-center gap-1.5 bg-ember hover:bg-ember-dark text-white text-sm font-semibold px-5 py-2.5 rounded-full shadow-soft transition-colors">
+        <a id="nav-donate-btn" href="/support/" class="hidden sm:inline-flex items-center gap-1.5 bg-ember hover:bg-ember-dark text-white text-sm font-semibold px-5 py-2.5 rounded-full shadow-soft transition-colors">
           후원하기
         </a>
         <!-- 모바일 메뉴 버튼 -->
@@ -323,13 +323,13 @@
   <!-- 모바일 메뉴 패널 -->
   <div id="mobileMenu" class="hidden lg:hidden border-t border-ink-900/5 bg-white/95 backdrop-blur-md">
     <nav class="flex flex-col px-6 py-4 gap-1 text-[15px] font-medium text-ink-700">
-      <a id="navm-about" href="javascript:void(0)" onclick="openOverlay('aboutOverlay')" class="py-2.5 border-b border-ink-900/5">사역 소개</a>
-      <a id="navm-cambodia" href="javascript:void(0)" onclick="openOverlay('cambodiaOverlay')" class="py-2.5 border-b border-ink-900/5">캄보디아 이야기</a>
-      <a id="navm-gallery" href="javascript:void(0)" onclick="openOverlay('galleryOverlay')" class="py-2.5 border-b border-ink-900/5">사진과 영상</a>
-      <a id="navm-reports" href="javascript:void(0)" onclick="openOverlay('reportsOverlay')" class="py-2.5 border-b border-ink-900/5">가족 이야기</a>
-      <a id="navm-letters" href="javascript:void(0)" onclick="openOverlay('lettersOverlay')" class="py-2.5 border-b border-ink-900/5">기도 편지</a>
-      <a id="navm-support" href="javascript:void(0)" onclick="openOverlay('supportOverlay')" class="py-2.5">후원 안내</a>
-      <a id="navm-donate-btn" href="javascript:void(0)" onclick="openOverlay('supportOverlay')" class="mt-3 text-center bg-ember text-white font-semibold px-5 py-2.5 rounded-full">후원하기</a>
+      <a id="navm-about" href="/about/" class="py-2.5 border-b border-ink-900/5">사역 소개</a>
+      <a id="navm-cambodia" href="/cambodia/" class="py-2.5 border-b border-ink-900/5">캄보디아 이야기</a>
+      <a id="navm-gallery" href="/media/" class="py-2.5 border-b border-ink-900/5">사진과 영상</a>
+      <a id="navm-reports" href="/family/" class="py-2.5 border-b border-ink-900/5">가족 이야기</a>
+      <a id="navm-letters" href="/letter/" class="py-2.5 border-b border-ink-900/5">기도 편지</a>
+      <a id="navm-support" href="/support/" class="py-2.5">후원 안내</a>
+      <a id="navm-donate-btn" href="/support/" class="mt-3 text-center bg-ember text-white font-semibold px-5 py-2.5 rounded-full">후원하기</a>
     </nav>
   </div>
 </header>
@@ -356,8 +356,8 @@
       캄보디아를 밝히는 큰 횃불이 될 줄 믿습니다.
     </p>
     <div class="mt-10 flex items-center justify-center gap-3">
-      <a href="javascript:void(0)" onclick="openOverlay('aboutOverlay')" class="bg-ember hover:bg-ember-dark text-white font-semibold text-sm px-7 py-3.5 rounded-full shadow-soft transition-colors">사역 이야기 보기</a>
-      <a href="javascript:void(0)" onclick="openOverlay('supportOverlay')" class="bg-white/10 hover:bg-white/20 text-white border border-white/40 font-semibold text-sm px-7 py-3.5 rounded-full backdrop-blur-sm transition-colors">후원 참여하기</a>
+      <a href="/about/" class="bg-ember hover:bg-ember-dark text-white font-semibold text-sm px-7 py-3.5 rounded-full shadow-soft transition-colors">사역 이야기 보기</a>
+      <a href="/support/" class="bg-white/10 hover:bg-white/20 text-white border border-white/40 font-semibold text-sm px-7 py-3.5 rounded-full backdrop-blur-sm transition-colors">후원 참여하기</a>
     </div>
   </div>
 
@@ -455,7 +455,7 @@
     <div id="ovcamMainGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-7 lg:gap-8"></div>
 
     <div class="reveal text-center mt-12">
-      <a href="javascript:void(0)" onclick="openOverlay('cambodiaOverlay')" class="inline-flex items-center gap-2 text-sm font-semibold text-ink-900 border border-ink-900/15 hover:border-ember hover:text-ember px-6 py-3 rounded-full transition-colors">
+      <a href="/cambodia/" class="inline-flex items-center gap-2 text-sm font-semibold text-ink-900 border border-ink-900/15 hover:border-ember hover:text-ember px-6 py-3 rounded-full transition-colors">
         캄보디아 이야기 전체보기
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 6l6 6-6 6"/></svg>
       </a>
@@ -480,7 +480,7 @@
     <div id="galleryMainGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-7 lg:gap-8"></div>
 
     <div class="reveal text-center mt-12">
-      <a href="javascript:void(0)" onclick="openOverlay('galleryOverlay'); filterGallery('all')" class="inline-flex items-center gap-2 text-sm font-semibold text-ink-900 border border-ink-900/15 hover:border-sky hover:text-sky px-6 py-3 rounded-full transition-colors">
+      <a href="/media/" class="inline-flex items-center gap-2 text-sm font-semibold text-ink-900 border border-ink-900/15 hover:border-sky hover:text-sky px-6 py-3 rounded-full transition-colors">
         사진·영상 전체보기 · 카테고리별 보기
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 6l6 6-6 6"/></svg>
       </a>
@@ -502,7 +502,7 @@
     <div id="ovrptMainGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-7 lg:gap-8"></div>
 
     <div class="reveal text-center mt-12">
-      <a href="javascript:void(0)" onclick="openOverlay('reportsOverlay')" class="inline-flex items-center gap-2 text-sm font-semibold text-ink-900 border border-ink-900/15 hover:border-rose-500 hover:text-rose-500 px-6 py-3 rounded-full transition-colors">
+      <a href="/family/" class="inline-flex items-center gap-2 text-sm font-semibold text-ink-900 border border-ink-900/15 hover:border-rose-500 hover:text-rose-500 px-6 py-3 rounded-full transition-colors">
         가족 이야기 전체보기
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 6l6 6-6 6"/></svg>
       </a>
@@ -524,7 +524,7 @@
     <div id="ovltrMainFeature"></div>
 
     <div class="reveal text-center mt-10">
-      <a href="javascript:void(0)" onclick="openOverlay('lettersOverlay')" class="inline-flex items-center gap-2 text-sm font-semibold text-ink-900 border border-ink-900/15 hover:border-violet-500 hover:text-violet-500 px-6 py-3 rounded-full transition-colors">
+      <a href="/letter/" class="inline-flex items-center gap-2 text-sm font-semibold text-ink-900 border border-ink-900/15 hover:border-violet-500 hover:text-violet-500 px-6 py-3 rounded-full transition-colors">
         기도 편지 전체보기
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 6l6 6-6 6"/></svg>
       </a>
@@ -1316,7 +1316,7 @@
       <p class="text-ink-600 text-sm sm:text-base leading-loose">
         캄보디아의 다음 세대를 세우고 아픈 마음을 치유하는 일은 저희 부부만의 힘으로는 불가능합니다. 저희는 캄보디아 땅에서 가장 먼저 땀 흘리며 온 삶을 다해 헌신하겠습니다. 여러분은 기도로, 물질로 이 땅에 소망을 흘려보내는 '보내는 선교사'가 되어주시지 않겠습니까? 여러분의 동역이 캄보디아를 살리는 가장 위대한 기적이 됩니다!
       </p>
-      <a href="javascript:void(0)" onclick="closeOverlay('aboutOverlay'); openOverlay('supportOverlay')" class="mt-6 inline-block bg-ember hover:bg-ember-dark text-white font-semibold text-sm px-7 py-3.5 rounded-full shadow-soft transition-colors">
+      <a href="/support/" class="mt-6 inline-block bg-ember hover:bg-ember-dark text-white font-semibold text-sm px-7 py-3.5 rounded-full shadow-soft transition-colors">
         후원 안내 보기
       </a>
     </div>
