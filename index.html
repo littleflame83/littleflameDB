@@ -365,10 +365,6 @@
 <a class="py-2.5 border-b border-ink-900/5" href="javascript:void(0)" id="navm-reports" onclick="openOverlay('reportsOverlay')">가족 이야기</a>
 <a class="py-2.5 border-b border-ink-900/5" href="javascript:void(0)" id="navm-letters" onclick="openOverlay('lettersOverlay')">기도 편지</a>
 <a class="py-2.5" href="javascript:void(0)" id="navm-support" onclick="openOverlay('supportOverlay')">후원 안내</a>
-<div class="mt-2 flex items-center gap-2 px-3 py-2.5 rounded-2xl bg-warm-bg border border-ink-900/5">
-  <svg fill="none" height="17" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="17"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5" stroke-linecap="round"></path></svg>
-  <input aria-label="검색" class="min-w-0 flex-1 bg-transparent text-sm outline-none" id="mobileSearchInput" placeholder="글 검색" type="search"/>
-</div>
 <a class="mt-3 text-center bg-ember text-white font-semibold px-5 py-2.5 rounded-full" href="javascript:void(0)" id="navm-donate-btn" onclick="openOverlay('supportOverlay')">후원하기</a>
 </nav>
 </div>
@@ -2081,15 +2077,22 @@
           if (status !== google.maps.places.PlacesServiceStatus.OK || !results?.[0]) { resolve(null); return; }
           service.getDetails({
             placeId: results[0].place_id,
-            fields: ['photos', 'editorial_summary', 'formatted_address', 'url', 'rating', 'types'],
+            fields: ['photos', 'editorial_summary', 'formatted_address', 'url', 'rating',
+              'user_ratings_total', 'types', 'opening_hours', 'website'],
           }, (detail, status2) => {
             if (status2 !== google.maps.places.PlacesServiceStatus.OK || !detail) { resolve(null); return; }
+            const photo = detail.photos?.[0];
             resolve({
-              photoUrl: detail.photos?.[0] ? detail.photos[0].getUrl({ maxWidth: 160, maxHeight: 160 }) : null,
+              photoUrl: photo ? photo.getUrl({ maxWidth: 160, maxHeight: 160 }) : null,
+              photoUrlLarge: photo ? photo.getUrl({ maxWidth: 800 }) : null,
               summary: detail.editorial_summary?.overview || null,
               address: detail.formatted_address || null,
               googleMapsUrl: detail.url || null,
               rating: detail.rating || null,
+              ratingCount: detail.user_ratings_total || null,
+              openNow: typeof detail.opening_hours?.isOpen === 'function' ? detail.opening_hours.isOpen() : null,
+              weekdayText: detail.opening_hours?.weekday_text || null,
+              website: detail.website || null,
             });
           });
         });
@@ -2154,30 +2157,68 @@
     document.body.style.overflow = '';
   }
 
-  function openPlaceEmbedModal(place, googleInfo) {
+  function renderRichPlacePanel(place, info) {
+    if (!info) {
+      // 구글 정보를 못 가져왔을 때: 최소한 지도라도 보여줌
+      return `
+        <div class="w-full aspect-[4/3] sm:aspect-[16/9]">
+          <iframe class="w-full h-full" style="border:0;" loading="lazy"
+            src="https://www.google.com/maps?q=${encodeURIComponent(place.lat + ',' + place.lng)}&output=embed"
+            title="${place.name} 지도"></iframe>
+        </div>
+        <div class="p-5 sm:p-6">
+          <div class="font-bold text-ink-900 text-base">${place.name}</div>
+          ${place.desc ? '<p class="text-sm text-ink-500 mt-1.5 leading-relaxed">' + place.desc + '</p>' : ''}
+        </div>`;
+    }
+    const photo = info.photoUrlLarge || info.photoUrl;
+    const ratingStars = info.rating ? '★'.repeat(Math.round(info.rating)) + '☆'.repeat(5 - Math.round(info.rating)) : '';
+    const hoursHtml = info.openNow === true
+      ? '<span class="text-green-600 font-semibold">영업 중</span>'
+      : (info.openNow === false ? '<span class="text-ember font-semibold">영업 종료</span>' : '');
+    const todayHours = info.weekdayText ? (info.weekdayText[(new Date().getDay() + 6) % 7] || '') : '';
+    const dirUrl = 'https://www.google.com/maps/dir/?api=1&destination=' + place.lat + ',' + place.lng;
+
+    return `
+      ${photo ? `<div class="w-full h-48 sm:h-64 overflow-hidden bg-warm-bg"><img src="${photo}" alt="${place.name}" class="w-full h-full object-cover" /></div>` : ''}
+      <div class="p-5 sm:p-6">
+        <h3 class="text-lg font-bold text-ink-900 leading-snug">${place.name}</h3>
+        ${info.rating ? `
+          <div class="flex items-center gap-1.5 text-sm text-ink-500 mt-1.5">
+            <span class="text-amber-500 tracking-tight">${ratingStars}</span>
+            <span>${info.rating}${info.ratingCount ? ' (' + info.ratingCount.toLocaleString() + ')' : ''}</span>
+          </div>` : ''}
+        ${info.summary ? `<p class="text-sm text-ink-500 mt-2.5 leading-relaxed">${info.summary}</p>` : ''}
+        <div class="mt-4 space-y-2.5 text-sm text-ink-700">
+          ${info.address ? `<div class="flex items-start gap-2"><span class="shrink-0">📍</span><span>${info.address}</span></div>` : ''}
+          ${(hoursHtml || todayHours) ? `<div class="flex items-start gap-2"><span class="shrink-0">🕐</span><span>${hoursHtml}${hoursHtml && todayHours ? ' · ' : ''}${todayHours}</span></div>` : ''}
+          ${info.website ? `<div class="flex items-start gap-2"><span class="shrink-0">🌐</span><a href="${info.website}" target="_blank" rel="noopener" class="text-sky underline break-all">${info.website}</a></div>` : ''}
+        </div>
+        <div class="mt-5 flex gap-2.5">
+          <a href="${dirUrl}" target="_blank" rel="noopener" class="flex-1 text-center text-sm font-semibold bg-ember text-white px-4 py-2.5 rounded-full">경로</a>
+          ${info.googleMapsUrl ? `<a href="${info.googleMapsUrl}" target="_blank" rel="noopener" class="flex-1 text-center text-sm font-semibold border border-ink-900/15 text-ink-700 px-4 py-2.5 rounded-full">구글 지도 앱에서 보기</a>` : ''}
+        </div>
+      </div>`;
+  }
+
+  function openPlaceEmbedModal(place) {
     const modal = ensurePlaceEmbedModal();
     const body = modal.querySelector('#placeMapModalBody');
-    const desc = googleInfo?.summary || place.desc || googleInfo?.address || '';
-    body.innerHTML = `
-      <div class="w-full aspect-[4/3] sm:aspect-[16/9]">
-        <iframe class="w-full h-full" style="border:0;" loading="lazy"
-          src="https://www.google.com/maps?q=${encodeURIComponent(place.lat + ',' + place.lng)}&output=embed"
-          title="${place.name} 지도"></iframe>
-      </div>
-      <div class="p-5 sm:p-6">
-        <div class="font-bold text-ink-900 text-base">${place.name}</div>
-        ${desc ? '<p class="text-sm text-ink-500 mt-1.5 leading-relaxed">' + desc + '</p>' : ''}
-      </div>`;
+    body.innerHTML = `<div class="p-14 text-center text-sm text-ink-400">정보를 불러오는 중입니다…</div>`;
     modal.classList.remove('hidden');
     document.body.style.overflow = 'hidden';
+    fetchGooglePlaceInfo(place).then((info) => {
+      if (modal.classList.contains('hidden')) return; // 그 사이 닫혔으면 그릴 필요 없음
+      body.innerHTML = renderRichPlacePanel(place, info);
+    });
   }
 
   // 카드 안 "구글 지도에서 보기" 버튼에 클릭 이벤트를 연결 (카드 내용이 새로 그려질 때마다 다시 연결)
-  function wirePlaceCardEmbedTrigger(contentEl, place, googleInfo) {
+  function wirePlaceCardEmbedTrigger(contentEl, place) {
     contentEl.querySelector('.js-place-embed-trigger')?.addEventListener('click', (e) => {
       e.stopPropagation();
       closePlaceCard();
-      openPlaceEmbedModal(place, googleInfo);
+      openPlaceEmbedModal(place);
     });
   }
 
@@ -2221,7 +2262,7 @@
     const contentEl = document.createElement('div');
     contentEl.innerHTML = buildPlaceCardContent(place, null, true);
     card.appendChild(contentEl);
-    wirePlaceCardEmbedTrigger(contentEl, place, null);
+    wirePlaceCardEmbedTrigger(contentEl, place);
     const closeBtn = document.createElement('button');
     closeBtn.type = 'button';
     closeBtn.setAttribute('aria-label', '닫기');
@@ -2240,7 +2281,7 @@
     fetchGooglePlaceInfo(place).then((info) => {
       if (ACTIVE_PLACE_CARD_EL !== card) return; // 그 사이에 카드가 닫혔거나 다른 장소로 바뀌었으면 무시
       contentEl.innerHTML = buildPlaceCardContent(place, info, false);
-      wirePlaceCardEmbedTrigger(contentEl, place, info);
+      wirePlaceCardEmbedTrigger(contentEl, place);
     });
 
     // 화면 밖으로 넘치지 않도록 위치 살짝 보정
