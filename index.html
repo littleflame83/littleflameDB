@@ -4055,6 +4055,29 @@
   imgLightboxCloseBtn.addEventListener('click', closeLightbox);
   imgLightbox.addEventListener('click', (e) => { if (e.target === imgLightbox) closeLightbox(); });
 
+  // ⭐ 신규: 손가락으로 좌우 스와이프해서 사진 넘기기 (화살표 버튼과 별개로 동작)
+  function attachSwipeNav(el, onSwipeLeft, onSwipeRight) {
+    let startX = 0, startY = 0, tracking = false;
+    el.addEventListener('touchstart', (e) => {
+      if (e.touches.length !== 1) return;
+      startX = e.touches[0].clientX;
+      startY = e.touches[0].clientY;
+      tracking = true;
+    }, { passive: true });
+    el.addEventListener('touchend', (e) => {
+      if (!tracking) return;
+      tracking = false;
+      const dx = e.changedTouches[0].clientX - startX;
+      const dy = e.changedTouches[0].clientY - startY;
+      // 가로로 충분히, 세로보다 확실히 더 많이 움직였을 때만 스와이프로 인정
+      // (위아래로 스크롤하려던 손가락이 실수로 사진을 넘기지 않도록)
+      if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy) * 1.5) {
+        if (dx < 0) onSwipeLeft(); else onSwipeRight();
+      }
+    }, { passive: true });
+  }
+  attachSwipeNav(imgLightbox, () => imgLightboxNext.click(), () => imgLightboxPrev.click());
+
   // 사진과 영상 갤러리 라이트박스 (여러 장이면 화살표로 넘기기 / 영상이면 바로 재생)
   const galleryLightbox = document.getElementById('galleryLightbox');
   const galleryLightboxImg = document.getElementById('galleryLightboxImg');
@@ -4138,6 +4161,13 @@
   });
   galleryLightboxCloseBtn.addEventListener('click', closeGalleryLightbox);
   galleryLightbox.addEventListener('click', (e) => { if (e.target === galleryLightbox) closeGalleryLightbox(); });
+
+  // ⭐ 신규: 갤러리도 손가락 스와이프로 넘기기 (영상 재생 중일 땐 스와이프 무시)
+  attachSwipeNav(
+    galleryLightbox,
+    () => { if (galleryLightboxVideoWrap.classList.contains('hidden')) galleryLightboxNext.click(); },
+    () => { if (galleryLightboxVideoWrap.classList.contains('hidden')) galleryLightboxPrev.click(); }
+  );
   document.addEventListener('keydown', (e) => {
     if (galleryLightbox.classList.contains('hidden')) return;
     if (e.key === 'ArrowLeft') galleryLightboxPrev.click();
