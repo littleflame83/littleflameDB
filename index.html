@@ -18,6 +18,11 @@
 <meta content="캄보디아 프놈펜에서 사역하는 작은불꽃 홍선교(홍성화 목사)의 공식 홈페이지. 캄보디아장로교신학교(캄장신) 교육사역과 선교 이야기, 기도편지, 사진, 가족 이야기, 후원 안내를 전합니다." name="description"/>
 <meta content="홍성화 (작은불꽃 홍선교)" name="author"/>
 <meta content="index, follow, max-image-preview:large" name="robots"/>
+<!-- ⭐ 신규: 파비콘 (브라우저 탭/즐겨찾기용 작은 아이콘) — 헤더에 쓰는 불꽃 로고를 그대로 사용 -->
+<link href="images/favicon.svg" rel="icon" type="image/svg+xml"/>
+<link href="images/favicon-32.png" rel="icon" sizes="32x32" type="image/png"/>
+<link href="images/favicon-16.png" rel="icon" sizes="16x16" type="image/png"/>
+<link href="images/apple-touch-icon.png" rel="apple-touch-icon"/>
 <meta content="#FDFCF8" media="(prefers-color-scheme: light)" name="theme-color"/>
 <meta content="#17130F" media="(prefers-color-scheme: dark)" name="theme-color"/>
 <meta content="light dark" name="color-scheme"/>
@@ -679,7 +684,7 @@
       최신 사역 요약과 기도편지를 이메일로 받아보세요.<br class="hidden sm:block"/>
       프놈펜의 소식을 전해드립니다.
     </p>
-<a class="mt-9 inline-flex items-center gap-2 bg-ember hover:bg-ember-dark text-white font-semibold text-sm px-8 py-4 rounded-full shadow-soft transition-colors" href="https://page.stibee.com/subscriptions/511617" rel="noopener" target="_blank">
+<a class="mt-9 inline-flex items-center gap-2 bg-ember hover:bg-ember-dark text-white font-semibold text-sm px-8 py-4 rounded-full shadow-soft transition-colors" href="https://page.stibee.com/subscriptions/511617" id="newsletterSubscribeBtn" rel="noopener" target="_blank">
       기도 편지 구독하기
       <svg fill="none" height="14" stroke="currentColor" stroke-width="2.2" viewbox="0 0 24 24" width="14"><path d="M9 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round"></path></svg>
 </a>
@@ -1059,21 +1064,28 @@
 <!-- 3. 본문 — 폰에서는 사진 아래(3번째), 데스크톱에서는 제목 아래 이어서 -->
 <div class="md:col-span-3 text-sm sm:text-base text-ink-600 leading-loose space-y-7 text-left">
 <p class="text-ink-900 font-medium">안녕하세요. 캄보디아를 마음에 품고 살아가는 홍성화 선교사입니다.</p>
-<div>
+<div class="space-y-3">
 <h3 class="font-bold text-ink-900 mb-2">🌱 첫 부르심: "주님이 너 오라신다"</h3>
-<p>제 인생의 방향을 바꾼 건 '한마디의 말'이었습니다. 2008년, 단기선교팀이 전해준 "성화야, 주님이 너 오라신다"는 말은 제게 분명한 하나님의 음성이었습니다. 군대를 다녀왔고, 축구를 좋아하며, 컴퓨터를 다룰 줄 아는 사람. 마침 현지 선교사님이 간절히 찾으시던 조건이 완벽하게 저를 향하고 있었습니다. 그렇게 시작된 1년간의 캄보디아 사역은 제 삶의 궤도를 완전히 바꿔놓았습니다. 전기가 끊긴 어두운 밤, 땀에 흠뻑 젖은 채 올려다본 크고 밝은 보름달 아래서 저는 주님이 주신 아름다움을 찬양하는 벅찬 기쁨을 배웠습니다.</p>
+<p>제 인생의 방향을 바꾼 건 '한마디의 말'이었습니다. 2008년, 단기선교팀이 전해준 "성화야, 주님이 너 오라신다"는 말은 제게 분명한 하나님의 음성이었습니다.</p>
+<p>그렇게 시작된 1년간의 캄보디아 사역은 제 삶의 궤도를 완전히 바꿔놓았습니다.</p>
+<p>전기가 끊긴 어두운 밤에 본 크고 밝은 보름달은 주님의 크심과 아름다움을 찬양케 하였습니다.</p>
 </div>
-<div>
+<div class="space-y-3">
 <h3 class="font-bold text-ink-900 mb-2">⛈️ 연단: 생사화복의 주관자를 만나다</h3>
-<p>물론 깊은 두려움의 순간도 있었습니다. 사역 중 맹장이 터지는 복막염으로 한국에 긴급 후송되어 큰 수술을 받았습니다. '과연 그 열악한 곳으로 다시 돌아갈 수 있을까?' 깊은 고뇌에 빠져 한동안 헌신의 찬양조차 부르지 못했습니다. 하지만 주님은 말씀을 통해 분명히 알려주셨습니다. 제가 어디에 있든, 생사화복의 주관자는 오직 하나님 한 분이시라는 것을요. 그제야 저는 두려움을 내려놓고 온전한 헌신을 고백할 수 있었습니다.</p>
+<p>사역 중에 맹장이 터지는 복막염으로 한국에 긴급 후송되어 큰 수술을 받았습니다.</p>
+<p>'과연 그 열악한 곳으로 다시 돌아갈 수 있을까?' 깊은 고뇌에 빠져 한동안 헌신의 찬양조차 부르지 못했습니다.</p>
+<p>하지만 주님은 말씀을 통해 분명히 알려주셨습니다. 제가 어디에 있든, 생사화복의 주관자는 오직 하나님 한 분이시라는 것을요. 그제야 저는 두려움을 내려놓고 온전한 헌신을 고백할 수 있었습니다.</p>
 </div>
-<div>
+<div class="space-y-3">
 <h3 class="font-bold text-ink-900 mb-2">📖 비전: 교수선교사를 향한 기나긴 준비</h3>
-<p>그 후로 제 삶은 선교를 향한 쉼 없는 준비의 여정이었습니다. 2014년에 아내와 선교지를 방문했을 때 캄보디아장로교신학교를 알게 되었습니다. 박사학위를 가진 교수가 필요하다는 말을 듣고, 저는 이를 주님의 부르심이라 고백했습니다. 그때부터 현지인 사역자를 길러내는 교수선교사가 되기 위해 신학대학원과 신약학 박사과정을 밟으며 묵묵히 학업에 매진했습니다. 참 감사하게도 그 기다림의 시간 동안, 아내와 사랑하는 두 아이들까지 온 가족이 한마음으로 캄보디아를 품게 되었습니다.</p>
+<p>2014년에 아내와 선교지를 방문했을 때 캄보디아장로교신학교를 알게 되었습니다. 박사학위를 가진 교수가 필요하다는 말을 듣고, 저는 이를 주님의 부르심이라 고백했습니다.</p>
+<p>그때부터 교수선교사가 되기 위해 신약학 석사와 박사과정을 밟으며 묵묵히 학업에 매진했습니다. 참 감사하게도 그 기다림의 시간 동안, 아내와 사랑하는 두 아이들까지 온 가족이 한마음으로 캄보디아를 품게 되었습니다.</p>
 </div>
-<div>
+<div class="space-y-3">
 <h3 class="font-bold text-ink-900 mb-2">🔥 파송: '선교사 체질', 다시 가슴이 뜁니다</h3>
-<p>코로나로 선교의 문이 닫혀가던 팍팍한 현실 속에서도 주님은 길을 여셨습니다. 대구신광교회를 통해 귀한 파송의 은혜를 허락해 주셨습니다. 최근 총회 선교사 훈련을 거치며, 제 안의 얼어있던 엔진이 다시 뜨겁게 폭발하는 것을 경험했습니다. "선교는 가르치는 것이 아니라 배우는 것이며, 내 이름은 지워지고 오직 주님의 이름만 남는 것." 돌아보면 저는 정말 '선교사 체질'인 것 같습니다. 앞으로도 주님을 깊이 사랑하고, 캄보디아 형제자매들의 진정한 이웃이 되기를 꿈꿉니다. 이 설레고 벅찬 여정에 여러분도 기도로 함께해 주시기를 소망합니다.</p>
+<p>코로나로 선교의 문이 닫혀가던 팍팍한 현실 속에서도 주님은 길을 여셨습니다. 대구신광교회를 통해 귀한 파송의 은혜를 허락해 주셨습니다. 최근 총회 선교사 훈련을 거치며, 제 안의 얼어있던 엔진이 다시 뜨겁게 폭발하는 것을 경험했습니다.</p>
+<p>"선교는 가르치는 것이 아니라 배우는 것이며, 내 이름은 지워지고 오직 주님의 이름만 남는 것."</p>
+<p>돌아보면 저는 정말 '선교사 체질'인 것 같습니다. 앞으로도 주님을 깊이 사랑하고, 캄보디아 형제자매들의 진정한 이웃이 되기를 꿈꿉니다. 이 설레고 벅찬 여정에 여러분도 기도로 함께해 주시기를 소망합니다.</p>
 </div>
 </div>
 
@@ -1777,6 +1789,18 @@
     document.querySelectorAll('a[href="https://go.missionfund.org/littleflame"]').forEach(a => {
       a.addEventListener('click', () => {
         gtag('event', 'click_recurring_donate', { event_category: 'donation' });
+      });
+    });
+
+    // ⭐ 신규: 기도 편지 구독하기 클릭
+    document.getElementById('newsletterSubscribeBtn')?.addEventListener('click', () => {
+      gtag('event', 'newsletter_click', { event_category: 'newsletter' });
+    });
+
+    // ⭐ 신규: 후원 안내 화면 열람 (헤더/메뉴/히어로의 "후원 참여하기" 등 → supportOverlay)
+    document.querySelectorAll('[onclick*="openOverlay(\'supportOverlay\')"]').forEach(el => {
+      el.addEventListener('click', () => {
+        gtag('event', 'support_open', { event_category: 'donation' });
       });
     });
 
@@ -3376,6 +3400,11 @@
     ACTIVE_STORY = { prefix: tmplPrefix, idx: String(idx), item };
     modalBody.innerHTML = item.detail_html;
 
+    // ⭐ 신규: GA4 이벤트 — 글 열람 추적 (어떤 카테고리 글이 많이 읽히는지 확인용)
+    if (typeof gtag === 'function') {
+      gtag('event', 'story_open', { event_category: tmplPrefix, event_label: item.title || String(idx) });
+    }
+
     // ⭐ 신규: 글 본문에 등록된 장소명을 따옴표로 쓰면("캄장신") 그 자리가 통째로 작은 지도로 바뀝니다.
     // 예) ...오늘은 "캄장신"에 방문했습니다... → "캄장신" 부분이 사라지고 그 자리에 지도가 나타남
     // 새 장소를 추가하고 싶으면 아래 PLACES 객체에 한 줄만 추가하면 이후 모든 글에서 바로 인식됩니다.
@@ -3437,6 +3466,10 @@
         localStorage.setItem(prayerKey, '1');
         e.currentTarget.className = 'inline-flex items-center gap-2 text-sm font-semibold bg-ember text-white px-6 py-3 rounded-full shadow-sm hover:shadow-soft transition-all';
         e.currentTarget.querySelector('span').textContent = uiText('prayed');
+        // ⭐ 신규: GA4 이벤트 — 기도 버튼 클릭 추적
+        if (typeof gtag === 'function') {
+          gtag('event', 'prayer_click', { event_category: tmplPrefix, event_label: idx });
+        }
         // ⭐ 신규: 처음 누를 때만(취소했다가 다시 누르는 것도 포함) 전체 합산 카운터 +1
         fetch('https://flat-shape-f26f.littleflame83.workers.dev/prayer-count/increment', { method: 'POST' })
           .then(res => res.json())
@@ -3763,12 +3796,24 @@
   //   https://cammission.com/?admin=1  으로 접속하면 비밀번호를 물어봄
   //   맞게 입력하면 그 브라우저에서는 계속 인쇄 버튼이 보이게 기억해둠(localStorage)
   //
-  // ⚠️ 주의: 이건 진짜 보안이 아니라 "일반 방문자 눈에 안 띄게 하는" 수준의
-  // 가벼운 잠금이에요. 공개된 사이트라 완전한 차단은 원래 불가능해요.
-  //
-  // 비밀번호를 바꾸고 싶으면 아래 PRINT_UNLOCK_PASSWORD 값만 고치면 됩니다.
+  // ⭐ 변경: 비밀번호를 이 파일(브라우저가 받는 코드) 안에 두지 않습니다.
+  // 대신 입력한 비밀번호를 Worker 서버로 보내서, 거기서만 진짜 비밀번호와
+  // 비교합니다. 그래서 이제 개발자도구로 소스를 열어봐도 비밀번호가 안 보여요.
+  // (Worker 쪽에 PRINT_PASSWORD라는 이름의 "비밀 값"을 등록해둬야 작동합니다.)
   (function initPrintUnlock() {
-    const PRINT_UNLOCK_PASSWORD = 'Missionhong1!';
+    async function verifyPrintPassword(password) {
+      try {
+        const res = await fetch('https://flat-shape-f26f.littleflame83.workers.dev/api/verify-print-password', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ password }),
+        });
+        const data = await res.json();
+        return data && data.ok === true;
+      } catch (e) {
+        return false;
+      }
+    }
 
     function showPrintButtons() {
       const show = () => {
@@ -3793,20 +3838,23 @@
       showPrintButtons();
     }
 
-    // ?admin=1 로 들어오면 비밀번호 확인
+    // ?admin=1 로 들어오면 비밀번호 확인 (서버에 물어봄)
     const params = new URLSearchParams(location.search);
     if (params.get('admin') === '1') {
       const input = window.prompt('인쇄 기능을 켜려면 비밀번호를 입력하세요');
-      if (input === PRINT_UNLOCK_PASSWORD) {
-        localStorage.setItem('printAccess', '1');
-        showPrintButtons();
-        alert('인쇄 버튼이 켜졌어요. 이 브라우저에서는 계속 보여요.');
-        showPrintButtons();
-      } else if (input !== null) {
-        alert('비밀번호가 일치하지 않아요.');
-      }
-      // 주소창에 ?admin=1 이 계속 남아있지 않도록 깨끗하게 정리
+      // 주소창에 ?admin=1 이 계속 남아있지 않도록 먼저 정리
       history.replaceState(null, '', location.pathname);
+      if (input !== null) {
+        verifyPrintPassword(input).then((ok) => {
+          if (ok) {
+            localStorage.setItem('printAccess', '1');
+            showPrintButtons();
+            alert('인쇄 버튼이 켜졌어요. 이 브라우저에서는 계속 보여요.');
+          } else {
+            alert('비밀번호가 일치하지 않아요.');
+          }
+        });
+      }
     }
   })();
 
