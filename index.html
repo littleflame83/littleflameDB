@@ -1079,7 +1079,7 @@
 <img alt="홍성화, 박윤희 선교사 가족" class="w-full h-full object-cover" loading="lazy" src="images/img-7bf08bd0fd0d.jpg"/>
 </div>
 <div class="reveal text-center mb-8 sm:mb-10" id="aboutMinistry">
-<p class="text-sky text-xs font-bold tracking-[0.25em] uppercase mb-3">Ministry</p>
+<p class="text-sky text-xs font-bold tracking-[0.25em] uppercase mb-3">Our Mission</p>
 <h3 class="text-lg sm:text-xl font-bold tracking-tight text-ink-900">사역 소개</h3>
 <p class="mt-3 text-sm text-ink-500">한 사람을 사랑하고, 한 사람을 세우며, 다음 세대를 준비합니다.</p>
 </div>
@@ -1681,13 +1681,15 @@
       if (goalEl) goalEl.textContent = goal.toLocaleString('ko-KR') + '만원';
     }
 
-    function showFundLoading() {
+    function showFundLoading(isTakingLong) {
       if (progressWrap) {
         progressWrap.classList.add('animate-pulse');
         progressWrap.classList.remove('hidden');
       }
       if (percentEl) {
-        percentEl.textContent = '불러오는 중';
+        // ⭐ 처음엔 "불러오는 중", 몇 번 실패해서 오래 걸리면 문구를 분명히 바꿔서
+        // "그냥 느린 것"과 "지금 안 되고 있는 것"을 누가 봐도 구분할 수 있게 합니다.
+        percentEl.textContent = isTakingLong ? '잠시 후 다시 확인해주세요' : '불러오는 중';
         percentEl.className = 'text-sm font-bold text-ink-400 animate-pulse';
       }
       if (currentEl) currentEl.textContent = '···';
@@ -1700,8 +1702,10 @@
       }
     }
 
+    let fundFailCount = 0;
+
     async function loadFundProgress() {
-      showFundLoading();
+      showFundLoading(fundFailCount >= 2);
       try {
         const res = await fetch(FUND_API_URL, { cache: 'no-store' });
         if (!res.ok) throw new Error('HTTP ' + res.status);
@@ -1710,10 +1714,12 @@
           throw new Error('후원 합계 응답이 올바르지 않습니다.');
         }
         const goal = typeof data.goal === 'number' && Number.isFinite(data.goal) ? data.goal : 350;
+        fundFailCount = 0;
         render(data.total, goal);
       } catch (error) {
-        console.warn('[후원 현황] 불러오기 실패 — 0%로 표시하지 않고 다시 시도합니다.', error);
-        showFundLoading();
+        fundFailCount++;
+        console.warn('[후원 현황] 불러오기 실패 — 0%로 표시하지 않고 계속 재시도합니다. (' + fundFailCount + '번째)', error);
+        showFundLoading(fundFailCount >= 2);
         setTimeout(loadFundProgress, 10000);
       }
     }
@@ -1791,16 +1797,28 @@
       el.classList.remove('animate-pulse');
     }
   }
-  fetch('https://flat-shape-f26f.littleflame83.workers.dev/prayer-count')
-    .then(res => res.json())
-    .then(data => { if (typeof data.count === 'number') updatePrayerCounterDisplay(data.count); })
-    .catch(() => {
-      const el = document.getElementById('prayerCounterNumber');
-      if (el) {
-        el.textContent = '0';
-        el.classList.remove('animate-pulse');
-      }
-    });
+  let prayerCountFailCount = 0;
+  function loadPrayerCount() {
+    fetch('https://flat-shape-f26f.littleflame83.workers.dev/prayer-count')
+      .then(res => res.json())
+      .then(data => {
+        if (typeof data.count !== 'number') throw new Error('기도 카운터 응답이 올바르지 않습니다.');
+        prayerCountFailCount = 0;
+        updatePrayerCounterDisplay(data.count);
+      })
+      .catch(() => {
+        // ⭐ 변경: 실패했다고 "0번"으로 보여주지 않습니다 (아무도 기도 안 한 것처럼 오해될 수 있음).
+        // 대신 계속 재시도하면서, 오래 걸리면 문구만 분명하게 바꿔줍니다.
+        prayerCountFailCount++;
+        const el = document.getElementById('prayerCounterNumber');
+        if (el) {
+          el.textContent = prayerCountFailCount >= 2 ? '잠시 후 다시 확인해주세요' : '불러오는 중';
+          el.classList.add('animate-pulse');
+        }
+        setTimeout(loadPrayerCount, 10000);
+      });
+  }
+  loadPrayerCount();
 
   // ⭐ 변경: 사역지 지도 — Google Maps JS API로 4개 사역지 마커를 직접 그림.
   // 처음엔 두 손가락(cooperative)으로 시작해서 페이지 스크롤을 방해하지 않다가,
@@ -2107,8 +2125,11 @@
       const countEl = document.getElementById('guestCount');
       if (countEl) countEl.textContent = String(rows.length);
     } catch (err) {
-      guestList.innerHTML = '<p class="text-sm text-ink-400 col-span-full text-center py-6">방명록을 불러오지 못했어요. 잠시 후 새로고침 해주세요.</p>';
+      // ⭐ 변경: 한 번 실패하고 끝내지 않고, 문구는 분명히 "실패"라고 알려주면서
+      // 15초 뒤 자동으로 다시 시도합니다 (방문자가 직접 새로고침 안 해도 됨).
+      guestList.innerHTML = '<p class="text-sm text-ink-400 col-span-full text-center py-6">방명록을 불러오지 못했어요. 자동으로 다시 시도할게요…</p>';
       console.error('guestbook load error', err);
+      setTimeout(loadGuestbook, 15000);
     }
   }
   loadGuestbook();
