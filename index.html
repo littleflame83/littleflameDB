@@ -178,13 +178,20 @@
   .about-tab.active { background: #3A332D !important; color: #fff !important; border-color: #3A332D !important; }
   .about-tab:not(.active) { background: transparent !important; color: #6b625b !important; border-color: rgba(42,37,33,.10) !important; }
   .about-panel-hidden { display: none !important; }
-  #aboutOverlay { background-color: #FDFCF8 !important; }
-  #aboutOverlay .about-tab-wrap { background: transparent !important; box-shadow: none !important; }
+  #aboutOverlay { background-color: #17130F !important; }
+  #aboutOverlay .about-tab-wrap { background: #17130F !important; box-shadow: none !important; }
   #aboutMinistry .ministry-person-card { background: #FFFFFF; border-radius: 1.5rem; padding: 2rem; box-shadow: 0 8px 30px -8px rgba(42,37,33,0.10); }
   #aboutMinistry .ministry-person-card p, #aboutMinistry .ministry-person-card li { font-size: 1rem; }
   #aboutMinistry .ministry-person-card li { line-height: 1.9; }
   @media (max-width: 639px) { #aboutMinistry .ministry-person-card { padding: 1.5rem; } #aboutMinistry .ministry-person-card p, #aboutMinistry .ministry-person-card li { font-size: .95rem; } }
   @media (max-width: 639px) { .about-tab { padding-left: .85rem; padding-right: .85rem; } }
+
+  /* 사역소개 오버레이도 다른 다크모드 창과 동일한 배경을 사용 */
+  #aboutOverlay, #aboutOverlay .about-tab-wrap { background-color: #17130F !important; }
+  @media (prefers-color-scheme: dark) {
+    #aboutOverlay .about-tab.active { background: #2C2823 !important; color: #F1EBE3 !important; border-color: rgba(241,235,227,.16) !important; }
+    #aboutOverlay .about-tab:not(.active) { color: #B9AEA2 !important; border-color: rgba(241,235,227,.10) !important; }
+  }
   /* 메인 섹션의 체감 길이만 조금 줄입니다. 콘텐츠는 삭제하지 않습니다. */
   #about { padding-top: 7rem; padding-bottom: 7rem; }
   #recentNews, #currentPrayerTopics, #reports { padding-top: 4rem; padding-bottom: 4rem; }
@@ -474,7 +481,7 @@
   </div>
 </section>
 <!-- ================= 현재 기도제목 ================= -->
-<section class="bg-[#FBF6EE] py-20 sm:py-24 px-6" id="currentPrayerTopics">
+<section class="bg-warm-bg py-20 sm:py-24 px-6" id="currentPrayerTopics">
   <div class="max-w-5xl mx-auto">
     <div class="reveal text-center mb-10 sm:mb-12">
       <p class="text-sky text-xs font-bold tracking-[0.25em] uppercase mb-3">Current Prayer</p>
@@ -565,7 +572,7 @@
 </div>
 </section>
 <!-- ================= 사진과 영상 ================= -->
-<section class="bg-[#FBF6EE] py-20 sm:py-24 px-6">
+<section class="bg-warm-bg py-20 sm:py-24 px-6">
 <div class="max-w-6xl mx-auto">
 <div class="reveal text-center mb-10 sm:mb-12">
 <p class="text-sky text-xs font-bold tracking-[0.25em] uppercase mb-3">Mission Media</p>
@@ -586,7 +593,7 @@
 </div>
 </section>
 <!-- ================= 가족이야기 (구 선교리포트) ================= -->
-<section class="bg-warm-bg py-20 sm:py-24 px-6" id="reports">
+<section class="bg-[#FBF6EE] py-20 sm:py-24 px-6" id="reports">
 <div class="max-w-6xl mx-auto">
 <div class="reveal text-center mb-14 sm:mb-16">
 <p class="text-rose-500 text-xs font-bold tracking-[0.25em] uppercase mb-3">Family Story</p>
@@ -604,7 +611,7 @@
 </div>
 </section>
 <!-- ================= 기도편지 ================= -->
-<section class="bg-[#FBF6EE] py-20 sm:py-24 px-6">
+<section class="bg-warm-bg py-20 sm:py-24 px-6">
 <div class="max-w-5xl mx-auto">
 <div class="reveal text-center mb-14 sm:mb-16">
 <p class="text-violet-500 text-xs font-bold tracking-[0.25em] uppercase mb-3">Prayer Letter</p>
@@ -621,7 +628,7 @@
 </div>
 </div>
 </section>
-<section class="bg-warm-bg py-24 sm:py-32 px-6" id="newsletter">
+<section class="bg-[#FBF6EE] py-24 sm:py-32 px-6" id="newsletter">
 <div class="max-w-2xl mx-auto text-center reveal">
 <div class="flex justify-center mb-6">
 <svg class="flame-flicker" fill="none" height="24" viewbox="0 0 24 24" width="24">
@@ -642,7 +649,7 @@
 </div>
 </section>
 <!-- ================= 후원안내 (정기/일시) ================= -->
-<section class="bg-[#FBF6EE] py-24 sm:py-32 px-6" id="support">
+<section class="bg-warm-bg py-24 sm:py-32 px-6" id="support">
 <div class="max-w-5xl mx-auto">
 <div class="reveal text-center mb-14">
 <p class="text-sky text-xs font-bold tracking-[0.25em] uppercase mb-3">기도의 장작을 더해주세요</p>
@@ -702,7 +709,7 @@
 </div>
 </section>
 <!-- ================= 응원 방명록 (커뮤니티 벽) ================= -->
-<section class="bg-warm-bg py-24 sm:py-32 px-6" id="guestbook">
+<section class="bg-[#FBF6EE] py-24 sm:py-32 px-6" id="guestbook">
 <div class="max-w-5xl mx-auto">
 <div class="reveal text-center mb-12">
 <p class="text-ember text-xs font-bold tracking-[0.25em] uppercase mb-3">함께하는 동역자들</p>
