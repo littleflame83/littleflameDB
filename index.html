@@ -344,9 +344,9 @@
     transition: background-color .2s ease, color .2s ease, border-color .2s ease;
   }
   .about-tab.is-active {
-    background: rgba(249,115,22,.12) !important;
-    color: #F97316 !important;
-    border-color: rgba(249,115,22,.28) !important;
+    background: #2A2521 !important;
+    color: #ffffff !important;
+    border-color: #2A2521 !important;
   }
   .about-tab:hover { color: #F97316 !important; border-color: rgba(249,115,22,.24) !important; }
   @media (prefers-color-scheme: dark) {
@@ -364,7 +364,7 @@
     #aboutOverlay .about-person-card .text-ember { color: #FB923C !important; }
     #aboutOverlay .about-person-card .font-semibold.text-ink-900 { color: #F1EBE3 !important; }
     #aboutOverlay .about-tabs-bar .about-tab { color: #B8ADA0 !important; }
-    #aboutOverlay .about-tabs-bar .about-tab.is-active { color: #FDBA74 !important; background: rgba(249,115,22,.16) !important; }
+    #aboutOverlay .about-tabs-bar .about-tab.is-active { color: #ffffff !important; background: rgba(255,255,255,.16) !important; }
     #aboutOverlay .about-tabs-bar .about-tab:hover { color: #FDBA74 !important; }
     #aboutOverlay .reveal.max-w-2xl.mx-auto.text-center.bg-\[\#FBF6EE\] { background: #24201B !important; }
   }
@@ -391,7 +391,7 @@
 </a>
 <!-- 데스크톱 메뉴 -->
 <nav class="hidden lg:flex items-center gap-9 text-[15px] font-medium text-ink-700">
-<a class="hover:text-ember transition-colors" href="javascript:void(0)" id="nav-about" onclick="openOverlay('aboutOverlay')">사역 소개</a>
+<a class="hover:text-ember transition-colors" href="javascript:void(0)" id="nav-about" onclick="openAboutOverlay('ministry')">사역 소개</a>
 <a class="hover:text-ember transition-colors" href="javascript:void(0)" id="nav-cambodia" onclick="openOverlay('cambodiaOverlay')">캄보디아 이야기</a>
 <a class="hover:text-ember transition-colors" href="javascript:void(0)" id="nav-gallery" onclick="openOverlay('galleryOverlay')">사진과 영상</a>
 <a class="hover:text-ember transition-colors" href="javascript:void(0)" id="nav-reports" onclick="openOverlay('reportsOverlay')">가족 이야기</a>
@@ -433,7 +433,7 @@
 <!-- 모바일 메뉴 패널 -->
 <div class="hidden lg:hidden border-t border-ink-900/5 bg-white/95 backdrop-blur-md" id="mobileMenu">
 <nav class="flex flex-col px-6 py-4 gap-1 text-[15px] font-medium text-ink-700">
-<a class="py-2.5 border-b border-ink-900/5" href="javascript:void(0)" id="navm-about" onclick="openOverlay('aboutOverlay')">사역 소개</a>
+<a class="py-2.5 border-b border-ink-900/5" href="javascript:void(0)" id="navm-about" onclick="openAboutOverlay('ministry')">사역 소개</a>
 <a class="py-2.5 border-b border-ink-900/5" href="javascript:void(0)" id="navm-cambodia" onclick="openOverlay('cambodiaOverlay')">캄보디아 이야기</a>
 <a class="py-2.5 border-b border-ink-900/5" href="javascript:void(0)" id="navm-gallery" onclick="openOverlay('galleryOverlay')">사진과 영상</a>
 <a class="py-2.5 border-b border-ink-900/5" href="javascript:void(0)" id="navm-reports" onclick="openOverlay('reportsOverlay')">가족 이야기</a>
@@ -466,10 +466,10 @@
     </p>
 <div class="mt-10 flex flex-col items-center">
   <div class="flex items-center justify-center gap-3">
-    <a class="bg-white/10 hover:bg-white/20 text-white border border-white/40 font-semibold text-sm px-7 py-3.5 rounded-full backdrop-blur-sm transition-colors" href="javascript:void(0)" onclick="openOverlay('aboutOverlay')">사역 이야기 보기</a>
+    <a class="bg-white/10 hover:bg-white/20 text-white border border-white/40 font-semibold text-sm px-7 py-3.5 rounded-full backdrop-blur-sm transition-colors" href="javascript:void(0)" onclick="openAboutOverlay('ministry')">사역 이야기 보기</a>
     <a class="bg-ember hover:bg-ember-dark text-white font-semibold text-sm px-7 py-3.5 rounded-full shadow-soft transition-colors" href="javascript:void(0)" onclick="openOverlay('supportOverlay')">후원 참여하기</a>
   </div>
-  <a class="mt-4 text-white/90 hover:text-white text-sm font-medium underline underline-offset-4 decoration-white/40 hover:decoration-white transition-colors" href="javascript:void(0)" onclick="openOverlay('aboutOverlay')">처음 오셨나요? →</a>
+  <a class="mt-4 text-white/90 hover:text-white text-sm font-medium underline underline-offset-4 decoration-white/40 hover:decoration-white transition-colors" href="javascript:void(0)" onclick="openAboutOverlay('story')">처음 오셨나요? →</a>
 </div>
 <!-- HERO 내부 SCROLL은 하나만 사용 -->
 <a aria-label="아래로 스크롤" class="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-2 text-white/80 bob" href="javascript:void(0)" onclick="document.getElementById('about').scrollIntoView({behavior:'smooth'})">
@@ -1031,29 +1031,52 @@
 </div>
 <div class="sticky top-16 sm:top-20 z-10 about-tabs-bar border-b border-ink-900/5">
   <nav aria-label="사역 소개 바로가기" class="max-w-4xl mx-auto px-6 py-3 flex items-center justify-center gap-2 sm:gap-3">
-    <button type="button" class="about-tab is-active px-3.5 py-2 rounded-full text-xs sm:text-sm font-semibold" onclick="scrollAboutTo('aboutPerson')">홍성화 선교사는</button>
-    <button type="button" class="about-tab px-3.5 py-2 rounded-full text-xs sm:text-sm font-semibold" onclick="scrollAboutTo('aboutMinistry')">사역 소개</button>
+    <button type="button" class="about-tab px-3.5 py-2 rounded-full text-xs sm:text-sm font-semibold" data-about-mode="story" onclick="switchAboutView('story')">홍성화 선교사는</button>
+    <button type="button" class="about-tab is-active px-3.5 py-2 rounded-full text-xs sm:text-sm font-semibold" data-about-mode="ministry" onclick="switchAboutView('ministry')">사역 소개</button>
   </nav>
 </div>
 <div class="pt-10 pb-20 sm:pt-14 sm:pb-28 px-6">
 <div class="max-w-4xl mx-auto">
-<div class="reveal grid grid-cols-1 md:grid-cols-5 gap-8 md:gap-12 items-center mb-12" id="aboutPerson">
-<div class="md:col-span-2">
-<div class="rounded-3xl overflow-hidden shadow-card aspect-[4/5] sm:aspect-square">
-<img alt="홍성화, 박윤희 선교사 가족" class="w-full h-full object-cover" loading="lazy" src="images/img-7bf08bd0fd0d.jpg"/>
-</div>
-</div>
+
+<!-- ⭐ "홍성화 선교사는" 보기 — 메인의 "처음 오셨나요? →"를 눌렀을 때만 보입니다 -->
+<div class="hidden" id="aboutStoryView">
+<div class="reveal grid grid-cols-1 md:grid-cols-5 gap-8 md:gap-12 items-start" id="aboutPerson">
 <div class="md:col-span-3 text-center md:text-left">
 <p class="text-ember text-xs font-bold tracking-[0.25em] uppercase mb-3">My Story</p>
 <h2 class="text-xl sm:text-2xl font-bold tracking-tight text-ink-900 leading-snug">홍성화 선교사는</h2>
-<p class="mt-4 text-sm sm:text-base text-ink-600 leading-loose">
-        저는 목회자로 살아오며, 하나님께서 한 사람의 마음에 작은 불꽃을 붙이시고 그 불꽃을 통해 또 다른 사람에게 소망을 전하게 하신다는 것을 배워왔습니다. 그 부르심은 제 안에서 캄보디아를 향한 마음으로 이어졌습니다.
-      </p>
+<p class="mt-2 text-xl sm:text-2xl font-extrabold tracking-tight text-ember">준비된 선교사입니다</p>
+<div class="mt-6 text-sm sm:text-base text-ink-600 leading-loose space-y-7 text-left">
+<p class="text-ink-900 font-medium">안녕하세요. 캄보디아를 마음에 품고 살아가는 홍성화 선교사입니다.</p>
+<div>
+<h3 class="font-bold text-ink-900 mb-2">🌱 첫 부르심: "주님이 너 오라신다"</h3>
+<p>제 인생의 방향을 바꾼 건 '한마디의 말'이었습니다. 2008년, 단기선교팀이 전해준 "성화야, 주님이 너 오라신다"는 말은 제게 분명한 하나님의 음성이었습니다. 군대를 다녀왔고, 축구를 좋아하며, 컴퓨터를 다룰 줄 아는 사람. 마침 현지 선교사님이 간절히 찾으시던 조건이 완벽하게 저를 향하고 있었습니다. 그렇게 시작된 1년간의 캄보디아 사역은 제 삶의 궤도를 완전히 바꿔놓았습니다. 전기가 끊긴 어두운 밤, 땀에 흠뻑 젖은 채 올려다본 크고 밝은 보름달 아래서 저는 주님이 주신 아름다움을 찬양하는 벅찬 기쁨을 배웠습니다.</p>
+</div>
+<div>
+<h3 class="font-bold text-ink-900 mb-2">⛈️ 연단: 생사화복의 주관자를 만나다</h3>
+<p>물론 깊은 두려움의 순간도 있었습니다. 사역 중 맹장이 터지는 복막염으로 한국에 긴급 후송되어 큰 수술을 받았습니다. '과연 그 열악한 곳으로 다시 돌아갈 수 있을까?' 깊은 고뇌에 빠져 한동안 헌신의 찬양조차 부르지 못했습니다. 하지만 주님은 말씀을 통해 분명히 알려주셨습니다. 제가 어디에 있든, 생사화복의 주관자는 오직 하나님 한 분이시라는 것을요. 그제야 저는 두려움을 내려놓고 온전한 헌신을 고백할 수 있었습니다.</p>
+</div>
+<div>
+<h3 class="font-bold text-ink-900 mb-2">📖 비전: 교수선교사를 향한 기나긴 준비</h3>
+<p>그 후로 제 삶은 선교를 향한 쉼 없는 준비의 여정이었습니다. 2014년에 아내와 선교지를 방문했을 때 캄보디아장로교신학교를 알게 되었습니다. 박사학위를 가진 교수가 필요하다는 말을 듣고, 저는 이를 주님의 부르심이라 고백했습니다. 그때부터 현지인 사역자를 길러내는 교수선교사가 되기 위해 신학대학원과 신약학 박사과정을 밟으며 묵묵히 학업에 매진했습니다. 참 감사하게도 그 기다림의 시간 동안, 아내와 사랑하는 두 아이들까지 온 가족이 한마음으로 캄보디아를 품게 되었습니다.</p>
+</div>
+<div>
+<h3 class="font-bold text-ink-900 mb-2">🔥 파송: '선교사 체질', 다시 가슴이 뜁니다</h3>
+<p>코로나로 선교의 문이 닫혀가던 팍팍한 현실 속에서도 주님은 길을 여셨습니다. 대구신광교회를 통해 귀한 파송의 은혜를 허락해 주셨습니다. 최근 총회 선교사 훈련을 거치며, 제 안의 얼어있던 엔진이 다시 뜨겁게 폭발하는 것을 경험했습니다. "선교는 가르치는 것이 아니라 배우는 것이며, 내 이름은 지워지고 오직 주님의 이름만 남는 것." 돌아보면 저는 정말 '선교사 체질'인 것 같습니다. 앞으로도 주님을 깊이 사랑하고, 캄보디아 형제자매들의 진정한 이웃이 되기를 꿈꿉니다. 이 설레고 벅찬 여정에 여러분도 기도로 함께해 주시기를 소망합니다.</p>
 </div>
 </div>
-<div class="reveal max-w-2xl mx-auto text-ink-600 text-sm sm:text-base leading-loose space-y-4 mb-14">
-<p>캄보디아의 아픔과 가능성을 마주하며, 저는 거창한 일을 이루기보다 한 사람을 사랑하고, 말씀과 배움으로 한 사람을 세우며, 그 사람이 또 다른 사람을 세우는 선교를 꿈꿉니다.</p>
-<p>그래서 아내 박윤희 선교사와 함께 현지인들의 삶 가까이에서 복음을 살아내고, 다음 세대의 리더를 세우는 길을 걸어가려 합니다. 작은 불꽃 하나가 또 다른 불꽃을 밝히듯, 하나님께서 시작하신 일을 끝까지 신실하게 걸어가고 싶습니다.</p>
+</div>
+<div class="md:col-span-2">
+<div class="md:sticky md:top-28 rounded-3xl overflow-hidden shadow-card aspect-[3/4]">
+<img alt="강단에서 말씀을 전하는 홍성화 선교사" class="w-full h-full object-cover" loading="lazy" src="images/img-hong-testimony.jpg"/>
+</div>
+</div>
+</div>
+</div>
+
+<!-- ⭐ "사역 소개" 보기 — 그 외 모든 "사역 소개" 버튼/링크는 이쪽으로 옵니다 (기본값) -->
+<div id="aboutMinistryView">
+<div class="reveal rounded-3xl overflow-hidden shadow-card aspect-[16/9] max-w-2xl mx-auto mb-12">
+<img alt="홍성화, 박윤희 선교사 가족" class="w-full h-full object-cover" loading="lazy" src="images/img-7bf08bd0fd0d.jpg"/>
 </div>
 <div class="reveal text-center mb-8 sm:mb-10" id="aboutMinistry">
 <p class="text-sky text-xs font-bold tracking-[0.25em] uppercase mb-3">Ministry</p>
@@ -1123,6 +1146,8 @@
         동역하기
       </a>
 </div>
+</div>
+
 </div>
 </div>
 </div>
@@ -2194,19 +2219,27 @@
     });
   }
 
-  function scrollAboutTo(targetId) {
-    const overlay = document.getElementById('aboutOverlay');
-    const target = document.getElementById(targetId);
-    if (!overlay || !target) return;
-    const topOffset = window.innerWidth >= 640 ? 120 : 104;
-    const y = Math.max(0, target.offsetTop - topOffset);
-    overlay.scrollTo({ top: y, behavior: 'smooth' });
-    document.querySelectorAll('.about-tab').forEach(btn => btn.classList.remove('is-active'));
+  // ⭐ 변경: 예전엔 같은 페이지 안에서 스크롤만 이동했지만,
+  // 이제 "홍성화 선교사는"과 "사역 소개"는 완전히 다른 내용이라 통째로 보이기/숨기기로 바꿨습니다.
+  function switchAboutView(mode) {
+    const storyView = document.getElementById('aboutStoryView');
+    const ministryView = document.getElementById('aboutMinistryView');
+    if (!storyView || !ministryView) return;
+    const isStory = mode === 'story';
+    storyView.classList.toggle('hidden', !isStory);
+    ministryView.classList.toggle('hidden', isStory);
     document.querySelectorAll('.about-tab').forEach(btn => {
-      if ((targetId === 'aboutPerson' && btn.textContent.includes('홍성화')) || (targetId === 'aboutMinistry' && btn.textContent.includes('사역 소개'))) {
-        btn.classList.add('is-active');
-      }
+      btn.classList.toggle('is-active', btn.getAttribute('data-about-mode') === mode);
     });
+    (isStory ? storyView : ministryView).querySelectorAll('.reveal').forEach(x => x.classList.add('in-view'));
+    const overlay = document.getElementById('aboutOverlay');
+    if (overlay) overlay.scrollTop = 0;
+  }
+
+  // ⭐ 신규: "처음 오셨나요?"는 story(홍성화 선교사는), 그 외 모든 "사역 소개"는 ministry로 엽니다
+  function openAboutOverlay(mode) {
+    openOverlay('aboutOverlay');
+    switchAboutView(mode || 'ministry');
   }
 
   // 메인 페이지 상·하 이동 화살표
@@ -2240,12 +2273,6 @@
     el.querySelectorAll('.reveal').forEach(x => x.classList.add('in-view'));
     document.body.style.overflow = 'hidden';
     el.scrollTop = 0;
-    if (id === 'aboutOverlay') {
-      const tabs = el.querySelectorAll('.about-tab');
-      tabs.forEach((btn, i) => {
-        btn.classList.toggle('is-active', i === 0);
-      });
-    }
     mobileMenu.classList.add('hidden');
     iconOpen.classList.remove('hidden');
     iconClose.classList.add('hidden');
