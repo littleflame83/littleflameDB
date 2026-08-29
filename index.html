@@ -1040,12 +1040,24 @@
 
 <!-- ⭐ "홍성화 선교사는" 보기 — 메인의 "처음 오셨나요? →"를 눌렀을 때만 보입니다 -->
 <div class="hidden" id="aboutStoryView">
-<div class="reveal grid grid-cols-1 md:grid-cols-5 gap-8 md:gap-12 items-start" id="aboutPerson">
+<div class="reveal flex flex-col md:grid md:grid-cols-5 gap-6 md:gap-12 items-start" id="aboutPerson">
+
+<!-- 1. 제목 / 부제 (항상 맨 위) -->
 <div class="md:col-span-3 text-center md:text-left">
 <p class="text-ember text-xs font-bold tracking-[0.25em] uppercase mb-3">My Story</p>
 <h2 class="text-xl sm:text-2xl font-bold tracking-tight text-ink-900 leading-snug">홍성화 선교사는</h2>
 <p class="mt-2 text-xl sm:text-2xl font-extrabold tracking-tight text-ember">준비된 선교사입니다</p>
-<div class="mt-6 text-sm sm:text-base text-ink-600 leading-loose space-y-7 text-left">
+</div>
+
+<!-- 2. 사진 — 폰에서는 제목 바로 아래(2번째)로, 데스크톱에서는 오른쪽에 두 줄에 걸쳐 고정 -->
+<div class="md:col-span-2 md:row-span-2">
+<div class="md:sticky md:top-28 rounded-3xl overflow-hidden shadow-card aspect-[3/4]">
+<img alt="강단에서 말씀을 전하는 홍성화 선교사" class="w-full h-full object-cover" loading="lazy" src="images/img-hong-testimony.jpg"/>
+</div>
+</div>
+
+<!-- 3. 본문 — 폰에서는 사진 아래(3번째), 데스크톱에서는 제목 아래 이어서 -->
+<div class="md:col-span-3 text-sm sm:text-base text-ink-600 leading-loose space-y-7 text-left">
 <p class="text-ink-900 font-medium">안녕하세요. 캄보디아를 마음에 품고 살아가는 홍성화 선교사입니다.</p>
 <div>
 <h3 class="font-bold text-ink-900 mb-2">🌱 첫 부르심: "주님이 너 오라신다"</h3>
@@ -1064,12 +1076,7 @@
 <p>코로나로 선교의 문이 닫혀가던 팍팍한 현실 속에서도 주님은 길을 여셨습니다. 대구신광교회를 통해 귀한 파송의 은혜를 허락해 주셨습니다. 최근 총회 선교사 훈련을 거치며, 제 안의 얼어있던 엔진이 다시 뜨겁게 폭발하는 것을 경험했습니다. "선교는 가르치는 것이 아니라 배우는 것이며, 내 이름은 지워지고 오직 주님의 이름만 남는 것." 돌아보면 저는 정말 '선교사 체질'인 것 같습니다. 앞으로도 주님을 깊이 사랑하고, 캄보디아 형제자매들의 진정한 이웃이 되기를 꿈꿉니다. 이 설레고 벅찬 여정에 여러분도 기도로 함께해 주시기를 소망합니다.</p>
 </div>
 </div>
-</div>
-<div class="md:col-span-2">
-<div class="md:sticky md:top-28 rounded-3xl overflow-hidden shadow-card aspect-[3/4]">
-<img alt="강단에서 말씀을 전하는 홍성화 선교사" class="w-full h-full object-cover" loading="lazy" src="images/img-hong-testimony.jpg"/>
-</div>
-</div>
+
 </div>
 </div>
 
@@ -4058,23 +4065,41 @@
   // ⭐ 신규: 손가락으로 좌우 스와이프해서 사진 넘기기 (화살표 버튼과 별개로 동작)
   function attachSwipeNav(el, onSwipeLeft, onSwipeRight) {
     let startX = 0, startY = 0, tracking = false;
-    el.addEventListener('touchstart', (e) => {
-      if (e.touches.length !== 1) return;
-      startX = e.touches[0].clientX;
-      startY = e.touches[0].clientY;
-      tracking = true;
-    }, { passive: true });
-    el.addEventListener('touchend', (e) => {
+    function handleStart(x, y) { startX = x; startY = y; tracking = true; }
+    function handleEnd(x, y) {
       if (!tracking) return;
       tracking = false;
-      const dx = e.changedTouches[0].clientX - startX;
-      const dy = e.changedTouches[0].clientY - startY;
+      const dx = x - startX;
+      const dy = y - startY;
       // 가로로 충분히, 세로보다 확실히 더 많이 움직였을 때만 스와이프로 인정
       // (위아래로 스크롤하려던 손가락이 실수로 사진을 넘기지 않도록)
       if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy) * 1.5) {
         if (dx < 0) onSwipeLeft(); else onSwipeRight();
       }
+    }
+    // 손가락(터치)
+    el.addEventListener('touchstart', (e) => {
+      if (e.touches.length !== 1) return;
+      handleStart(e.touches[0].clientX, e.touches[0].clientY);
     }, { passive: true });
+    el.addEventListener('touchend', (e) => {
+      handleEnd(e.changedTouches[0].clientX, e.changedTouches[0].clientY);
+    }, { passive: true });
+
+    // ⭐ 신규: 마우스로 눌러서 좌우로 끌기(드래그)도 지원
+    let mouseDown = false;
+    el.addEventListener('mousedown', (e) => {
+      // 닫기/이전/다음/다운로드 버튼을 누른 거면 드래그로 취급하지 않음
+      if (e.target.closest('button, a')) return;
+      mouseDown = true;
+      handleStart(e.clientX, e.clientY);
+    });
+    el.addEventListener('mouseup', (e) => {
+      if (!mouseDown) return;
+      mouseDown = false;
+      handleEnd(e.clientX, e.clientY);
+    });
+    el.addEventListener('mouseleave', () => { mouseDown = false; tracking = false; });
   }
   attachSwipeNav(imgLightbox, () => imgLightboxNext.click(), () => imgLightboxPrev.click());
 
