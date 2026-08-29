@@ -175,9 +175,15 @@
 
   /* 사역 소개 선택 메뉴 — 사진·영상의 카테고리 필터와 같은 pill 스타일 */
   .about-tab { transition: all .25s ease; }
-  .about-tab.active { background: #2A2521 !important; color: #fff !important; border-color: #2A2521 !important; }
-  .about-tab:not(.active) { background: transparent !important; color: #6b625b !important; border-color: rgba(42,37,33,.12) !important; }
+  .about-tab.active { background: #3A332D !important; color: #fff !important; border-color: #3A332D !important; }
+  .about-tab:not(.active) { background: transparent !important; color: #6b625b !important; border-color: rgba(42,37,33,.10) !important; }
   .about-panel-hidden { display: none !important; }
+  #aboutOverlay { background-color: #FDFCF8 !important; }
+  #aboutOverlay .about-tab-wrap { background: transparent !important; box-shadow: none !important; }
+  #aboutMinistry .ministry-person-card { background: #FFFFFF; border-radius: 1.5rem; padding: 2rem; box-shadow: 0 8px 30px -8px rgba(42,37,33,0.10); }
+  #aboutMinistry .ministry-person-card p, #aboutMinistry .ministry-person-card li { font-size: 1rem; }
+  #aboutMinistry .ministry-person-card li { line-height: 1.9; }
+  @media (max-width: 639px) { #aboutMinistry .ministry-person-card { padding: 1.5rem; } #aboutMinistry .ministry-person-card p, #aboutMinistry .ministry-person-card li { font-size: .95rem; } }
   @media (max-width: 639px) { .about-tab { padding-left: .85rem; padding-right: .85rem; } }
   /* 메인 섹션의 체감 길이만 조금 줄입니다. 콘텐츠는 삭제하지 않습니다. */
   #about { padding-top: 7rem; padding-bottom: 7rem; }
@@ -979,7 +985,7 @@
 </div>
 </div>
 
-<div class="sticky top-16 sm:top-20 z-10 bg-warm-bg/95 backdrop-blur-sm border-b border-ink-900/5">
+<div class="about-tab-wrap sticky top-16 sm:top-20 z-10 bg-transparent border-b border-ink-900/5">
   <nav aria-label="사역 소개 선택" class="max-w-6xl mx-auto px-6 py-3 flex flex-wrap items-center justify-center gap-2" role="tablist">
     <button id="aboutTabPerson" type="button" role="tab" aria-selected="true" class="about-tab active px-4 py-2 rounded-full text-sm font-semibold border border-ink-900/10" onclick="setAboutPanel('aboutPerson')">홍성화 선교사는</button>
     <button id="aboutTabMinistry" type="button" role="tab" aria-selected="false" class="about-tab px-4 py-2 rounded-full text-sm font-semibold border border-ink-900/10" onclick="setAboutPanel('aboutMinistry')">사역 소개</button>
@@ -1065,9 +1071,9 @@
 </div>
 
 <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8 mb-16">
-<div class="reveal p-2 sm:p-3">
+<div class="reveal ministry-person-card">
 <span class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-sky/10 text-lg mb-4">👨‍🏫</span>
-<h3 class="font-bold text-lg text-ink-900">홍성화 선교사</h3>
+<h3 class="font-bold text-xl sm:text-2xl text-ink-900">홍성화 선교사</h3>
 <p class="mt-1 text-xs font-semibold text-sky uppercase tracking-wide">교육과 지성 훈련으로 다음 세대 리더 양성</p>
 <ul class="mt-4 space-y-3 text-sm text-ink-500 leading-relaxed">
 <li><span class="font-semibold text-ink-900">신학교 사역 (CPTI)</span> — 바른 세계관과 영성을 갖춘 현지 목회자 후보생들을 집중적으로 양성합니다.</li>
@@ -1075,9 +1081,9 @@
 <li><span class="font-semibold text-ink-900">현지 교회 개척</span> — 훈련된 관계망을 바탕으로 스스로 자립할 수 있는 건강한 현지 교회를 개척합니다.</li>
 </ul>
 </div>
-<div class="reveal p-2 sm:p-3">
+<div class="reveal ministry-person-card">
 <span class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-ember/10 text-lg mb-4">👩‍💼</span>
-<h3 class="font-bold text-lg text-ink-900">박윤희 선교사</h3>
+<h3 class="font-bold text-xl sm:text-2xl text-ink-900">박윤희 선교사</h3>
 <p class="mt-1 text-xs font-semibold text-ember uppercase tracking-wide">일상의 나눔과 치유가 있는 '사랑방' 상담 사역</p>
 <ul class="mt-4 space-y-3 text-sm text-ink-500 leading-relaxed">
 <li><span class="font-semibold text-ink-900">일상 밀착형 상담 센터 개소</span> — 접근성이 좋은 곳에 상가를 얻어, 현지인들과 일상을 나누는 '사랑방' 형태의 소통 공간을 엽니다.</li>
@@ -1120,7 +1126,7 @@
       </p>
 </div>
 
-<div class="reveal max-w-2xl mx-auto text-center bg-[#FBF6EE] rounded-3xl p-8 sm:p-10">
+<div class="reveal max-w-2xl mx-auto text-center bg-transparent rounded-3xl p-8 sm:p-10">
 <p class="text-ember text-xs font-bold tracking-[0.25em] uppercase mb-3">❤️ 동역 초청</p>
 <h3 class="text-lg sm:text-xl font-bold text-ink-900 mb-4">기적을 만드는 여정, 여러분을 초대합니다!</h3>
 <p class="text-ink-600 text-sm sm:text-base leading-loose">
