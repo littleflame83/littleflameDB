@@ -1043,7 +1043,7 @@
 <div class="reveal flex flex-col md:grid md:grid-cols-5 gap-6 md:gap-12 items-start" id="aboutPerson">
 
 <!-- 1. 제목 / 부제 (항상 맨 위) -->
-<div class="md:col-span-3 text-center md:text-left">
+<div class="md:col-span-3 text-left">
 <p class="text-ember text-xs font-bold tracking-[0.25em] uppercase mb-3">My Story</p>
 <h2 class="text-xl sm:text-2xl font-bold tracking-tight text-ink-900 leading-snug">홍성화 선교사는</h2>
 <p class="mt-2 text-xl sm:text-2xl font-extrabold tracking-tight text-ember">준비된 선교사입니다</p>
@@ -1329,7 +1329,7 @@
 <button aria-label="이전 사진" class="hidden absolute left-3 sm:left-6 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors" id="imgLightboxPrev" type="button">
 <svg fill="none" height="20" stroke="white" stroke-width="2.2" viewbox="0 0 24 24" width="20"><path d="M15 6l-6 6 6 6" stroke-linecap="round" stroke-linejoin="round"></path></svg>
 </button>
-<img alt="" class="max-h-[78vh] max-w-full rounded-2xl shadow-2xl object-contain" id="imgLightboxImg" loading="lazy" src=""/>
+<img alt="" class="max-h-[78vh] max-w-full rounded-2xl shadow-2xl object-contain" draggable="false" id="imgLightboxImg" loading="lazy" src=""/>
 <button aria-label="다음 사진" class="hidden absolute right-3 sm:right-6 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors" id="imgLightboxNext" type="button">
 <svg fill="none" height="20" stroke="white" stroke-width="2.2" viewbox="0 0 24 24" width="20"><path d="M9 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round"></path></svg>
 </button>
@@ -1347,7 +1347,7 @@
 <button aria-label="이전 사진" class="hidden absolute left-3 sm:left-6 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors" id="galleryLightboxPrev" type="button">
 <svg fill="none" height="20" stroke="white" stroke-width="2.2" viewbox="0 0 24 24" width="20"><path d="M15 6l-6 6 6 6" stroke-linecap="round" stroke-linejoin="round"></path></svg>
 </button>
-<img alt="" class="max-h-[78vh] max-w-full rounded-2xl shadow-2xl object-contain" id="galleryLightboxImg" loading="lazy" src=""/>
+<img alt="" class="max-h-[78vh] max-w-full rounded-2xl shadow-2xl object-contain" draggable="false" id="galleryLightboxImg" loading="lazy" src=""/>
 <div class="hidden w-full max-w-4xl" id="galleryLightboxVideoWrap">
 <div class="aspect-video">
 <iframe allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen="" class="w-full h-full rounded-2xl shadow-2xl" frameborder="0" id="galleryLightboxVideoFrame" src="" title=""></iframe>
@@ -4091,6 +4091,8 @@
     el.addEventListener('mousedown', (e) => {
       // 닫기/이전/다음/다운로드 버튼을 누른 거면 드래그로 취급하지 않음
       if (e.target.closest('button, a')) return;
+      // 이미지의 기본 "고스트 이미지 끌기" 동작을 막아야 드래그가 정상적으로 잡힘
+      e.preventDefault();
       mouseDown = true;
       handleStart(e.clientX, e.clientY);
     });
