@@ -415,7 +415,10 @@
     </p>
 <div class="mt-10 flex items-center justify-center gap-3">
 <a class="bg-white/10 hover:bg-white/20 text-white border border-white/40 font-semibold text-sm px-7 py-3.5 rounded-full backdrop-blur-sm transition-colors" href="javascript:void(0)" onclick="openOverlay('aboutOverlay')">사역 이야기 보기</a>
-<a class="bg-ember hover:bg-ember-dark text-white font-semibold text-sm px-7 py-3.5 rounded-full shadow-soft transition-colors" href="javascript:void(0)" onclick="openOverlay('supportOverlay')">후원 참여하기</a>
+<a class="bg-ember hover:bg-ember-dark text-white font-semibold text-sm px-7 py-3.5 rounded-full shadow-soft transition-colors" href="javascript:void(0)" onclick="openOverlay('supportOverlay')">후원 참여하기</a>        <button id="heroScrollCue" type="button" aria-label="아래로 스크롤" onclick="window.scrollBy({top: window.innerHeight * 0.78, behavior: 'smooth'})" class="mt-5 mx-auto flex flex-col items-center text-ink-500/55 hover:text-ink-700/80 transition-colors">
+          <span class="text-[11px] tracking-[0.22em]">SCROLL</span>
+          <svg class="mt-1 w-4 h-4 animate-bounce" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
 <a class="text-white/90 hover:text-white text-sm font-medium underline underline-offset-4 decoration-white/40 hover:decoration-white transition-colors" href="javascript:void(0)" onclick="openOverlay('aboutOverlay')">처음 오셨나요? →</a>
 </div>
 </div>
