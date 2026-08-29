@@ -21,8 +21,6 @@
 <meta content="#FDFCF8" media="(prefers-color-scheme: light)" name="theme-color"/>
 <meta content="#17130F" media="(prefers-color-scheme: dark)" name="theme-color"/>
 <meta content="light dark" name="color-scheme"/>
-<link href="https://cdn.jsdelivr.net" rel="preconnect"/>
-<link href="https://www.googletagmanager.com" rel="preconnect"/>
 <meta content="작은불꽃, 홍선교, 홍성화, 홍성화 목사, 홍성화 선교사, 캄보디아, 캄보디아 선교사, 캄보디아 선교, 프놈펜 선교사, 캄장신, 캄보디아장로교신학교, 캄보디아장로회신학교, 캄보디아장로교신학대학교, PCK, PCK 선교사, 총회 파송 선교사, 예장통합 선교사" name="keywords"/>
 <link href="https://cammission.com/" rel="canonical"/>
 <!-- 카카오톡·페이스북 등에 링크 공유할 때 미리보기로 쓰이는 정보 -->
@@ -167,6 +165,25 @@
   /* 포스트잇 살짝 기울임 */
   .postit:nth-child(odd) { transform: rotate(-1.4deg); }
   .postit:nth-child(even) { transform: rotate(1.2deg); }
+
+  /* 메인 페이지 상·하 이동 화살표 — 거의 보이지 않다가 호버/터치 시 선명해집니다. */
+  .page-scroll-arrows { position: fixed; right: 18px; bottom: 92px; z-index: 55; display: flex; flex-direction: column; gap: 7px; }
+  .page-scroll-arrow { width: 34px; height: 34px; border-radius: 9999px; display: flex; align-items: center; justify-content: center; color: rgba(42,37,33,.16); background: rgba(255,255,255,.16); border: 1px solid rgba(42,37,33,.07); backdrop-filter: blur(4px); transition: color .25s ease, background-color .25s ease, opacity .25s ease; }
+  .page-scroll-arrow:hover, .page-scroll-arrow:focus-visible { color: rgba(42,37,33,.55); background: rgba(255,255,255,.75); outline: none; }
+  .page-scroll-arrow.hidden-arrow { opacity: 0; pointer-events: none; }
+  @media (max-width: 639px) { .page-scroll-arrows { right: 10px; bottom: 82px; } .page-scroll-arrow { width: 30px; height: 30px; } }
+
+  /* 메인 섹션의 체감 길이만 조금 줄입니다. 콘텐츠는 삭제하지 않습니다. */
+  #about { padding-top: 7rem; padding-bottom: 7rem; }
+  #recentNews, #currentPrayerTopics, #reports { padding-top: 4rem; padding-bottom: 4rem; }
+  #missionTimeline { padding-top: 4rem; padding-bottom: 6rem; }
+  #missionMap { padding-top: 5rem; padding-bottom: 6rem; }
+  #newsletter { padding-top: 5rem; padding-bottom: 5rem; }
+  #support, #guestbook { padding-top: 5rem; padding-bottom: 5rem; }
+  @media (max-width: 639px) {
+    #about { padding-top: 5rem; padding-bottom: 5rem; }
+    #recentNews, #currentPrayerTopics, #reports, #missionTimeline, #missionMap, #newsletter, #support, #guestbook { padding-top: 3.5rem; padding-bottom: 3.5rem; }
+  }
 
   @media (prefers-reduced-motion: reduce) {
     .flame-flicker, .bob, .glow-drift, .glow-drift-slow { animation: none !important; }
@@ -399,6 +416,7 @@
 <div class="mt-10 flex items-center justify-center gap-3">
 <a class="bg-white/10 hover:bg-white/20 text-white border border-white/40 font-semibold text-sm px-7 py-3.5 rounded-full backdrop-blur-sm transition-colors" href="javascript:void(0)" onclick="openOverlay('aboutOverlay')">사역 이야기 보기</a>
 <a class="bg-ember hover:bg-ember-dark text-white font-semibold text-sm px-7 py-3.5 rounded-full shadow-soft transition-colors" href="javascript:void(0)" onclick="openOverlay('supportOverlay')">후원 참여하기</a>
+<a class="text-white/90 hover:text-white text-sm font-medium underline underline-offset-4 decoration-white/40 hover:decoration-white transition-colors" href="javascript:void(0)" onclick="openOverlay('aboutOverlay')">처음 오셨나요? →</a>
 </div>
 </div>
 <!-- 스크롤 유도 아이콘 -->
@@ -712,6 +730,15 @@
 <input id="guestHiddenName" name="entry.1814068072" type="text"/>
 <input id="guestHiddenMsg" name="entry.1653980961" type="text"/>
 </form>
+<!-- ================= 페이지 상·하 이동 ================= -->
+<div aria-label="페이지 이동" class="page-scroll-arrows no-print" id="pageScrollArrows">
+  <button aria-label="맨 위로" class="page-scroll-arrow" id="scrollTopBtn" type="button" title="맨 위로">
+    <svg fill="none" height="16" stroke="currentColor" stroke-width="1.8" viewbox="0 0 24 24" width="16"><path d="M12 20V4m0 0l-6 6m6-6l6 6" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+  </button>
+  <button aria-label="맨 아래로" class="page-scroll-arrow" id="scrollBottomBtn" type="button" title="맨 아래로">
+    <svg fill="none" height="16" stroke="currentColor" stroke-width="1.8" viewbox="0 0 24 24" width="16"><path d="M12 4v16m0 0l-6-6m6 6l6-6" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+  </button>
+</div>
 <!-- ================= FOOTER ================= -->
 <footer class="bg-ink-900 text-white/70" id="siteFooter">
 <div class="max-w-7xl mx-auto px-6 sm:px-8 py-5">
@@ -949,24 +976,37 @@
 <span class="font-bold text-ink-900">사역 소개</span>
 </div>
 </div>
-<div class="pt-14 pb-20 sm:pt-20 sm:pb-28 px-6">
+<div class="sticky top-16 sm:top-20 z-10 bg-warm-bg/95 backdrop-blur-sm border-b border-ink-900/5">
+  <nav aria-label="사역 소개 바로가기" class="max-w-4xl mx-auto px-6 py-3 flex items-center justify-center gap-2 sm:gap-3">
+    <button type="button" class="about-tab px-3.5 py-2 rounded-full text-xs sm:text-sm font-semibold bg-ink-900 text-white" onclick="scrollAboutTo('aboutPerson')">홍성화 선교사는</button>
+    <button type="button" class="about-tab px-3.5 py-2 rounded-full text-xs sm:text-sm font-semibold bg-white text-ink-700 border border-ink-900/10 hover:border-ember hover:text-ember transition-colors" onclick="scrollAboutTo('aboutMinistry')">사역 소개</button>
+    <button type="button" class="about-tab px-3.5 py-2 rounded-full text-xs sm:text-sm font-semibold bg-white text-ink-700 border border-ink-900/10 hover:border-ember hover:text-ember transition-colors" onclick="openOverlay('supportOverlay')">동역하기</button>
+  </nav>
+</div>
+<div class="pt-10 pb-20 sm:pt-14 sm:pb-28 px-6">
 <div class="max-w-4xl mx-auto">
-<div class="reveal grid grid-cols-1 md:grid-cols-5 gap-8 md:gap-12 items-center mb-16">
+<div class="reveal grid grid-cols-1 md:grid-cols-5 gap-8 md:gap-12 items-center mb-12" id="aboutPerson">
 <div class="md:col-span-2">
 <div class="rounded-3xl overflow-hidden shadow-card">
 <img alt="홍성화, 박윤희 선교사 가족" class="w-full h-full object-cover" loading="lazy" src="images/img-7bf08bd0fd0d.jpg"/>
 </div>
 </div>
 <div class="md:col-span-3 text-center md:text-left">
-<p class="text-ember text-xs font-bold tracking-[0.25em] uppercase mb-3">Our Mission</p>
-<h2 class="text-xl sm:text-2xl font-bold tracking-tight text-ink-900 leading-snug">
-          캄보디아 땅에 생명과 소망을 심는 두 사람,<br class="hidden sm:block"> 홍성화 &amp; 박윤희 선교사입니다
-        </br></h2>
+<p class="text-ember text-xs font-bold tracking-[0.25em] uppercase mb-3">My Story</p>
+<h2 class="text-xl sm:text-2xl font-bold tracking-tight text-ink-900 leading-snug">홍성화 선교사는</h2>
+<p class="mt-4 text-sm sm:text-base text-ink-600 leading-loose">
+        저는 목회자로 살아오며, 하나님께서 한 사람의 마음에 작은 불꽃을 붙이시고 그 불꽃을 통해 또 다른 사람에게 소망을 전하게 하신다는 것을 배워왔습니다. 그 부르심은 제 안에서 캄보디아를 향한 마음으로 이어졌습니다.
+      </p>
 </div>
 </div>
-<div class="reveal max-w-2xl mx-auto text-ink-600 text-sm sm:text-base leading-loose space-y-4 mb-16">
-<p>캄보디아는 전체 인구의 60% 이상이 30대 이하인 젊고 역동적인 나라입니다. 하지만 과거 끔찍했던 학살의 역사적 상처와 "현재의 고난은 바꿀 수 없다"는 운명론적 패배주의를 내면에 안고 살아가는 곳이기도 합니다. 저희 부부는 이 척박한 땅에 조건 없는 '은혜'와 '하나님 자녀로서의 정체성'을 전하기 위해 나아갑니다.</p>
-<p>저희 부부는 현지인들을 진정한 형제자매로 사랑하며, 좋은 친구가 되어 그리스도의 사랑을 삶으로 증명해 내고자 합니다. 기계적인 사역이 아닌, 영혼을 향한 뜨거운 사랑으로 다음의 두 가지 사역 축을 감당합니다.</p>
+<div class="reveal max-w-2xl mx-auto text-ink-600 text-sm sm:text-base leading-loose space-y-4 mb-14">
+<p>캄보디아의 아픔과 가능성을 마주하며, 저는 거창한 일을 이루기보다 한 사람을 사랑하고, 말씀과 배움으로 한 사람을 세우며, 그 사람이 또 다른 사람을 세우는 선교를 꿈꿉니다.</p>
+<p>그래서 아내 박윤희 선교사와 함께 현지인들의 삶 가까이에서 복음을 살아내고, 다음 세대의 리더를 세우는 길을 걸어가려 합니다. 작은 불꽃 하나가 또 다른 불꽃을 밝히듯, 하나님께서 시작하신 일을 끝까지 신실하게 걸어가고 싶습니다.</p>
+</div>
+<div class="reveal text-center mb-8 sm:mb-10" id="aboutMinistry">
+<p class="text-sky text-xs font-bold tracking-[0.25em] uppercase mb-3">Ministry</p>
+<h3 class="text-lg sm:text-xl font-bold tracking-tight text-ink-900">사역 소개</h3>
+<p class="mt-3 text-sm text-ink-500">한 사람을 사랑하고, 한 사람을 세우며, 다음 세대를 준비합니다.</p>
 </div>
 <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8 mb-16">
 <div class="reveal bg-white rounded-3xl shadow-card p-8 sm:p-9">
@@ -1028,7 +1068,7 @@
         캄보디아의 다음 세대를 세우고 아픈 마음을 치유하는 일은 저희 부부만의 힘으로는 불가능합니다. 저희는 캄보디아 땅에서 가장 먼저 땀 흘리며 온 삶을 다해 헌신하겠습니다. 여러분은 기도로, 물질로 이 땅에 소망을 흘려보내는 '보내는 선교사'가 되어주시지 않겠습니까? 여러분의 동역이 캄보디아를 살리는 가장 위대한 기적이 됩니다!
       </p>
 <a class="mt-6 inline-block bg-ember hover:bg-ember-dark text-white font-semibold text-sm px-7 py-3.5 rounded-full shadow-soft transition-colors" href="javascript:void(0)" onclick="closeOverlay('aboutOverlay'); openOverlay('supportOverlay')">
-        후원 안내 보기
+        동역하기
       </a>
 </div>
 </div>
@@ -1504,7 +1544,7 @@
 
   function renderRecentNews() {
     const items = getRecentArticles();
-    renderRecentList(document.getElementById('recentNewsList'), items, 5);
+    renderRecentList(document.getElementById('recentNewsList'), items, 3);
     renderRecentList(document.getElementById('recentOverlayList'), items, items.length);
   }
 
@@ -1937,7 +1977,7 @@
     return (s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   }
 
-  const GUEST_PAGE_SIZE = 9;
+  const GUEST_PAGE_SIZE = 4;
   let guestAllRows = []; // 최신순으로 정렬된 전체 목록
   let guestVisibleCount = GUEST_PAGE_SIZE;
 
@@ -2089,6 +2129,39 @@
     });
   }
 
+  function scrollAboutTo(targetId) {
+    const overlay = document.getElementById('aboutOverlay');
+    const target = document.getElementById(targetId);
+    if (!overlay || !target) return;
+    const topOffset = window.innerWidth >= 640 ? 120 : 104;
+    const y = Math.max(0, target.offsetTop - topOffset);
+    overlay.scrollTo({ top: y, behavior: 'smooth' });
+    document.querySelectorAll('.about-tab').forEach(btn => btn.classList.remove('bg-ink-900','text-white'));
+    document.querySelectorAll('.about-tab').forEach(btn => {
+      if ((targetId === 'aboutPerson' && btn.textContent.includes('홍성화')) || (targetId === 'aboutMinistry' && btn.textContent.includes('사역 소개'))) {
+        btn.classList.add('bg-ink-900','text-white');
+      }
+    });
+  }
+
+  // 메인 페이지 상·하 이동 화살표
+  (function initPageScrollArrows(){
+    const topBtn = document.getElementById('scrollTopBtn');
+    const bottomBtn = document.getElementById('scrollBottomBtn');
+    if (!topBtn || !bottomBtn) return;
+    const update = () => {
+      const max = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
+      const y = window.scrollY || window.pageYOffset || 0;
+      topBtn.classList.toggle('hidden-arrow', y < 220);
+      bottomBtn.classList.toggle('hidden-arrow', y > max - 220);
+    };
+    topBtn.addEventListener('click', () => window.scrollTo({top:0, behavior:'smooth'}));
+    bottomBtn.addEventListener('click', () => window.scrollTo({top:document.documentElement.scrollHeight, behavior:'smooth'}));
+    window.addEventListener('scroll', update, {passive:true});
+    window.addEventListener('resize', update);
+    update();
+  })();
+
   function openOverlay(id) {
     const el = document.getElementById(id);
     if (!el) return;
@@ -2102,6 +2175,13 @@
     el.querySelectorAll('.reveal').forEach(x => x.classList.add('in-view'));
     document.body.style.overflow = 'hidden';
     el.scrollTop = 0;
+    if (id === 'aboutOverlay') {
+      const tabs = el.querySelectorAll('.about-tab');
+      tabs.forEach((btn, i) => {
+        btn.classList.toggle('bg-ink-900', i === 0);
+        btn.classList.toggle('text-white', i === 0);
+      });
+    }
     mobileMenu.classList.add('hidden');
     iconOpen.classList.remove('hidden');
     iconClose.classList.add('hidden');
