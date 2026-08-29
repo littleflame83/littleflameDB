@@ -471,12 +471,12 @@
   </div>
   <a class="mt-4 text-white/90 hover:text-white text-sm font-medium underline underline-offset-4 decoration-white/40 hover:decoration-white transition-colors" href="javascript:void(0)" onclick="openAboutOverlay('story')">처음 오셨나요? →</a>
 </div>
-<!-- HERO 내부 SCROLL은 하나만 사용 -->
+</div>
+<!-- ⭐ 수정: 히어로 전체(section) 기준으로 가운데 오도록, 텍스트 박스 밖으로 뺐습니다 -->
 <a aria-label="아래로 스크롤" class="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-2 text-white/80 bob" href="javascript:void(0)" onclick="document.getElementById('about').scrollIntoView({behavior:'smooth'})">
   <span class="text-[11px] tracking-[0.2em] uppercase font-medium">Scroll</span>
   <svg fill="none" height="18" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="18"><path d="M12 4v16m0 0l-6-6m6 6l6-6" stroke-linecap="round" stroke-linejoin="round"></path></svg>
 </a>
-</div>
 </section>
 <!-- ================= INTRO / 왜 캄보디아인가 ================= -->
 <section class="bg-warm-bg py-28 sm:py-40 px-6" id="about">
