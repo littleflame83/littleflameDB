@@ -1039,7 +1039,7 @@
 <div class="max-w-4xl mx-auto">
 <div class="reveal grid grid-cols-1 md:grid-cols-5 gap-8 md:gap-12 items-center mb-12" id="aboutPerson">
 <div class="md:col-span-2">
-<div class="rounded-3xl overflow-hidden shadow-card">
+<div class="rounded-3xl overflow-hidden shadow-card aspect-[4/5] sm:aspect-square">
 <img alt="홍성화, 박윤희 선교사 가족" class="w-full h-full object-cover" loading="lazy" src="images/img-7bf08bd0fd0d.jpg"/>
 </div>
 </div>
@@ -1819,7 +1819,7 @@
         overlay.style.display = 'none';
       }, { once: true });
       });
-    });
+    };
     if ('IntersectionObserver' in window) {
       const observer = new IntersectionObserver((entries, obs) => {
         if (entries.some(e => e.isIntersecting)) { start(); obs.disconnect(); }
