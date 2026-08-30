@@ -749,6 +749,12 @@
         </button>
 </div>
 </div>
+<div class="reveal text-center mt-10">
+<p class="text-sm text-ink-500 mb-3">먼저 저희가 어떤 사역을 하고 있는지 궁금하신가요?</p>
+<a class="inline-flex items-center gap-1.5 bg-white border border-ink-900/10 hover:border-ember hover:text-ember text-ink-900 font-semibold text-sm px-6 py-3 rounded-full shadow-sm transition-colors" href="javascript:void(0)" onclick="openOverlay('aboutOverlay'); switchAboutView('ministry');">
+        사역 안내 보기 →
+      </a>
+</div>
 </div>
 </section>
 <!-- ================= 응원 방명록 (커뮤니티 벽) ================= -->
@@ -3121,14 +3127,36 @@
 
   var MASTER_ARTICLE_ORDER = null;
 
+  // ⭐ 변경: 같은 주제(카테고리) 안에서 먼저 이전/다음을 찾고,
+  //    그 주제의 맨 처음/맨 끝에 닿았을 때만 다른 주제의 글로 자연스럽게 넘어갑니다.
+  //    (전체를 하나의 시간순 목록으로만 보면 카테고리가 계속 뒤섞여서
+  //     "캄보디아 이야기 읽다가 갑자기 가족이야기로 튀는" 문제가 있었음)
   function getPrevNextArticles(prefix, idx) {
-    if (!MASTER_ARTICLE_ORDER) MASTER_ARTICLE_ORDER = buildMasterArticleOrder();
-    const list = MASTER_ARTICLE_ORDER;
-    if (list.length < 2) return { prev: null, next: null };
-    const i = list.findIndex(a => a.prefix === prefix && a.idx === String(idx));
-    if (i === -1) return { prev: null, next: null };
-    const prev = list[(i - 1 + list.length) % list.length];
-    const next = list[(i + 1) % list.length];
+    const list = buildArticleIndex();
+
+    const sameCategory = list
+      .filter(a => a.prefix === prefix)
+      .sort((a, b) => {
+        if (a.dateValue !== b.dateValue) return a.dateValue - b.dateValue;
+        return String(a.idx).localeCompare(String(b.idx), undefined, { numeric: true });
+      });
+
+    const i = sameCategory.findIndex(a => a.idx === String(idx));
+
+    let prev = (i > 0) ? sameCategory[i - 1] : null;
+    let next = (i !== -1 && i < sameCategory.length - 1) ? sameCategory[i + 1] : null;
+
+    // 같은 주제의 시작/끝에 닿았을 때만 전체 시간순 목록에서 이어감(카테고리 넘어가기)
+    if (!prev || !next) {
+      if (!MASTER_ARTICLE_ORDER) MASTER_ARTICLE_ORDER = buildMasterArticleOrder();
+      const masterList = MASTER_ARTICLE_ORDER;
+      const mi = masterList.findIndex(a => a.prefix === prefix && a.idx === String(idx));
+      if (mi !== -1 && masterList.length > 1) {
+        if (!prev) prev = masterList[(mi - 1 + masterList.length) % masterList.length];
+        if (!next) next = masterList[(mi + 1) % masterList.length];
+      }
+    }
+
     return { prev, next };
   }
 
