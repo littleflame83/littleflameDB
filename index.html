@@ -3418,6 +3418,15 @@
     return null;
   }
 
+  // ⭐ 신규: /support/, /cambodia/, /about/ 같은 "메뉴 전체보기" 예쁜 주소를
+  // 직접 열었을 때, 그 주소에 맞는 메뉴를 찾아줍니다.
+  function getOverlayFromPrettyPath() {
+    const path = location.pathname;
+    return Object.keys(OVERLAY_PATHS).find(
+      oid => oid !== 'recentOverlay' && OVERLAY_PATHS[oid] === path
+    ) || null;
+  }
+
   async function openDetail(tmplPrefix, idx, skipHash) {
     await DATA_READY;
     const modal = document.getElementById(tmplPrefix + 'Modal');
@@ -3713,7 +3722,16 @@
       await setLang(langParam);
     }
 
-    if (!target) return;
+    if (!target) {
+      // ⭐ 신규: story 글이 아니라 /support/ 같은 메뉴 전체보기 주소로
+      // 바로 들어온 경우도 처리
+      const prettyOverlay = getOverlayFromPrettyPath();
+      if (prettyOverlay) {
+        history.replaceState({ overlay: prettyOverlay, detail: null }, '', location.pathname);
+        openOverlay(prettyOverlay);
+      }
+      return;
+    }
     const detailMatch = target.match(/^(ovrpt|ovltr|ovcam)-(.+)$/);
     if (detailMatch) {
       const prefix = detailMatch[1];
