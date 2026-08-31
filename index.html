@@ -273,6 +273,9 @@
   .about-question summary::-webkit-details-marker { display: none; }
   .about-question[open] .about-question-icon { transform: rotate(45deg); }
   .about-question-icon { transition: transform 0.2s ease; }
+  .about-question-number { transition: color 0.2s ease; }
+  .about-question[open] .about-question-number { color: #F97316; }
+  .about-question:hover .about-question-number { color: #FDBA74; }
 </style>
 <!-- ===== 다크모드: 기기(폰/패드/PC)의 시스템 설정을 그대로 따라감 (노션 방식) ===== -->
 <style>
@@ -1045,7 +1048,6 @@
         <div>
           <p class="text-ember text-xs font-bold tracking-[0.25em] uppercase mb-2" id="searchEyebrow">Search</p>
           <h2 class="text-xl sm:text-2xl font-bold tracking-tight text-ink-900" id="searchResultTitle">검색어를 입력해 주세요</h2>
-          <p class="mt-1 text-xs text-ink-400" id="searchResultHint">제목 · 본문 · 카테고리 · 날짜를 자동으로 검색합니다.</p>
         </div>
         <span class="text-xs text-ink-400 whitespace-nowrap" id="searchResultCount"></span>
       </div>
@@ -1094,32 +1096,38 @@
 <div id="aboutStoryView">
 <div class="max-w-3xl mx-auto">
 
-<div class="reveal text-center mb-10 sm:mb-14">
+<div class="reveal mb-10 sm:mb-14">
 <p class="text-ember text-xs font-bold tracking-[0.25em] uppercase mb-3">My Story</p>
 <h2 class="text-xl sm:text-2xl font-bold tracking-tight text-ink-900">안녕하세요</h2>
-<p class="mt-3 text-xl sm:text-2xl font-extrabold tracking-tight text-ember">캄보디아를 마음에 품고 살아가는 홍성화 선교사입니다.</p>
+<p class="mt-3 text-xl sm:text-2xl font-extrabold tracking-tight text-ink-900">캄보디아를 마음에 품고 살아가는 홍성화 선교사입니다.</p>
 <p class="mt-5 text-sm sm:text-base text-ink-500 leading-relaxed">제가 누구인지, 어디에서 무엇을 하고 있는지 궁금하시다면<br class="hidden sm:block" /> 아래에서 편하게 살펴보세요.</p>
 </div>
 
-<div class="space-y-4">
+<div class="divide-y divide-ink-900/8">
 
-<details class="about-question reveal bg-white rounded-2xl shadow-card overflow-hidden">
-<summary class="cursor-pointer list-none px-6 py-5 sm:px-7 sm:py-6 font-bold text-base sm:text-lg text-ink-900 flex items-center justify-between gap-4">
-<span>① 홍성화 선교사는?</span>
-<span class="about-question-icon text-ink-400 text-xl shrink-0">＋</span>
+<details class="about-question reveal">
+<summary class="cursor-pointer list-none py-6 sm:py-8 flex items-start justify-between gap-4">
+<span class="flex items-baseline gap-3 sm:gap-5">
+<span class="about-question-number text-2xl sm:text-3xl font-black text-ink-900/15 leading-none">01</span>
+<span class="text-lg sm:text-2xl font-bold text-ink-900 leading-snug">홍성화 선교사는?</span>
+</span>
+<span class="about-question-icon text-ink-300 text-2xl shrink-0 mt-1 sm:mt-1.5">＋</span>
 </summary>
-<div class="px-6 pb-6 sm:px-7 sm:pb-7 text-sm sm:text-base text-ink-600 leading-loose space-y-4 border-t border-ink-900/5 pt-5">
+<div class="pb-8 sm:pb-10 pl-0 sm:pl-16 text-sm sm:text-base text-ink-600 leading-loose space-y-4">
 <p>주님을 사랑하며 성경을 사랑하고 가르쳐주기를 소망하며 말씀대로 살아보고자 노력하는 사람입니다.</p>
 <p><strong class="text-ink-900">배우는 선교, 섬기는 선교, 주님의 이름이 남고 저는 없어지는 선교</strong>를 지향합니다.</p>
 </div>
 </details>
 
-<details class="about-question reveal bg-white rounded-2xl shadow-card overflow-hidden">
-<summary class="cursor-pointer list-none px-6 py-5 sm:px-7 sm:py-6 font-bold text-base sm:text-lg text-ink-900 flex items-center justify-between gap-4">
-<span>② 왜 캄보디아인가요?</span>
-<span class="about-question-icon text-ink-400 text-xl shrink-0">＋</span>
+<details class="about-question reveal">
+<summary class="cursor-pointer list-none py-6 sm:py-8 flex items-start justify-between gap-4">
+<span class="flex items-baseline gap-3 sm:gap-5">
+<span class="about-question-number text-2xl sm:text-3xl font-black text-ink-900/15 leading-none">02</span>
+<span class="text-lg sm:text-2xl font-bold text-ink-900 leading-snug">왜 캄보디아인가요?</span>
+</span>
+<span class="about-question-icon text-ink-300 text-2xl shrink-0 mt-1 sm:mt-1.5">＋</span>
 </summary>
-<div class="px-6 pb-7 sm:px-7 sm:pb-8 text-sm sm:text-base text-ink-600 leading-loose space-y-7 border-t border-ink-900/5 pt-5">
+<div class="pb-8 sm:pb-10 pl-0 sm:pl-16 text-sm sm:text-base text-ink-600 leading-loose space-y-7">
 <div>
 <h3 class="font-bold text-ink-900 mb-2">🌱 첫 부르심: "주님이 너 오라신다"</h3>
 <p>제가 캄보디아를 만나게 된 것은 '한마디의 말'이었습니다. 청년부 캄보디아 단기선교팀이 전해준 "성화야, 주님이 너 오라신다"는 말은 제게 분명한 하나님의 음성이었습니다.</p>
@@ -1134,42 +1142,56 @@
 </div>
 </details>
 
-<details class="about-question reveal bg-white rounded-2xl shadow-card overflow-hidden">
-<summary class="cursor-pointer list-none px-6 py-5 sm:px-7 sm:py-6 font-bold text-base sm:text-lg text-ink-900 flex items-center justify-between gap-4">
-<span>③ 선교는 왜 필요한가요?</span>
-<span class="about-question-icon text-ink-400 text-xl shrink-0">＋</span>
+<details class="about-question reveal">
+<summary class="cursor-pointer list-none py-6 sm:py-8 flex items-start justify-between gap-4">
+<span class="flex items-baseline gap-3 sm:gap-5">
+<span class="about-question-number text-2xl sm:text-3xl font-black text-ink-900/15 leading-none">03</span>
+<span class="text-lg sm:text-2xl font-bold text-ink-900 leading-snug">선교는 왜 필요한가요?</span>
+</span>
+<span class="about-question-icon text-ink-300 text-2xl shrink-0 mt-1 sm:mt-1.5">＋</span>
 </summary>
-<div class="px-6 pb-7 sm:px-7 sm:pb-8 text-sm sm:text-base text-ink-600 leading-loose space-y-4 border-t border-ink-900/5 pt-5">
+<div class="pb-8 sm:pb-10 pl-0 sm:pl-16 text-sm sm:text-base text-ink-600 leading-loose space-y-4">
 <p>캄보디아는 킬링필드로 인해 현재 인구의 60%가 30대 이하인 매우 젊은 국가가 되었지만, 이 청년들을 이끌어줄 윗세대의 '멘토 그룹'이 완전히 공백 상태입니다.</p>
 <p>이에 캄보디아 정부는 '오각 전략'을 통해 인적 자본 개발을 최우선 과제로 삼고 있습니다.</p>
-<p class="text-ink-900 font-medium">▶ 선교는 이러한 국가의 비전과도 방향을 같이합니다.</p>
+<p class="text-ink-900 font-medium">▶ 선교는 국가 비전과 방법을 같이합니다.</p>
+<p>저희가 준비하는 교육 사역과 돌봄 사역은 국가가 채우지 못하는 영적, 도덕적 인프라를 채우는 완벽한 파트너십이 되어, 합법적이고 안정적인 선교의 문을 열어줄 것이라 기대하고 있습니다.</p>
 </div>
 </details>
 
-<details class="about-question reveal bg-white rounded-2xl shadow-card overflow-hidden">
-<summary class="cursor-pointer list-none px-6 py-5 sm:px-7 sm:py-6 font-bold text-base sm:text-lg text-ink-900 flex items-center justify-between gap-4">
-<span>④ 왜 신학교 사역인가요?</span>
-<span class="about-question-icon text-ink-400 text-xl shrink-0">＋</span>
+<details class="about-question reveal">
+<summary class="cursor-pointer list-none py-6 sm:py-8 flex items-start justify-between gap-4">
+<span class="flex items-baseline gap-3 sm:gap-5">
+<span class="about-question-number text-2xl sm:text-3xl font-black text-ink-900/15 leading-none">04</span>
+<span class="text-lg sm:text-2xl font-bold text-ink-900 leading-snug">왜 신학교 사역인가요?</span>
+</span>
+<span class="about-question-icon text-ink-300 text-2xl shrink-0 mt-1 sm:mt-1.5">＋</span>
 </summary>
-<div class="px-6 pb-7 sm:px-7 sm:pb-8 text-sm sm:text-base text-ink-600 leading-loose space-y-4 border-t border-ink-900/5 pt-5">
+<div class="pb-8 sm:pb-10 pl-0 sm:pl-16 text-sm sm:text-base text-ink-600 leading-loose space-y-4">
 <h3 class="font-bold text-ink-900">📖 비전: 교수선교사를 향한 기나긴 준비</h3>
 <p>2014년에 아내와 선교지를 방문했을 때 캄보디아장로교신학교를 알게 되었습니다. 캄보디아 현지 목회자를 양육해야 하는데 박사학위를 가진 교수가 필요하다는 말을 듣고, 저는 이를 주님의 부르심이라 고백했습니다.</p>
 <p>그때부터 교수선교사가 되기 위해 신약학 석사와 박사과정을 밟으며 묵묵히 학업에 매진했습니다. 참 감사하게도 그 기다림의 시간 동안, 아내와 사랑하는 두 아이들까지 온 가족이 한마음으로 캄보디아를 품게 되었습니다.</p>
-<a href="javascript:void(0)" onclick="switchAboutView('ministry')" class="mt-2 inline-flex items-center gap-2 bg-sky text-white font-semibold text-sm px-5 py-3 rounded-full shadow-soft hover:opacity-90 transition-opacity">가족의 사역 소개 보기 <span>→</span></a>
+<div class="text-center pt-2">
+<a href="javascript:void(0)" onclick="switchAboutView('ministry')" class="inline-flex items-center bg-sky text-white font-semibold text-sm px-5 py-3 rounded-full shadow-soft hover:opacity-90 transition-opacity">가족 사역 소개 보기</a>
+</div>
 </div>
 </details>
 
-<details class="about-question reveal bg-white rounded-2xl shadow-card overflow-hidden">
-<summary class="cursor-pointer list-none px-6 py-5 sm:px-7 sm:py-6 font-bold text-base sm:text-lg text-ink-900 flex items-center justify-between gap-4">
-<span>⑤ 어떻게 후원할 수 있나요?</span>
-<span class="about-question-icon text-ink-400 text-xl shrink-0">＋</span>
+<details class="about-question reveal">
+<summary class="cursor-pointer list-none py-6 sm:py-8 flex items-start justify-between gap-4">
+<span class="flex items-baseline gap-3 sm:gap-5">
+<span class="about-question-number text-2xl sm:text-3xl font-black text-ink-900/15 leading-none">05</span>
+<span class="text-lg sm:text-2xl font-bold text-ink-900 leading-snug">어떻게 후원할 수 있나요?</span>
+</span>
+<span class="about-question-icon text-ink-300 text-2xl shrink-0 mt-1 sm:mt-1.5">＋</span>
 </summary>
-<div class="px-6 pb-7 sm:px-7 sm:pb-8 text-sm sm:text-base text-ink-600 leading-loose space-y-4 border-t border-ink-900/5 pt-5">
+<div class="pb-8 sm:pb-10 pl-0 sm:pl-16 text-sm sm:text-base text-ink-600 leading-loose space-y-4">
 <h3 class="font-bold text-ink-900">🔥 파송: '선교사 체질', 다시 가슴이 뜁니다</h3>
 <p>코로나로 선교의 문이 닫혀가던 팍팍한 현실 속에서도 주님은 길을 여셨습니다. 대구신광교회를 통해 귀한 파송의 은혜를 허락해 주셨습니다. 최근 총회 선교사 훈련을 거치며, 제 안의 얼어있던 엔진이 다시 뜨겁게 폭발하는 것을 경험했습니다.</p>
 <p>"선교는 가르치는 것이 아니라 배우는 것이며, 내 이름은 지워지고 오직 주님의 이름만 남는 것."</p>
 <p>돌아보면 저는 정말 '선교사 체질'인 것 같습니다. 앞으로도 주님을 깊이 사랑하고, 캄보디아 형제자매들의 진정한 이웃이 되기를 꿈꿉니다. 이 설레고 벅찬 여정에 여러분도 기도로 함께해 주시기를 소망합니다.</p>
-<a href="javascript:void(0)" onclick="closeOverlay('aboutOverlay'); openOverlay('supportOverlay')" class="mt-2 inline-flex items-center gap-2 bg-ember text-white font-semibold text-sm px-5 py-3 rounded-full shadow-soft hover:bg-ember-dark transition-colors">동역하기 <span>→</span></a>
+<div class="text-center pt-2">
+<a href="javascript:void(0)" onclick="closeOverlay('aboutOverlay'); openOverlay('supportOverlay')" class="inline-flex items-center bg-ember text-white font-semibold text-sm px-5 py-3 rounded-full shadow-soft hover:bg-ember-dark transition-colors">동역하기</a>
+</div>
 </div>
 </details>
 
@@ -3205,28 +3227,19 @@
     if (ARTICLE_INDEX) return ARTICLE_INDEX;
 
     const list = [];
-    const categoryLabels = {
-      ovrpt: '가족 이야기',
-      ovltr: '기도 편지',
-      ovcam: '캄보디아 이야기'
-    };
 
     ['ovrpt', 'ovltr', 'ovcam'].forEach(prefix => {
       (window.SITE_DATA[prefix] || []).forEach((item, originalIndex) => {
         const date = parseKoreanDate(item.date_parse || item.date);
-        const category = categoryLabels[prefix] || '';
 
         list.push({
           prefix,
           idx: String(item.idx),
           date,
           dateValue: date ? date.getTime() : Number.POSITIVE_INFINITY,
-          dateText: item.date || '',
-          title: item.title || '',
+          dateText: item.date,
+          title: item.title,
           image: item.image || null,
-          excerpt: item.excerpt || '',
-          detailHtml: item.detail_html || '',
-          category,
           originalIndex
         });
       });
@@ -3295,9 +3308,9 @@
   // 검색 결과를 클릭하면 메인 홈페이지를 배경에 둔 채 같은 상세 모달을 엽니다.
   // ============================================================
   const SEARCH_UI = {
-    ko: { placeholder: '찾고 싶은 이야기를 검색해 보세요', title: '검색어를 입력해 주세요', hint: '제목 · 본문 · 카테고리 · 날짜를 자동으로 검색합니다.', count: '개', none: '검색 결과가 없습니다.' },
-    en: { placeholder: 'Search stories, letters, and family posts', title: 'Type a search term', hint: 'Searches titles, body text, categories, and dates automatically.', count: 'results', none: 'No matching stories found.' },
-    km: { placeholder: 'ស្វែងរករឿងរ៉ាវ លិខិត និងរឿងគ្រួសារ', title: 'សូមបញ្ចូលពាក្យស្វែងរក', hint: 'ស្វែងរកដោយស្វ័យប្រវត្តិតាមចំណងជើង ខ្លឹមសារ ប្រភេទ និងកាលបរិច្ឆេទ។', count: 'លទ្ធផល', none: 'រកមិនឃើញរឿងដែលត្រូវគ្នាទេ។' }
+    ko: { placeholder: '찾고 싶은 이야기를 검색해 보세요', title: '검색어를 입력해 주세요', count: '개', none: '검색 결과가 없습니다.' },
+    en: { placeholder: 'Search stories, letters, and family posts', title: 'Type a search term', count: 'results', none: 'No matching stories found.' },
+    km: { placeholder: 'ស្វែងរករឿងរ៉ាវ លិខិត និងរឿងគ្រួសារ', title: 'សូមបញ្ចូលពាក្យស្វែងរក', count: 'លទ្ធផល', none: 'រកមិនឃើញរឿងដែលត្រូវគ្នាទេ។' }
   };
 
   function updateSearchUi() {
@@ -3308,64 +3321,22 @@
     });
     const no = document.getElementById('searchNoResult');
     if (no) no.textContent = t.none;
-    const hint = document.getElementById('searchResultHint');
-    if (hint) hint.textContent = t.hint || '';
   }
 
   function normalizeSearchText(text) {
-    return String(text || '')
-      .toLowerCase()
-      .replace(/<[^>]*>/g, ' ')
-      .replace(/&nbsp;/gi, ' ')
-      .replace(/[“”‘’]/g, '')
-      .replace(/[.,!?;:()[\]{}"'`~·|/\\]+/g, ' ')
-      .replace(/\s+/g, ' ')
-      .trim();
+    return String(text || '').toLowerCase().replace(/\s+/g, ' ').trim();
   }
 
   function searchArticles(query) {
     const q = normalizeSearchText(query);
     if (!q) return [];
-
-    // 여러 단어를 입력하면 모든 단어가 제목/본문/카테고리/날짜 중
-    // 하나 이상의 영역에서 발견되는 글만 보여줍니다.
-    const terms = q.split(' ').filter(Boolean);
-    const articles = buildArticleIndex();
-
-    return articles.map(a => {
-      const data = (window.SITE_DATA[a.prefix] || [])
-        .find(x => String(x.idx) === String(a.idx));
-
-      const fields = {
-        title: normalizeSearchText(a.title),
-        excerpt: normalizeSearchText(a.excerpt || data?.excerpt || ''),
-        body: normalizeSearchText(a.detailHtml || data?.detail_html || ''),
-        category: normalizeSearchText(a.category),
-        date: normalizeSearchText(a.dateText || '')
-      };
-
-      const matchesAll = terms.every(term =>
-        Object.values(fields).some(value => value.includes(term))
-      );
-      if (!matchesAll) return { ...a, data, score: 0 };
-
-      let score = 0;
-      terms.forEach(term => {
-        if (fields.title.includes(term)) score += 100;
-        if (fields.category.includes(term)) score += 70;
-        if (fields.excerpt.includes(term)) score += 50;
-        if (fields.date.includes(term)) score += 40;
-        if (fields.body.includes(term)) score += 20;
-      });
-
-      // 제목 전체가 검색어와 정확히 일치하거나 포함되면 최우선으로 올립니다.
-      if (fields.title === q) score += 200;
-      else if (fields.title.includes(q)) score += 120;
-
-      return { ...a, data, score };
-    })
-      .filter(a => a.score > 0)
-      .sort((a, b) => b.score - a.score || b.dateValue - a.dateValue);
+    return buildArticleIndex().map(a => {
+      const data = (window.SITE_DATA[a.prefix] || []).find(x => String(x.idx) === String(a.idx));
+      const haystack = normalizeSearchText([
+        a.title, a.dateText, data?.excerpt || '', data?.detail_html || ''
+      ].join(' '));
+      return { ...a, data, score: haystack.includes(q) ? (normalizeSearchText(a.title).includes(q) ? 3 : 1) : 0 };
+    }).filter(a => a.score > 0).sort((a,b) => b.score - a.score || b.date - a.date);
   }
 
   function openSearchOverlay(initialQuery) {
@@ -3461,72 +3432,6 @@
   document.getElementById('searchOverlay')?.addEventListener('click', (e) => {
     if (e.target.id === 'searchOverlay') closeSearchOverlay();
   });
-
-  // ============================================================
-  // ⭐ 글별 SEO 구조화 데이터
-  // 브라우저에서 글을 열었을 때 Article JSON-LD를 글 내용에 맞게 교체합니다.
-  // Worker의 공유 페이지에서도 같은 정보를 서버 측으로 제공합니다.
-  // ============================================================
-  function updateArticleStructuredData(tmplPrefix, idx, item) {
-    const data = item || (window.SITE_DATA[tmplPrefix] || [])
-      .find(x => String(x.idx) === String(idx));
-    if (!data) return;
-
-    let script = document.getElementById('articleStructuredData');
-    if (!script) {
-      script = document.createElement('script');
-      script.id = 'articleStructuredData';
-      script.type = 'application/ld+json';
-      document.head.appendChild(script);
-    }
-
-    const categoryMap = {
-      ovcam: '캄보디아 이야기',
-      ovltr: '기도 편지',
-      ovrpt: '가족 이야기'
-    };
-    const dateValue = data.date_parse || data.date || '';
-    const image = data.image ? new URL(data.image, location.origin + '/').href : '';
-    const url = getPrettyStoryPath(tmplPrefix, idx, data);
-    const absoluteUrl = new URL(url, location.origin).href;
-    const description = String(data.excerpt || '')
-      .replace(/<[^>]*>/g, ' ')
-      .replace(/\s+/g, ' ')
-      .trim()
-      .slice(0, 160);
-
-    const article = {
-      '@context': 'https://schema.org',
-      '@type': 'Article',
-      '@id': absoluteUrl + '#article',
-      headline: String(data.title || ''),
-      description: description || DEFAULT_META.description,
-      datePublished: dateValue,
-      author: {
-        '@type': 'Person',
-        name: '홍성화',
-        url: 'https://cammission.com/'
-      },
-      publisher: {
-        '@type': 'Person',
-        name: '홍성화',
-        url: 'https://cammission.com/'
-      },
-      mainEntityOfPage: {
-        '@type': 'WebPage',
-        '@id': absoluteUrl
-      },
-      articleSection: categoryMap[tmplPrefix] || '선교 이야기',
-      url: absoluteUrl
-    };
-    if (image) article.image = [image];
-
-    script.textContent = JSON.stringify(article);
-  }
-
-  function removeArticleStructuredData() {
-    document.getElementById('articleStructuredData')?.remove();
-  }
 
   // ============================================================
   // ⭐ 예쁜 글 주소
@@ -3878,7 +3783,6 @@
           const twDesc = document.querySelector('meta[name="twitter:description"]');
           if (twDesc) twDesc.content = storyDesc;
         }
-        updateArticleStructuredData(tmplPrefix, idx, item);
       }
     } catch (e) {}
   }
@@ -3896,7 +3800,6 @@
     });
     if (!anyOverlayOpen) {
       document.body.style.overflow = '';
-      removeArticleStructuredData();
     }
     // 글 상세 URL 정리 및 기본 페이지 제목·SEO 메타정보 복원 (canonical, OG, twitter 전부)
     try {
