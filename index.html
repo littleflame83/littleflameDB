@@ -532,26 +532,31 @@
       <p class="mt-3 text-sm text-ink-500">지금 이 시간, 함께 품어주셨으면 하는 기도제목입니다.</p>
     </div>
     <div class="grid grid-cols-1 md:grid-cols-3 gap-5 sm:gap-6 max-w-4xl mx-auto">
-      <div class="reveal bg-white rounded-3xl shadow-card p-6 sm:p-7">
+      <div class="reveal bg-white rounded-3xl shadow-card p-6 sm:p-7 flex flex-col">
         <span class="text-2xl">🙏</span>
         <p class="mt-4 text-xs font-bold text-sky tracking-wide">01</p>
         <h3 class="mt-1 font-bold text-base text-ink-900">소명과 은혜</h3>
         <p class="mt-2 text-sm text-ink-500 leading-relaxed">캄보디아를 향한 주님의 부르심을 잊지 않고, 늘 기쁨으로 순종하며 나아가도록.</p>
+        <button type="button" class="prayer-topic-btn mt-auto pt-5 text-center text-xs font-semibold" data-topic-key="prayer-topic-1"></button>
       </div>
-      <div class="reveal bg-white rounded-3xl shadow-card p-6 sm:p-7">
+      <div class="reveal bg-white rounded-3xl shadow-card p-6 sm:p-7 flex flex-col">
         <span class="text-2xl">🏠</span>
         <p class="mt-4 text-xs font-bold text-sky tracking-wide">02</p>
         <h3 class="mt-1 font-bold text-base text-ink-900">필요한 재정의 공급</h3>
         <p class="mt-2 text-sm text-ink-500 leading-relaxed">현지의 높은 물가와 아이들 학비 등 사역과 생활에 필요한 재정이 은혜 가운데 순조롭게 채워지도록.</p>
+        <button type="button" class="prayer-topic-btn mt-auto pt-5 text-center text-xs font-semibold" data-topic-key="prayer-topic-2"></button>
       </div>
-      <div class="reveal bg-white rounded-3xl shadow-card p-6 sm:p-7">
+      <div class="reveal bg-white rounded-3xl shadow-card p-6 sm:p-7 flex flex-col">
         <span class="text-2xl">👨‍👩‍👧‍👦</span>
         <p class="mt-4 text-xs font-bold text-sky tracking-wide">03</p>
         <h3 class="mt-1 font-bold text-base text-ink-900">가족과 아이들</h3>
         <p class="mt-2 text-sm text-ink-500 leading-relaxed">남은 파송 준비 기간 동안 온 가족이 영육 간에 강건하고, 아이들도 캄보디아를 향한 하나님의 마음을 품고 기쁘게 준비하도록.</p>
+        <button type="button" class="prayer-topic-btn mt-auto pt-5 text-center text-xs font-semibold" data-topic-key="prayer-topic-3"></button>
       </div>
     </div>
-    
+    <p class="reveal text-center mt-8 text-sm text-ink-400">
+      🙏 지금까지 <span class="animate-pulse" id="topicPrayerCounterNumber">불러오는 중</span>번 함께 기도했습니다
+    </p>
   </div>
 </section>
 
@@ -1855,11 +1860,13 @@
 
   // 전체 기도 카운터: 페이지 열릴 때 워커에서 현재 숫자를 불러와 표시
   function updatePrayerCounterDisplay(count) {
-    const el = document.getElementById('prayerCounterNumber');
-    if (el) {
-      el.textContent = count.toLocaleString('ko-KR');
-      el.classList.remove('animate-pulse');
-    }
+    ['prayerCounterNumber', 'topicPrayerCounterNumber'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) {
+        el.textContent = count.toLocaleString('ko-KR');
+        el.classList.remove('animate-pulse');
+      }
+    });
   }
   let prayerCountFailCount = 0;
   function loadPrayerCount() {
@@ -1883,6 +1890,40 @@
       });
   }
   loadPrayerCount();
+
+  // ⭐ 신규: 홈페이지 "함께 기도해주세요" 3개 카드의 기도 버튼
+  // 글별 기도 버튼과 똑같은 방식(localStorage로 내 표시, 워커 KV로 전체 합산)을 씁니다.
+  (function initTopicPrayerButtons() {
+    function render(btn) {
+      const key = btn.getAttribute('data-topic-key');
+      const done = localStorage.getItem(key) === '1';
+      btn.className = 'prayer-topic-btn mt-auto pt-5 text-center text-xs font-semibold ' +
+        (done ? 'text-ember' : 'text-ink-400 hover:text-ink-600');
+      btn.innerHTML = '🙏 ' + (done ? uiText('prayed') : uiText('prayForTopic'));
+    }
+
+    document.querySelectorAll('.prayer-topic-btn').forEach(btn => {
+      render(btn);
+      btn.addEventListener('click', () => {
+        const key = btn.getAttribute('data-topic-key');
+        const done = localStorage.getItem(key) === '1';
+        if (done) {
+          localStorage.removeItem(key);
+          render(btn);
+          return;
+        }
+        localStorage.setItem(key, '1');
+        render(btn);
+        if (typeof gtag === 'function') {
+          gtag('event', 'prayer_click', { event_category: 'home_topic', event_label: key });
+        }
+        fetch('https://flat-shape-f26f.littleflame83.workers.dev/prayer-count/increment', { method: 'POST' })
+          .then(res => res.json())
+          .then(data => { if (typeof data.count === 'number') updatePrayerCounterDisplay(data.count); })
+          .catch(() => {});
+      });
+    });
+  })();
 
   // ⭐ 변경: 사역지 지도 — Google Maps JS API로 4개 사역지 마커를 직접 그림.
   // 처음엔 두 손가락(cooperative)으로 시작해서 페이지 스크롤을 방해하지 않다가,
@@ -2433,16 +2474,16 @@
   const PLACES = {
     camjangsin: { name: '캄보디아 장로교 신학교', short: '캄장신', lat: 11.560598, lng: 104.833593,
       aliases: ['캄장신', '캄보디아장로교신학교', '캄보디아 장로교 신학교', '캄보디아장로회신학교'],
-      url: '', desc: '', image: '' },
+      url: '', desc: '앞으로 교육 사역을 감당하게 될 신학교입니다.', image: '' },
     hebron: { name: '헤브론 메디컬 센터', short: '헤브론', lat: 11.561763, lng: 104.8391636,
       aliases: ['헤브론', '헤브론센터', '헤브론 센터', '헤브론메디컬센터', '헤브론 메디컬 센터'],
-      url: '', desc: '', image: '' },
+      url: '', desc: '한국 의료 선교사님들이 사역하시는 병원입니다.', image: '' },
     npic: { name: '내셔널 폴리테크닉 인스티튜트 오브 캄보디아', short: 'NPIC', lat: 11.598406, lng: 104.8007837,
       aliases: ['NPIC', 'npic', '폴리텍', '내셔널폴리테크닉', '내셔널 폴리테크닉 인스티튜트 오브 캄보디아'],
-      url: '', desc: '', image: '' },
+      url: '', desc: '2008년 첫 단기선교 사역지입니다.', image: '' },
     adulam: { name: '아둘람센터', short: '아둘람', lat: 11.5968859, lng: 104.8031447,
       aliases: ['아둘람', '아둘람센터', '아둘람 센터'],
-      url: '', desc: '', image: '' },
+      url: '', desc: '예전 WD 센터로 불리던 곳입니다.', image: '' },
   };
   // 지도 위에서 겹칠 때 어떤 핀/이름표가 위로 오는지 순서 (위에 적힌 순서대로 앞에 옴)
   // 지금은 캄장신 > 헤브론 > NPIC > 아둘람 순서
@@ -3069,6 +3110,7 @@
   // 그래서 메뉴처럼 아예 미리 정해둔 번역을 그 자리에서 바로 꽂아 넣도록 함.
   const UI_TEXT = {
     prayFor:    { ko: '이 글을 위해 기도할게요', en: 'Pray for this',      km: 'អធិស្ឋានសម្រាប់រឿងនេះ' },
+    prayForTopic: { ko: '이 제목을 위해 기도할게요', en: 'Pray for this', km: 'អធិស្ឋានសម្រាប់រឿងនេះ' },
     prayed:     { ko: '기도했습니다',           en: 'Prayed',             km: 'បានអធិស្ឋានហើយ' },
     prayHint:   { ko: '한 번 눌러두면 이 기도제목을 기억하는 표시가 저장됩니다.', en: 'Tap once to remember that you prayed for this.', km: 'ចុចម្ដងដើម្បីរក្សាទុកថាអ្នកបានអធិស្ឋាន។' },
     viewAll:    { ko: '전체보기', en: 'View All', km: 'មើលទាំងអស់' },
