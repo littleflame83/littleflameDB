@@ -1691,10 +1691,11 @@
       const article = document.createElement('article');
       article.className = 'reveal group bg-warm-card rounded-3xl overflow-hidden shadow-card hover:shadow-soft transition-shadow duration-300 cursor-pointer';
       article.addEventListener('click', () => {
+        const relatedStoryId = card.getAttribute('data-related-story');
         if (videoId) {
-          openGalleryVideo(videoId, text.querySelector('.gallery-title')?.textContent || '');
+          openGalleryVideo(videoId, text.querySelector('.gallery-title')?.textContent || '', relatedStoryId);
         } else {
-          openGalleryLightbox(photos, 0);
+          openGalleryLightbox(photos, 0, relatedStoryId);
         }
       });
       article.appendChild(cover);
@@ -4505,6 +4506,10 @@
     galleryLightboxRelatedStory.onclick = () => {
       closeGalleryLightbox();
       closeOverlay('galleryOverlay');
+      // ⭐ 수정: 그 글의 카테고리 목록(가족이야기/기도편지/캄보디아이야기)을
+      // 뒷배경으로 먼저 열어야, 글을 닫았을 때도 자연스럽게 그 목록으로 돌아감
+      const bgOverlay = OVERLAY_MAP_BY_PREFIX[m[1]];
+      if (bgOverlay) openOverlay(bgOverlay);
       openDetail(m[1], m[2]);
     };
   }
