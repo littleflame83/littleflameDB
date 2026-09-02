@@ -1484,6 +1484,9 @@
 <button aria-label="다음 사진" class="hidden absolute right-3 sm:right-6 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors" id="galleryLightboxNext" type="button">
 <svg fill="none" height="20" stroke="white" stroke-width="2.2" viewbox="0 0 24 24" width="20"><path d="M9 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round"></path></svg>
 </button>
+<a class="hidden absolute bottom-16 left-1/2 -translate-x-1/2 flex items-center gap-1.5 text-white bg-ember hover:bg-ember-dark text-xs sm:text-sm font-semibold px-4 py-2.5 rounded-full shadow-lg transition-colors" href="javascript:void(0)" id="galleryLightboxRelatedStory">
+📖 이 사진과 관련된 이야기 보기
+</a>
 <span class="hidden absolute bottom-7 left-1/2 -translate-x-1/2 text-white/80 text-xs font-semibold bg-white/10 px-3 py-1.5 rounded-full" id="galleryLightboxCounter"></span>
 </div>
 <script>
@@ -4484,7 +4487,29 @@
     if (multi) galleryLightboxCounter.textContent = (galleryIndex + 1) + ' / ' + galleryPhotos.length;
   }
 
-  function openGalleryLightbox(photos, startIdx) {
+  const galleryLightboxRelatedStory = document.getElementById('galleryLightboxRelatedStory');
+
+  // ⭐ 신규: 사진/영상과 연결된 글이 있으면 "이 사진과 관련된 이야기 보기" 버튼을 보여줌
+  // (이전글/다음글 개념이 아니라, 이 사진첩과 연결된 글 딱 하나만 보여줌)
+  function setGalleryRelatedStory(storyId) {
+    if (!storyId) {
+      galleryLightboxRelatedStory.classList.add('hidden');
+      return;
+    }
+    const m = String(storyId).match(/^(ovrpt|ovltr|ovcam)-(.+)$/);
+    if (!m) {
+      galleryLightboxRelatedStory.classList.add('hidden');
+      return;
+    }
+    galleryLightboxRelatedStory.classList.remove('hidden');
+    galleryLightboxRelatedStory.onclick = () => {
+      closeGalleryLightbox();
+      closeOverlay('galleryOverlay');
+      openDetail(m[1], m[2]);
+    };
+  }
+
+  function openGalleryLightbox(photos, startIdx, relatedStoryId) {
     // 이전에 영상이 재생 중이었다면 정지
     galleryLightboxVideoWrap.classList.add('hidden');
     galleryLightboxVideoFrame.src = '';
@@ -4493,12 +4518,13 @@
     galleryPhotos = photos;
     galleryIndex = startIdx || 0;
     updateGalleryLightbox();
+    setGalleryRelatedStory(relatedStoryId);
     galleryLightbox.classList.remove('hidden');
     document.body.style.overflow = 'hidden';
   }
 
   // ⭐ 신규: 갤러리에서 영상 카드를 클릭했을 때 — 유튜브로 나가지 않고 이 팝업 안에서 바로 재생
-  function openGalleryVideo(videoId, title) {
+  function openGalleryVideo(videoId, title, relatedStoryId) {
     galleryLightboxImg.classList.add('hidden');
     galleryLightboxPrev.classList.add('hidden');
     galleryLightboxNext.classList.add('hidden');
@@ -4510,6 +4536,7 @@
     const fallbackLink = document.getElementById('galleryLightboxVideoFallback');
     if (fallbackLink) fallbackLink.href = 'https://youtu.be/' + videoId;
 
+    setGalleryRelatedStory(relatedStoryId);
     galleryLightbox.classList.remove('hidden');
     document.body.style.overflow = 'hidden';
   }
@@ -4525,14 +4552,15 @@
 
   document.querySelectorAll('.gallery-card').forEach(card => {
     card.addEventListener('click', () => {
+      const relatedStoryId = card.getAttribute('data-related-story');
       const videoId = card.getAttribute('data-video-id');
       if (videoId) {
         const title = card.querySelector('.gallery-title')?.textContent || '';
-        openGalleryVideo(videoId, title);
+        openGalleryVideo(videoId, title, relatedStoryId);
         return;
       }
       const photos = JSON.parse(card.getAttribute('data-photos') || '[]');
-      openGalleryLightbox(photos, 0);
+      openGalleryLightbox(photos, 0, relatedStoryId);
     });
   });
 
