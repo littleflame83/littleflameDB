@@ -2964,7 +2964,10 @@
     if (!data || !Array.isArray(data.translatedTexts)) throw new Error('번역 결과 없음: ' + JSON.stringify(data));
     toFetch.forEach((t, i) => {
       const translated = data.translatedTexts[i];
-      translationCache.set(t + '|' + target, translated);
+      // ⭐ 수정: 실패(null)까지 캐시에 저장해버리면, 같은 페이지를 보는 동안
+      // 그 문장은 다시 시도도 안 하고 계속 실패로 남습니다. 성공한 번역만
+      // 저장해서, 다음 언어 전환이나 재시도 때 다시 물어볼 수 있게 합니다.
+      if (translated) translationCache.set(t + '|' + target, translated);
       result[t] = translated;
     });
     return result;
