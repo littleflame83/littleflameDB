@@ -743,7 +743,7 @@
 </div>
 </div>
 <p class="mt-4 text-sm text-ink-600">
-        월 <span class="font-semibold text-ink-900" id="fundCurrentText">···</span> / 목표 <span class="font-semibold text-ink-900" id="fundGoalText">···</span>
+        월 <span class="font-semibold text-ink-900" id="fundCurrentText">···</span>만원 / 목표 <span class="font-semibold text-ink-900" id="fundGoalText">···</span>만원
 </p>
 </div>
 <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8">
@@ -1095,8 +1095,8 @@
 </div>
 <div class="sticky top-16 sm:top-20 z-10 about-tabs-bar border-b border-ink-900/5">
   <nav aria-label="사역 소개 바로가기" class="max-w-4xl mx-auto px-6 py-3 flex items-center justify-center gap-2 sm:gap-3">
-    <button type="button" class="about-tab px-3.5 py-2 rounded-full text-xs sm:text-sm font-semibold" data-about-mode="story" onclick="switchAboutView('story')">홍성화 선교사는</button>
-    <button type="button" class="about-tab is-active px-3.5 py-2 rounded-full text-xs sm:text-sm font-semibold" data-about-mode="ministry" onclick="switchAboutView('ministry')">사역 소개</button>
+    <button type="button" id="aboutTabStory" class="about-tab px-3.5 py-2 rounded-full text-xs sm:text-sm font-semibold" data-about-mode="story" onclick="switchAboutView('story')">홍성화 선교사는</button>
+    <button type="button" id="aboutTabMinistry" class="about-tab is-active px-3.5 py-2 rounded-full text-xs sm:text-sm font-semibold" data-about-mode="ministry" onclick="switchAboutView('ministry')">사역 소개</button>
   </nav>
 </div>
 <div class="pt-10 pb-20 sm:pt-14 sm:pb-28 px-6">
@@ -1814,8 +1814,8 @@
         percentEl.textContent = percent + '%';
         percentEl.className = 'text-2xl font-bold text-ink-900';
       }
-      if (currentEl) currentEl.textContent = current.toLocaleString('ko-KR') + '만원';
-      if (goalEl) goalEl.textContent = goal.toLocaleString('ko-KR') + '만원';
+      if (currentEl) currentEl.textContent = current.toLocaleString('ko-KR');
+      if (goalEl) goalEl.textContent = goal.toLocaleString('ko-KR');
     }
 
     function showFundLoading(isTakingLong) {
@@ -2146,6 +2146,13 @@
           track.appendChild(divider);
         }
       });
+
+      // ⭐ 신규: 확대/축소로 내용을 새로 그릴 때마다, 지금 한국어가 아닌 언어가
+      // 선택되어 있으면 방금 새로 만든 연도 라벨·날짜·제목도 바로 번역합니다.
+      // (안 그러면 언어를 바꾼 뒤 확대·축소할 때마다 한글로 되돌아갔음)
+      if (typeof currentLang !== 'undefined' && currentLang !== 'ko' && typeof translateSubtree === 'function') {
+        translateSubtree(track, currentLang, false);
+      }
     }
 
     function setScale(next) {
@@ -2996,10 +3003,22 @@
     const translatedMap = {};
     for (let i = 0; i < uniqueTexts.length; i += chunkSize) {
       const chunk = uniqueTexts.slice(i, i + chunkSize);
-      try {
-        Object.assign(translatedMap, await translateTextsBatch(chunk, target));
-      } catch (err) {
-        console.error('[번역 배치 실패]', err);
+      // ⭐ 신규: 일시적인 오류(네트워크 순간 끊김, 번역 서버 순간 오류 등)로
+      // 청크 하나가 실패해도 그 자리에서 바로 포기하지 않고, 짧게 쉬었다가
+      // 한 번 더 시도합니다. 그래도 안 되면 그때 포기하고 실패로 기록합니다.
+      let lastErr = null;
+      let succeeded = false;
+      for (let attempt = 0; attempt < 2 && !succeeded; attempt++) {
+        try {
+          if (attempt > 0) await new Promise(r => setTimeout(r, 400));
+          Object.assign(translatedMap, await translateTextsBatch(chunk, target));
+          succeeded = true;
+        } catch (err) {
+          lastErr = err;
+        }
+      }
+      if (!succeeded) {
+        console.error('[번역 배치 실패] (재시도 후에도 실패)', lastErr);
       }
     }
 
@@ -3130,6 +3149,11 @@
     'navm-letters':     { en: 'Prayer Letter',    km: 'លិខិតអធិស្ឋាន' },
     'navm-support':     { en: 'Support Us',       km: 'គាំទ្រ' },
     'navm-donate-btn':  { en: 'Donate',           km: 'បរិច្ចាគ' },
+    // ⭐ 신규: '사역 소개' 오버레이 안의 탭 두 개. 사람 이름(홍성화)이 들어간
+    // 짧은 라벨이라 구글 번역이 문장 맥락 없이는 이름을 바꾸지 않고 그대로
+    // 두는 경우가 많아서, 메뉴처럼 사전에 정해둔 번역으로 고정합니다.
+    'aboutTabStory':    { en: 'About Me',         km: 'អំពីខ្ញុំ' },
+    'aboutTabMinistry': { en: 'Our Ministry',     km: 'អំពីព័ន្ធកិច្ចរបស់យើង' },
   };
 
   function applyNavTranslations(lang) {
@@ -3739,11 +3763,6 @@
       }
     });
 
-    // 지금 한국어가 아닌 언어가 선택되어 있으면, 이 글의 본문(고정문구 아닌 실제 글 내용)도 바로 번역함
-    if (typeof currentLang !== 'undefined' && currentLang !== 'ko') {
-      translateSubtree(modalBody, currentLang);
-    }
-
     // "공유" 버튼 글자는 글을 열 때마다 지금 언어에 정확히 맞춰서 고정 (스캔 누락과 무관하게 항상 일치)
     const shareLabelEl = document.getElementById(tmplPrefix + 'CopyLinkText');
     if (shareLabelEl) shareLabelEl.textContent = uiText('share');
@@ -3858,6 +3877,13 @@
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 6l6 6-6 6"/></svg>
         </a>`;
       modalBody.appendChild(wrap);
+    }
+
+    // ⭐ 수정: 번역은 반드시 여기, 즉 기도 버튼·이전/다음 이야기·동역하기·전체보기 버튼까지
+    // modalBody에 전부 붙은 "다음"에 실행합니다. 예전에는 본문(item.detail_html)만 있을 때
+    // 번역을 실행해서, 그 뒤에 새로 추가되는 버튼/문구들은 한국어 그대로 남았습니다.
+    if (typeof currentLang !== 'undefined' && currentLang !== 'ko') {
+      translateSubtree(modalBody, currentLang);
     }
 
     modal.classList.remove('hidden');
