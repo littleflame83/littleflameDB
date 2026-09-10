@@ -2413,6 +2413,14 @@
     (isStory ? storyView : ministryView).querySelectorAll('.reveal').forEach(x => x.classList.add('in-view'));
     const overlay = document.getElementById('aboutOverlay');
     if (overlay) overlay.scrollTop = 0;
+
+    // 언어가 영어/크메르어인 상태에서 탭을 바꾸면 새로 보이는 내용도 즉시 번역합니다.
+    const visibleView = isStory ? storyView : ministryView;
+    if (typeof currentLang !== 'undefined' && currentLang !== 'ko' && typeof translateSubtree === 'function') {
+      applyFixedTextTranslations(currentLang, visibleView);
+      translateSubtree(visibleView, currentLang, false)
+        .catch(e => console.error('사역소개 탭 번역 오류:', e));
+    }
   }
 
   // ⭐ 신규: "처음 오셨나요?"는 story(홍성화 선교사는), 그 외 모든 "사역 소개"는 ministry로 엽니다
@@ -3043,8 +3051,8 @@
     // 많이 모이면 60개만으로도 이 한도를 훌쩍 넘어서 요청 자체가 실패했고,
     // 재시도해도 크기가 그대로라 똑같이 실패했습니다(그게 실패 64/226이 뜬 이유).
     // 이제 "문장 60개" 또는 "글자 수 3,500자" 중 먼저 차는 기준으로 묶습니다.
-    const chunkSize = 60;
-    const maxChunkChars = 3500;
+    const chunkSize = 30;
+    const maxChunkChars = 1800;
     const chunks = [];
     let current = [];
     let currentChars = 0;
@@ -3076,7 +3084,17 @@
         }
       }
       if (!succeeded) {
-        console.error('[번역 배치 실패] (재시도 후에도 실패)', lastErr);
+        // 한 덩어리가 실패하더라도 전체 문장을 포기하지 않습니다.
+        // 실패한 덩어리를 문장 단위로 다시 요청해 부분 번역이 남는 현상을 줄입니다.
+        for (const singleText of chunk) {
+          try {
+            const one = await translateTextsBatch([singleText], target);
+            Object.assign(translatedMap, one);
+          } catch (singleErr) {
+            console.error('[개별 번역 실패]', singleText, singleErr);
+          }
+        }
+        if (lastErr) console.error('[번역 배치 실패 → 개별 재시도]', lastErr);
       }
     }
 
@@ -3143,6 +3161,18 @@
 
     if (label) label.textContent = lang === 'en' ? 'Translating…' : 'កំពុងបកប្រែ…';
 
+    // 현재 열려 있는 메뉴를 먼저 번역합니다. 특히 후원 안내/사역 소개처럼
+    // 사용자가 바로 보고 있는 화면이 메인 페이지의 긴 번역 때문에 뒤로 밀리지 않게 합니다.
+    const openOverlayBefore = ALL_OVERLAYS.map(id => document.getElementById(id)).find(el => el && !el.classList.contains('hidden'));
+    if (openOverlayBefore) {
+      const overlayTarget = openOverlayBefore.id === 'aboutOverlay'
+        ? (openOverlayBefore.querySelector('#aboutStoryView:not(.hidden)') || openOverlayBefore.querySelector('#aboutMinistryView:not(.hidden)') || openOverlayBefore)
+        : openOverlayBefore;
+      applyFixedTextTranslations(lang, overlayTarget);
+      await translateSubtree(overlayTarget, lang, false, () => requestId === languageRequestId);
+      if (requestId !== languageRequestId) return;
+    }
+
     // 2) JSON으로 생성된 메인 카드까지 모두 만들어진 상태에서 번역을 시작합니다.
     //    푸터와 닫혀 있는 오버레이는 건너뜁니다.
     const result = await translateSubtree(document.body, lang, true, () => requestId === languageRequestId);
@@ -3161,7 +3191,11 @@
     // 3) 지금 열려있는 메뉴(오버레이)가 있다면 그 메뉴도 현재 선택 언어로 번역합니다.
     const openOverlayEl = ALL_OVERLAYS.map(id => document.getElementById(id)).find(el => el && !el.classList.contains('hidden'));
     if (openOverlayEl) {
-      await translateSubtree(openOverlayEl, lang, false, () => requestId === languageRequestId);
+      const overlayTarget = openOverlayEl.id === 'aboutOverlay'
+        ? (openOverlayEl.querySelector('#aboutStoryView:not(.hidden)') || openOverlayEl.querySelector('#aboutMinistryView:not(.hidden)') || openOverlayEl)
+        : openOverlayEl;
+      applyFixedTextTranslations(lang, overlayTarget);
+      await translateSubtree(overlayTarget, lang, false, () => requestId === languageRequestId);
     }
   }
   window.setLang = setLang;
@@ -3285,6 +3319,19 @@
     '어떻게 후원할 수 있나요?': { en: 'How can I support you?', km: 'តើខ្ញុំអាចគាំទ្របានយ៉ាងដូចម្តេច?' },
     '사역 소개': { en: 'Our Ministry', km: 'អំពីព័ន្ធកិច្ចរបស់យើង' },
     '동역하기': { en: 'Partner with Us', km: 'ចូលរួមជាដៃគូ' },
+    '후원요청을 위한 첫 발걸음, 떨리는 마음으로 출발합니다': { en: 'Taking the First Step to Invite Support, We Set Out with Trembling Hearts', km: 'ជំហានដំបូងដើម្បីអញ្ជើញការគាំទ្រ យើងចេញដំណើរដោយចិត្តរំភើប' },
+    '선교 후원 모집을 위한 첫 방문, 떨리는 마음을 담은 출정식 쇼츠 영상입니다.': { en: 'A short video of our first visit to invite mission support, capturing our nervous and hopeful hearts.', km: 'វីដេអូខ្លីពីដំណើរទស្សនកិច្ចដំបូងដើម្បីអញ្ជើញការគាំទ្របេសកកម្ម ដែលបង្ហាញពីចិត្តរំភើបរបស់យើង។' },
+    '후원 안내': { en: 'Support Us', km: 'ការគាំទ្រ' },
+    '🇰🇭 동역자 초청': { en: '🇰🇭 Invitation to Partner', km: '🇰🇭 អញ្ជើញចូលរួមជាដៃគូ' },
+    '캄보디아 선교에 함께해주세요': { en: 'Please Join Us in Mission to Cambodia', km: 'សូមចូលរួមជាមួយយើងក្នុងបេសកកម្មនៅកម្ពុជា' },
+    '동역 안내': { en: 'Ways to Partner', km: 'វិធីចូលរួមជាដៃគូ' },
+    '정기후원': { en: 'Monthly Support', km: 'ការគាំទ្រប្រចាំខែ' },
+    '캄보디아 선교의 든든한 동역자': { en: 'A Strong Partner in Mission to Cambodia', km: 'ដៃគូដ៏រឹងមាំក្នុងបេសកកម្មនៅកម្ពុជា' },
+    '정기후원하기': { en: 'Give Monthly', km: 'គាំទ្រប្រចាំខែ' },
+    '일시후원': { en: 'One-Time Support', km: 'ការគាំទ្រម្តង' },
+    '마음을 담아 보내는 곳': { en: 'A Place to Give from the Heart', km: 'កន្លែងផ្តល់ដោយបេះដូង' },
+    '계좌번호 복사하기': { en: 'Copy Account Number', km: 'ចម្លងលេខគណនី' },
+    '사역 안내 보기 →': { en: 'View Ministry →', km: 'មើលអំពីព័ន្ធកិច្ច →' },
   };
 
   function applyFixedTextTranslations(lang, root = document.body) {
