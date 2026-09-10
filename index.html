@@ -3037,6 +3037,11 @@
         if (node.parentElement && node.parentElement.closest('[data-i18n-skip]')) {
           return NodeFilter.FILTER_REJECT;
         }
+        // ⭐ 신규: 고정 사전(FIXED_TEXT_TRANSLATIONS)으로 이미 번역된 노드는
+        // 실시간 구글 번역 대상에서 제외합니다. 안 그러면 고정으로 이미
+        // 맞게 넣어둔 문구를 구글 번역이 또 요청해서 다른 결과로 덮어쓰거나,
+        // 괜히 API 호출만 낭비하게 됩니다.
+        if (node.__fixedTranslated) return NodeFilter.FILTER_REJECT;
         // 메인 화면 번역할 때는, 지금 안 열려있는 오버레이(메뉴창)들은 건너뜀 —
         // 그래야 처음 언어 바꿀 때 사이트 전체(모든 글)를 다 번역하려다 오래 걸리는 일이 없음.
         // 각 오버레이는 실제로 그 메뉴를 열 때 그 자리에서 번역됨.
@@ -3343,34 +3348,53 @@
     '마음을 담아 보내는 곳': { en: 'A Place to Give from the Heart', km: 'កន្លែងផ្តល់ដោយបេះដូង' },
     '계좌번호 복사하기': { en: 'Copy Account Number', km: 'ចម្លងលេខគណនី' },
     '사역 안내 보기 →': { en: 'View Ministry →', km: 'មើលអំពីព័ន្ធកិច្ច →' },
-    '선교는 한 사람이 홀로 떠나는 길이 아니라, 기도하는 사람과 보내는 사람, 그리고 현장에서 섬기는 사람이 함께 걸어가는 길이라고 믿습니다.': { en: 'I believe mission is not a journey one person takes alone, but a journey walked together by those who pray, those who send, and those who serve in the field.', km: 'I believe mission is not a journey one person takes alone, but a journey walked together by those who pray, those who send, and those who serve in the field.' },
-    '저희 가족은 캄보디아로 파송받아 복음과 교육, 다음 세대를 세우는 사역을 시작하려 합니다. 그 여정에 동행해 주실 동역자가 필요합니다.': { en: 'Our family is being sent to Cambodia to begin a ministry of the gospel, education, and raising up the next generation. We need partners who will walk with us on this journey.', km: 'Our family is being sent to Cambodia to begin a ministry of the gospel, education, and raising up the next generation. We need partners who will walk with us on this journey.' },
-    '매월의 작은 후원이 사역을 지속하고 사람을 세워가는 힘이 됩니다.': { en: 'A small monthly gift helps sustain the ministry and build people up.', km: 'A small monthly gift helps sustain the ministry and build people up.' },
-    '미션펀드를 통해 간편하게': { en: 'Simply through MissionFund', km: 'Simply through MissionFund' },
-    'CMS 자동이체': { en: 'Automatic CMS Transfer', km: 'Automatic CMS Transfer' },
-    '정기후원이 아니더라도 마음이 감동될 때 언제든 힘을 보태주실 수 있습니다.': { en: 'Even if you do not give monthly, you can support the ministry whenever your heart is moved to do so.', km: 'Even if you do not give monthly, you can support the ministry whenever your heart is moved to do so.' },
-    '카카오뱅크': { en: 'KakaoBank', km: 'KakaoBank' },
-    '먼저 저희가 어떤 사역을 하고 있는지 궁금하신가요?': { en: 'Would you like to know more about the ministry we are preparing for?', km: 'Would you like to know more about the ministry we are preparing for?' },
-    '📚 후원금은 이렇게 사용됩니다': { en: '📚 How Your Support Will Be Used', km: '📚 How Your Support Will Be Used' },
-    '신학교와 교육': { en: 'Seminary & Education', km: 'Seminary & Education' },
-    '현지 목회자와 사역자를 세우고 말씀을 가르치는 사역': { en: 'Training local pastors and ministry leaders and teaching the Word', km: 'Training local pastors and ministry leaders and teaching the Word' },
-    '현지 사역': { en: 'Local Ministry', km: 'Local Ministry' },
-    '현지 교회와 공동체를 섬기며 복음을 전하는 사역': { en: 'Serving local churches and communities and sharing the gospel', km: 'Serving local churches and communities and sharing the gospel' },
-    '선교사 가정': { en: 'Missionary Family', km: 'Missionary Family' },
-    '현지에서 생활하며 사역을 지속하기 위한 생활비와 정착 비용': { en: 'Living and settlement costs needed to live locally and sustain the ministry', km: 'Living and settlement costs needed to live locally and sustain the ministry' },
-    '현장 사역': { en: 'Field Ministry', km: 'Field Ministry' },
-    '사역지를 오가며 사람을 만나고 섬기는 데 필요한 비용': { en: 'Costs needed to travel to ministry locations, meet people, and serve them', km: 'Costs needed to travel to ministry locations, meet people, and serve them' },
-    '후원금이 실제로 어떻게 사용되었는지는 사역 보고와 기도편지를 통해 분기별로 계속 나누겠습니다.': { en: 'We will continue to share quarterly, through ministry reports and prayer letters, how your support has actually been used.', km: 'We will continue to share quarterly, through ministry reports and prayer letters, how your support has actually been used.' },
-    '🇰🇭 우리가 가려는 길': { en: '🇰🇭 The Road We Are Walking', km: '🇰🇭 The Road We Are Walking' },
-    '사람을 세우는 선교를 꿈꿉니다.': { en: 'We dream of a mission that builds people up.', km: 'We dream of a mission that builds people up.' },
-    '신학교와 교육, 상담과 독서 모임 등을 통해 현지의 사람들이 복음을 배우고 살아내며 또 다른 사람과 다음 세대를 세워갈 수 있도록 돕고자 합니다.': { en: 'Through seminary and education, counseling, reading groups, and more, we hope to help local people learn and live out the gospel and raise up others and the next generation.', km: 'Through seminary and education, counseling, reading groups, and more, we hope to help local people learn and live out the gospel and raise up others and the next generation.' },
-    '현지인과 나란히 배우고, 한마음으로 예배하며, 서로를 세워가는 선교. 그것이 저희가 캄보디아에서 걸어가고 싶은 길입니다.': { en: 'A mission where we learn side by side with local people, worship together, and build one another up. That is the road we want to walk in Cambodia.', km: 'A mission where we learn side by side with local people, worship together, and build one another up. That is the road we want to walk in Cambodia.' },
-    '🙏 함께해주세요': { en: '🙏 Join Us', km: '🙏 Join Us' },
-    '기도와 마음으로 동참해 주세요.': { en: 'Please join us through prayer and your heart.', km: 'Please join us through prayer and your heart.' },
-    '캄보디아에서 시작될 사역과 저희 가족의 여정을 위해 기도해 주시면 감사하겠습니다. 뜻을 모아주시는 모든 분들께 진심으로 감사드립니다.': { en: 'We would be grateful if you would pray for the ministry that will begin in Cambodia and for our family’s journey. We sincerely thank everyone who joins us in this mission.', km: 'We would be grateful if you would pray for the ministry that will begin in Cambodia and for our family’s journey. We sincerely thank everyone who joins us in this mission.' },
-    '후원요청을 위한 첫 발걸음, 떨리는 마음으로 출발합니다': { en: 'Taking the First Step to Invite Support, We Set Out with Trembling Hearts', km: 'Taking the First Step to Invite Support, We Set Out with Trembling Hearts' },
-    '선교 후원 모집을 위한 첫 방문, 떨리는 마음을 담은 출정식 쇼츠 영상입니다.': { en: 'A short video of our first visit to invite mission support, capturing our nervous and hopeful hearts.', km: 'A short video of our first visit to invite mission support, capturing our nervous and hopeful hearts.' },
+    '선교는 한 사람이 홀로 떠나는 길이 아니라, 기도하는 사람과 보내는 사람, 그리고 현장에서 섬기는 사람이 함께 걸어가는 길이라고 믿습니다.': { en: 'I believe mission is not a journey one person takes alone, but a journey walked together by those who pray, those who send, and those who serve in the field.' },
+    '저희 가족은 캄보디아로 파송받아 복음과 교육, 다음 세대를 세우는 사역을 시작하려 합니다. 그 여정에 동행해 주실 동역자가 필요합니다.': { en: 'Our family is being sent to Cambodia to begin a ministry of the gospel, education, and raising up the next generation. We need partners who will walk with us on this journey.' },
+    '매월의 작은 후원이 사역을 지속하고 사람을 세워가는 힘이 됩니다.': { en: 'A small monthly gift helps sustain the ministry and build people up.' },
+    '미션펀드를 통해 간편하게': { en: 'Simply through MissionFund' },
+    'CMS 자동이체': { en: 'Automatic CMS Transfer' },
+    '정기후원이 아니더라도 마음이 감동될 때 언제든 힘을 보태주실 수 있습니다.': { en: 'Even if you do not give monthly, you can support the ministry whenever your heart is moved to do so.' },
+    '카카오뱅크': { en: 'KakaoBank' },
+    '먼저 저희가 어떤 사역을 하고 있는지 궁금하신가요?': { en: 'Would you like to know more about the ministry we are preparing for?' },
+    '📚 후원금은 이렇게 사용됩니다': { en: '📚 How Your Support Will Be Used' },
+    '신학교와 교육': { en: 'Seminary & Education' },
+    '현지 목회자와 사역자를 세우고 말씀을 가르치는 사역': { en: 'Training local pastors and ministry leaders and teaching the Word' },
+    '현지 사역': { en: 'Local Ministry' },
+    '현지 교회와 공동체를 섬기며 복음을 전하는 사역': { en: 'Serving local churches and communities and sharing the gospel' },
+    '선교사 가정': { en: 'Missionary Family' },
+    '현지에서 생활하며 사역을 지속하기 위한 생활비와 정착 비용': { en: 'Living and settlement costs needed to live locally and sustain the ministry' },
+    '현장 사역': { en: 'Field Ministry' },
+    '사역지를 오가며 사람을 만나고 섬기는 데 필요한 비용': { en: 'Costs needed to travel to ministry locations, meet people, and serve them' },
+    '후원금이 실제로 어떻게 사용되었는지는 사역 보고와 기도편지를 통해 분기별로 계속 나누겠습니다.': { en: 'We will continue to share quarterly, through ministry reports and prayer letters, how your support has actually been used.' },
+    '🇰🇭 우리가 가려는 길': { en: '🇰🇭 The Road We Are Walking' },
+    '사람을 세우는 선교를 꿈꿉니다.': { en: 'We dream of a mission that builds people up.' },
+    '신학교와 교육, 상담과 독서 모임 등을 통해 현지의 사람들이 복음을 배우고 살아내며 또 다른 사람과 다음 세대를 세워갈 수 있도록 돕고자 합니다.': { en: 'Through seminary and education, counseling, reading groups, and more, we hope to help local people learn and live out the gospel and raise up others and the next generation.' },
+    '현지인과 나란히 배우고, 한마음으로 예배하며, 서로를 세워가는 선교. 그것이 저희가 캄보디아에서 걸어가고 싶은 길입니다.': { en: 'A mission where we learn side by side with local people, worship together, and build one another up. That is the road we want to walk in Cambodia.' },
+    '🙏 함께해주세요': { en: '🙏 Join Us' },
+    '기도와 마음으로 동참해 주세요.': { en: 'Please join us through prayer and your heart.' },
+    '캄보디아에서 시작될 사역과 저희 가족의 여정을 위해 기도해 주시면 감사하겠습니다. 뜻을 모아주시는 모든 분들께 진심으로 감사드립니다.': { en: 'We would be grateful if you would pray for the ministry that will begin in Cambodia and for our family’s journey. We sincerely thank everyone who joins us in this mission.' },
+    '후원요청을 위한 첫 발걸음, 떨리는 마음으로 출발합니다': { en: 'Taking the First Step to Invite Support, We Set Out with Trembling Hearts' },
+    '선교 후원 모집을 위한 첫 방문, 떨리는 마음을 담은 출정식 쇼츠 영상입니다.': { en: 'A short video of our first visit to invite mission support, capturing our nervous and hopeful hearts.' },
   };
+
+  // ⭐ 신규: "❤️ 동역 안내"처럼 이모지가 문구 앞에 붙어 있으면, 사전에 등록해둔
+  // 키("동역 안내")와 글자가 완전히 똑같지 않아서 지금까지 매칭이 안 되고
+  // 있었습니다. 앞에 붙은 이모지/국기 기호를 뗀 나머지로도 한 번 더
+  // 찾아보고, 찾으면 뗐던 기호를 번역 결과 앞에 다시 붙여줍니다.
+  const LEADING_SYMBOL_RE = /^((?:\p{Extended_Pictographic}|\p{Regional_Indicator}|\uFE0F|\u200D)+)\s*/u;
+
+  function resolveFixedTranslation(key, lang) {
+    let entry = FIXED_TEXT_TRANSLATIONS[key];
+    if (entry && entry[lang]) return { prefix: '', text: entry[lang] };
+
+    const m = key.match(LEADING_SYMBOL_RE);
+    if (m) {
+      const rest = key.slice(m[0].length);
+      entry = FIXED_TEXT_TRANSLATIONS[rest];
+      if (entry && entry[lang]) return { prefix: m[1] + ' ', text: entry[lang] };
+    }
+    return null;
+  }
 
   function applyFixedTextTranslations(lang, root = document.body) {
     const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
@@ -3390,8 +3414,15 @@
     nodes.forEach(node => {
       const original = node.__originalKo || node.nodeValue;
       const key = original.trim();
-      const t = FIXED_TEXT_TRANSLATIONS[key];
-      if (!t) return;
+      const resolved = resolveFixedTranslation(key, lang);
+
+      // ⭐ 수정: 이번 언어(lang) 기준으로 고정 사전에 값이 있을 때만 표시를 켭니다.
+      // 예전엔 한 번 true가 되면 계속 true로 남아서, 예를 들어 영어에서는
+      // 고정 사전으로 처리된 문구가 크메르어처럼 고정 사전에 값이 없는
+      // 언어로 바꿀 때도 계속 "이미 처리됨"으로 잘못 취급되어 실시간
+      // 번역 대상에서 제외되고, 결국 한국어로 남아 있었습니다.
+      node.__fixedTranslated = !!resolved;
+      if (!resolved) return;
 
       node.__originalKo = original;
       const leading = original.match(/^\s*/)[0];
@@ -3399,7 +3430,7 @@
 
       node.nodeValue = lang === 'ko'
         ? original
-        : leading + (t[lang] || original.trim()) + trailing;
+        : leading + resolved.prefix + resolved.text + trailing;
     });
   }
 
