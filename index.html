@@ -804,8 +804,7 @@
 </div>
 </div>
 </section>
-<!-- 구글폼으로 조용히 전송하기 위한 숨김 iframe/form
-     ⚠️ 아래 3곳을 새로 만드실 구글폼 정보로 교체해야 작동합니다 (지금은 자리표시자) -->
+<!-- 구글폼으로 조용히 전송하기 위한 숨김 iframe/form (실제 방명록 구글폼에 연결되어 작동 중) -->
 <iframe id="guestHiddenIframe" name="guestHiddenIframe" style="display:none"></iframe>
 <form action="https://docs.google.com/forms/d/e/1FAIpQLSf77STFZByMrMoloHopmUyHgfg4hPqLMmRkF8_KSqVte50s1g/formResponse" id="guestHiddenForm" method="POST" style="display:none" target="guestHiddenIframe">
 <input id="guestHiddenName" name="entry.1814068072" type="text"/>
@@ -1621,14 +1620,6 @@
     });
   }
 
-  // "2026년 8월 1일" 같은 한글 날짜 표기를 메인 카드용 "2026.08.01" 점(dot) 표기로 바꿔줌
-  function toDotDate(text) {
-    const m = (text || '').match(/(\d{4})년\s*(\d{1,2})월\s*(\d{1,2})일/);
-    if (!m) return text || '';
-    const pad = n => String(n).padStart(2, '0');
-    return m[1] + '.' + pad(m[2]) + '.' + pad(m[3]);
-  }
-
   // 메인페이지 "가족 이야기" 미리보기 — 데이터 맨 앞 2개를 보여줌
   function renderOvrptMainPreview() {
     const grid = document.getElementById('ovrptMainGrid');
@@ -1790,8 +1781,7 @@
   // 구글 시트에서 자동으로 합계를 불러와 그립니다. 코드를 건드릴 필요 없이,
   // 구글 시트에 후원 내역 행만 추가/수정하시면 홈페이지에 자동 반영됩니다.
   //
-  // ⚠️ 아래 FUND_API_URL을 새로 만드실 Apps Script 배포 주소로 교체해야 작동합니다.
-  //    (설정 방법은 별도로 안내해드릴게요 — 방명록 구글폼과 똑같은 방식이에요)
+  // 실제 Apps Script 배포 주소로 연결되어 작동 중 (후원 목표 달성률 조회용)
   (function initFundProgress() {
 
     const FUND_API_URL = 'https://script.google.com/macros/s/AKfycbwn0ZK7_tAzNnF7XTs_SDojeR_fLRnCkbtI0UhYGu78typHMyaBLjunbdgy-ZP7gXf9/exec';
@@ -2297,7 +2287,6 @@
   });
 
   // 응원 방명록 제출 — 숨김 iframe으로 실제 <form> 전송 (구글폼 무입력창 전송의 표준 방법)
-  // ⚠️ 위 guestHiddenForm의 action/entry 값을 새 구글폼 정보로 바꾸면 바로 작동합니다.
   const guestForm = document.getElementById('guestForm');
   const guestSubmitMsg = document.getElementById('guestSubmitMsg');
   const guestHiddenForm = document.getElementById('guestHiddenForm');
@@ -3045,7 +3034,7 @@
         // 메인 화면 번역할 때는, 지금 안 열려있는 오버레이(메뉴창)들은 건너뜀 —
         // 그래야 처음 언어 바꿀 때 사이트 전체(모든 글)를 다 번역하려다 오래 걸리는 일이 없음.
         // 각 오버레이는 실제로 그 메뉴를 열 때 그 자리에서 번역됨.
-        if (excludeOverlays && node.parentElement && node.parentElement.closest('#reportsOverlay, #lettersOverlay, #supportOverlay, #aboutOverlay, #galleryOverlay, #cambodiaOverlay, #siteFooter')) {
+        if (excludeOverlays && node.parentElement && node.parentElement.closest('#reportsOverlay, #lettersOverlay, #supportOverlay, #aboutOverlay, #galleryOverlay, #cambodiaOverlay, #recentOverlay, #siteFooter')) {
           return NodeFilter.FILTER_REJECT;
         }
         return NodeFilter.FILTER_ACCEPT;
@@ -3598,7 +3587,7 @@
 
   function updateSearchUi() {
     const t = SEARCH_UI[currentLang] || SEARCH_UI.ko;
-    ['siteSearchInput','mobileSearchInput','searchOverlayInput'].forEach(id => {
+    ['siteSearchInput','searchOverlayInput'].forEach(id => {
       const el = document.getElementById(id);
       if (el) el.placeholder = t.placeholder;
     });
@@ -3745,12 +3734,6 @@
   });
   document.getElementById('siteSearchInput')?.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') openSearchOverlay(e.currentTarget.value);
-  });
-  document.getElementById('mobileSearchInput')?.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') {
-      document.getElementById('mobileMenu')?.classList.add('hidden');
-      openSearchOverlay(e.currentTarget.value);
-    }
   });
   document.getElementById('searchOverlayInput')?.addEventListener('input', (e) => renderSearchResults(e.currentTarget.value));
   document.getElementById('searchOverlayClose')?.addEventListener('click', closeSearchOverlay);
@@ -4085,8 +4068,26 @@
     }
 
 
-    // ⭐ "동역하기" 버튼 — 전체보기 버튼 바로 위, 글을 다 읽고 관련 글까지 본 다음
-    // 마지막으로 마주치는 CTA가 되도록 배치함
+    // 글 맨 아래에 해당 카테고리 "전체보기" 버튼을 자동으로 붙임
+    const info = CATEGORY_INFO[tmplPrefix];
+    if (info) {
+      const catLabel = currentLang === 'en' ? info.labelEn : (currentLang === 'km' ? info.labelKm : info.label);
+      const wrap = document.createElement('div');
+      wrap.className = 'mt-4 pt-5 text-center no-print';
+      wrap.innerHTML = `
+        <a href="javascript:void(0)" onclick="closeDetail('${tmplPrefix}'); openOverlay('${info.overlay}')"
+          class="inline-flex items-center gap-2 text-sm font-semibold text-ink-900 border border-ink-900/15 hover:border-${info.color} hover:text-${info.color} px-6 py-3 rounded-full transition-colors">
+          ${catLabel} ${uiText('viewAll')}
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 6l6 6-6 6"/></svg>
+        </a>`;
+      modalBody.appendChild(wrap);
+    }
+
+    // ⭐ 수정: "동역하기" 버튼 — 글을 다 읽고 관련 글, 전체보기까지 다 본 다음
+    // 스크롤 맨 끝에서 정말로 마지막에 마주치는 CTA가 되도록, 전체보기 버튼
+    // "다음"에 붙입니다. (예전엔 이 버튼을 전체보기보다 먼저 붙여서, 정작
+    // 스크롤 끝에서 마지막으로 보이는 건 전체보기 쪽이었습니다 — 주석의
+    // 원래 의도와 실제 동작이 어긋나 있었습니다.)
     const donateWrap = document.createElement('div');
     donateWrap.className = 'mt-10 pt-8 border-t border-ink-900/10 text-center no-print';
     donateWrap.innerHTML = `
@@ -4102,21 +4103,6 @@
       closeDetail(tmplPrefix);
       openOverlay('supportOverlay');
     });
-
-    // 글 맨 아래에 해당 카테고리 "전체보기" 버튼을 자동으로 붙임
-    const info = CATEGORY_INFO[tmplPrefix];
-    if (info) {
-      const catLabel = currentLang === 'en' ? info.labelEn : (currentLang === 'km' ? info.labelKm : info.label);
-      const wrap = document.createElement('div');
-      wrap.className = 'mt-4 pt-5 text-center no-print';
-      wrap.innerHTML = `
-        <a href="javascript:void(0)" onclick="closeDetail('${tmplPrefix}'); openOverlay('${info.overlay}')"
-          class="inline-flex items-center gap-2 text-sm font-semibold text-ink-900 border border-ink-900/15 hover:border-${info.color} hover:text-${info.color} px-6 py-3 rounded-full transition-colors">
-          ${catLabel} ${uiText('viewAll')}
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 6l6 6-6 6"/></svg>
-        </a>`;
-      modalBody.appendChild(wrap);
-    }
 
     // ⭐ 수정: 번역은 반드시 여기, 즉 기도 버튼·이전/다음 이야기·동역하기·전체보기 버튼까지
     // modalBody에 전부 붙은 "다음"에 실행합니다. 예전에는 본문(item.detail_html)만 있을 때
