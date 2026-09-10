@@ -2410,51 +2410,22 @@
     document.querySelectorAll('.about-tab').forEach(btn => {
       btn.classList.toggle('is-active', btn.getAttribute('data-about-mode') === mode);
     });
-    (isStory ? storyView : ministryView).querySelectorAll('.reveal').forEach(x => x.classList.add('in-view'));
+    const visibleView = isStory ? storyView : ministryView;
+    visibleView.querySelectorAll('.reveal').forEach(x => x.classList.add('in-view'));
+    // 탭 전환으로 새로 보이는 내용도 현재 언어로 즉시 맞춥니다.
+    if (typeof currentLang !== 'undefined' && currentLang !== 'ko' && typeof translateSubtree === 'function') {
+      translateSubtree(visibleView, currentLang, false, () => true).catch(err => {
+        console.error('[소개 화면 번역 오류]', err);
+      });
+    }
     const overlay = document.getElementById('aboutOverlay');
     if (overlay) overlay.scrollTop = 0;
-
-    // 언어가 영어/크메르어인 상태에서 탭을 바꾸면 새로 보이는 내용도 즉시 번역합니다.
-    const visibleView = isStory ? storyView : ministryView;
-    if (typeof currentLang !== 'undefined' && currentLang !== 'ko' && typeof translateSubtree === 'function') {
-      applyFixedTextTranslations(currentLang, visibleView);
-      translateSubtree(visibleView, currentLang, false)
-        .catch(e => console.error('사역소개 탭 번역 오류:', e));
-    }
   }
-
-
-  // 번호(01~05)를 펼칠 때 새로 보이는 본문도 현재 언어로 즉시 번역합니다.
-  document.addEventListener('toggle', function(e) {
-    if (!e.target || e.target.tagName !== 'DETAILS' || !e.target.classList.contains('about-question') || !e.target.open) return;
-    if (typeof currentLang === 'undefined' || currentLang === 'ko') return;
-    applyFixedTextTranslations(currentLang, e.target);
-    if (typeof translateSubtree === 'function') {
-      translateSubtree(e.target, currentLang, false).catch(err => console.error('아코디언 번역 오류:', err));
-    }
-  }, true);
 
   // ⭐ 신규: "처음 오셨나요?"는 story(홍성화 선교사는), 그 외 모든 "사역 소개"는 ministry로 엽니다
   function openAboutOverlay(mode) {
     openOverlay('aboutOverlay');
     switchAboutView(mode || 'ministry');
-
-    // ⭐ 중요: aboutOverlay는 두 화면을 함께 가지고 있기 때문에
-    // openOverlay() 시점에는 어떤 화면을 번역해야 할지 아직 결정되지 않습니다.
-    // 탭 전환이 끝난 뒤 현재 보이는 화면만 실시간 번역합니다.
-    if (typeof currentLang !== 'undefined' && currentLang !== 'ko' && typeof translateSubtree === 'function') {
-      const overlay = document.getElementById('aboutOverlay');
-      const target = overlay
-        ? (overlay.querySelector('#aboutStoryView:not(.hidden)') ||
-           overlay.querySelector('#aboutMinistryView:not(.hidden)'))
-        : null;
-
-      if (target) {
-        applyFixedTextTranslations(currentLang, target);
-        translateSubtree(target, currentLang, false)
-          .catch(e => console.error('사역소개 번역 오류:', e));
-      }
-    }
   }
 
   // 메인 페이지 상·하 이동 화살표
@@ -2491,31 +2462,17 @@
     mobileMenu.classList.add('hidden');
     iconOpen.classList.remove('hidden');
     iconClose.classList.add('hidden');
-    // 고정 문구는 즉시 처리하고, 본문처럼 길고 매번 달라지는 문장만 실시간 번역합니다.
-    // 사역소개는 두 화면(홍성화 선교사는?/사역 소개) 중 현재 보이는 화면만 번역합니다.
-    applyFixedTextTranslations(
-      typeof currentLang !== 'undefined' ? currentLang : 'ko',
-      el
-    );
-
+    // 지금 한국어가 아닌 언어가 선택되어 있으면, 이 메뉴도 열자마자 번역함
     const langBtnLabelEl = document.getElementById('langBtnLabel');
     if (typeof currentLang !== 'undefined' && currentLang !== 'ko' && typeof translateSubtree === 'function') {
-      const translateTarget = id === 'aboutOverlay'
-        ? (el.querySelector('#aboutStoryView:not(.hidden)') || el.querySelector('#aboutMinistryView:not(.hidden)') || el)
-        : el;
-
-      const overlayNodes = collectTextNodes(translateTarget, false);
+      const overlayNodes = collectTextNodes(el, false);
       if (langBtnLabelEl) langBtnLabelEl.textContent = '메뉴 번역중… (' + overlayNodes.length + '개)';
-
-      // 사역소개는 switchAboutView 이후에 다시 정확히 한 번 번역합니다.
-      if (id !== 'aboutOverlay') {
-        translateSubtree(translateTarget, currentLang, false).then(() => {
-          if (langBtnLabelEl) langBtnLabelEl.textContent = currentLang === 'en' ? 'English' : 'ខ្មែរ';
-        }).catch((e) => {
-          console.error('메뉴 번역 오류:', e);
-          if (langBtnLabelEl) langBtnLabelEl.textContent = '⚠️ 메뉴 번역 실패';
-        });
-      }
+      translateSubtree(el, currentLang, false).then(() => {
+        if (langBtnLabelEl) langBtnLabelEl.textContent = currentLang === 'en' ? 'English' : 'ខ្មែរ';
+      }).catch((e) => {
+        console.error('메뉴 번역 오류:', e);
+        if (langBtnLabelEl) langBtnLabelEl.textContent = '⚠️ 메뉴 번역 실패';
+      });
     }
     // ⭐ 신규: 뒤로가기 기록에 이 메뉴를 하나의 "단계"로 등록
     //
@@ -2991,10 +2948,44 @@
 
   // ⭐ 배치 번역: 문장을 하나씩 보내지 않고, 중복은 한 번만 묶어서 한 번에 요청함
   // (예: 30개 문장 → 예전엔 30번 왕복, 지금은 1번 왕복)
+  // ⭐ 번역이 반드시 정확해야 하는 고유명사/핵심 문구는 수동 번역을 우선 적용합니다.
+  // 특히 이름은 자동번역에 맡기면 음역되거나 다른 표기로 바뀔 수 있으므로 고정합니다.
+  const MANUAL_TRANSLATIONS = {
+    en: {
+      '홍성화': 'Hong Sung Hwa',
+      '홍성화 선교사': 'Missionary Hong Sung Hwa',
+      '홍성화 목사': 'Rev. Hong Sung Hwa',
+      '홍성화 선교사는?': 'Who is Missionary Hong Sung Hwa?',
+      '캄보디아를 마음에 품고 살아가는 홍성화 선교사입니다.': 'I am Missionary Hong Sung Hwa, carrying Cambodia in my heart.',
+      '❤️ 동역 안내': '❤️ Partnering with Us',
+      '🏦 정기후원': '🏦 Monthly Support',
+      '🎁 일시후원': '🎁 One-Time Support',
+      '후원요청을 위한 첫 발걸음, 떨리는 마음으로 출발합니다': 'Our First Step to Invite Mission Support, Setting Out with a Trembling Heart',
+      '선교 후원 모집을 위한 첫 방문, 떨리는 마음을 담은 출정식 쇼츠 영상입니다.': 'A short video from our first visit to invite mission support, capturing our nervous but hopeful first step.'
+    },
+    km: {
+      '홍성화': 'Hong Sung Hwa',
+      '홍성화 선교사': 'អ្នកផ្សព្វផ្សាយសាសនា Hong Sung Hwa',
+      '홍성화 목사': 'លោកគ្រូគង្វាល Hong Sung Hwa',
+      '홍성화 선교사는?': 'តើអ្នកផ្សព្វផ្សាយសាសនា Hong Sung Hwa ជានរណា?',
+      '❤️ 동역 안내': '❤️ ការចូលរួមជាដៃគូ',
+      '🏦 정기후원': '🏦 ការគាំទ្រប្រចាំខែ',
+      '🎁 일시후원': '🎁 ការគាំទ្រម្តងម្កាល',
+      '후원요청을 위한 첫 발걸음, 떨리는 마음으로 출발합니다': 'ជំហានដំបូងដើម្បីអញ្ជើញការគាំទ្របេសកកម្ម យើងចាប់ផ្តើមដោយបេះដូងញ័រ',
+      '선교 후원 모집을 위한 첫 방문, 떨리는 마음을 담은 출정식 쇼츠 영상입니다.': 'វីដេអូខ្លីអំពីដំណើរទស្សនកិច្ចដំបូង ដើម្បីអញ្ជើញការគាំទ្របេសកកម្ម ដោយមានបេះដូងពោរពេញដោយក្តីរំភើប។'
+    }
+  };
+
   async function translateTextsBatch(texts, target) {
     const toFetch = [];
     const result = {};
     texts.forEach(t => {
+      const manual = MANUAL_TRANSLATIONS[target]?.[t];
+      if (manual) {
+        translationCache.set(t + '|' + target, manual);
+        result[t] = manual;
+        return;
+      }
       const key = t + '|' + target;
       if (translationCache.has(key)) {
         result[t] = translationCache.get(key);
@@ -3062,8 +3053,8 @@
     // 많이 모이면 60개만으로도 이 한도를 훌쩍 넘어서 요청 자체가 실패했고,
     // 재시도해도 크기가 그대로라 똑같이 실패했습니다(그게 실패 64/226이 뜬 이유).
     // 이제 "문장 60개" 또는 "글자 수 3,500자" 중 먼저 차는 기준으로 묶습니다.
-    const chunkSize = 30;
-    const maxChunkChars = 1800;
+    const chunkSize = 60;
+    const maxChunkChars = 3500;
     const chunks = [];
     let current = [];
     let currentChars = 0;
@@ -3095,17 +3086,7 @@
         }
       }
       if (!succeeded) {
-        // 한 덩어리가 실패하더라도 전체 문장을 포기하지 않습니다.
-        // 실패한 덩어리를 문장 단위로 다시 요청해 부분 번역이 남는 현상을 줄입니다.
-        for (const singleText of chunk) {
-          try {
-            const one = await translateTextsBatch([singleText], target);
-            Object.assign(translatedMap, one);
-          } catch (singleErr) {
-            console.error('[개별 번역 실패]', singleText, singleErr);
-          }
-        }
-        if (lastErr) console.error('[번역 배치 실패 → 개별 재시도]', lastErr);
+        console.error('[번역 배치 실패] (재시도 후에도 실패)', lastErr);
       }
     }
 
@@ -3135,6 +3116,19 @@
     });
   }
 
+  // ⭐ 핵심 수정: 01~05의 <details>는 닫혀 있다가 사용자가 눌러 열기 때문에,
+  // 페이지 전체 번역 시점에 번역이 빠질 수 있습니다. 번호를 눌러 실제 내용이 열린 순간
+  // 그 내용 전체를 다시 번역합니다. 제목뿐 아니라 안쪽의 모든 문단을 대상으로 합니다.
+  document.addEventListener('toggle', (e) => {
+    const detail = e.target;
+    if (!detail || !detail.matches || !detail.matches('#aboutStoryView details.about-question')) return;
+    if (!detail.open) return;
+    if (typeof currentLang === 'undefined' || currentLang === 'ko') return;
+    translateSubtree(detail, currentLang, false, () => true).catch(err => {
+      console.error('[소개 질문 번역 오류]', err);
+    });
+  }, true);
+
   let languageRequestId = 0;
 
   async function setLang(lang) {
@@ -3142,7 +3136,6 @@
     currentLang = lang;
     updateSearchUi();
     updateShareSheetLabels();
-    updateGalleryRelatedStoryLabel();
     document.getElementById('langMenu').classList.add('hidden');
     const label = document.getElementById('langBtnLabel');
 
@@ -3160,9 +3153,8 @@
     // 기다리는 동안 다른 언어를 선택했다면, 이전 요청은 더 이상 화면을 덮어쓰지 않습니다.
     if (requestId !== languageRequestId) return;
 
-    // 1) 메뉴 + 고정 UI는 네트워크와 무관하게 즉시, 100% 확실하게 바뀜
+    // 1) 메뉴는 네트워크와 무관하게 즉시, 100% 확실하게 바뀜
     applyNavTranslations(lang);
-    applyFixedTextTranslations(lang, document.body);
 
     if (lang === 'ko') {
       restoreOriginal(document.body);
@@ -3171,18 +3163,6 @@
     }
 
     if (label) label.textContent = lang === 'en' ? 'Translating…' : 'កំពុងបកប្រែ…';
-
-    // 현재 열려 있는 메뉴를 먼저 번역합니다. 특히 후원 안내/사역 소개처럼
-    // 사용자가 바로 보고 있는 화면이 메인 페이지의 긴 번역 때문에 뒤로 밀리지 않게 합니다.
-    const openOverlayBefore = ALL_OVERLAYS.map(id => document.getElementById(id)).find(el => el && !el.classList.contains('hidden'));
-    if (openOverlayBefore) {
-      const overlayTarget = openOverlayBefore.id === 'aboutOverlay'
-        ? (openOverlayBefore.querySelector('#aboutStoryView:not(.hidden)') || openOverlayBefore.querySelector('#aboutMinistryView:not(.hidden)') || openOverlayBefore)
-        : openOverlayBefore;
-      applyFixedTextTranslations(lang, overlayTarget);
-      await translateSubtree(overlayTarget, lang, false, () => requestId === languageRequestId);
-      if (requestId !== languageRequestId) return;
-    }
 
     // 2) JSON으로 생성된 메인 카드까지 모두 만들어진 상태에서 번역을 시작합니다.
     //    푸터와 닫혀 있는 오버레이는 건너뜁니다.
@@ -3202,11 +3182,7 @@
     // 3) 지금 열려있는 메뉴(오버레이)가 있다면 그 메뉴도 현재 선택 언어로 번역합니다.
     const openOverlayEl = ALL_OVERLAYS.map(id => document.getElementById(id)).find(el => el && !el.classList.contains('hidden'));
     if (openOverlayEl) {
-      const overlayTarget = openOverlayEl.id === 'aboutOverlay'
-        ? (openOverlayEl.querySelector('#aboutStoryView:not(.hidden)') || openOverlayEl.querySelector('#aboutMinistryView:not(.hidden)') || openOverlayEl)
-        : openOverlayEl;
-      applyFixedTextTranslations(lang, overlayTarget);
-      await translateSubtree(overlayTarget, lang, false, () => requestId === languageRequestId);
+      await translateSubtree(openOverlayEl, lang, false, () => requestId === languageRequestId);
     }
   }
   window.setLang = setLang;
@@ -3299,110 +3275,7 @@
     instagramShare: { ko: '링크 복사 후 Instagram', en: 'Copy link, then Instagram', km: 'ចម្លងតំណ រួចទៅ Instagram' },
     threadsShare: { ko: 'Threads에 공유', en: 'Share on Threads', km: 'ចែករំលែកតាម Threads' },
     copyOnly: { ko: '링크만 복사', en: 'Copy link only', km: 'ចម្លងតំណតែប៉ុណ្ណោះ' },
-
-    // ⭐ 고정 UI 문구: 짧고 반복적으로 쓰이는 문구는 실시간 번역에 맡기지 않습니다.
-    // 이렇게 해두면 Google 번역이 실패하거나 시크릿 모드여도 항상 번역됩니다.
-    relatedStories: { ko: '이어지는 이야기', en: 'More Stories', km: 'រឿងបន្ត' },
-    previousStory: { ko: '이전 이야기', en: 'Previous Story', km: 'រឿងមុន' },
-    nextStory: { ko: '다음 이야기', en: 'Next Story', km: 'រឿងបន្ទាប់' },
-    galleryRelated: { ko: '이 사진과 관련된 이야기 보기', en: 'Read the story related to this photo', km: 'មើលរឿងដែលទាក់ទងនឹងរូបថតនេះ' },
-    partner: { ko: '동역하기', en: 'Partner with Us', km: 'ចូលរួមជាដៃគូ' },
   };
-
-  // ⭐ 꼭 번역되어야 하는 고정 문구들.
-  // 본문처럼 매번 바뀌는 글은 아래의 실시간 번역을 사용하고,
-  // 메뉴/버튼/소개 핵심 문구처럼 고정된 것은 여기서 즉시 번역합니다.
-  const FIXED_TEXT_TRANSLATIONS = {
-    '후원 안내': { en: 'Support Us', km: 'ការគាំទ្រ' },
-    '이어지는 이야기': { en: 'More Stories', km: 'រឿងបន្ត' },
-    '이전 이야기': { en: 'Previous Story', km: 'រឿងមុន' },
-    '다음 이야기': { en: 'Next Story', km: 'រឿងបន្ទាប់' },
-    '이 사진과 관련된 이야기 보기': { en: 'Read the story related to this photo', km: 'មើលរឿងដែលទាក់ទងនឹងរូបថតនេះ' },
-    '한 사람을 사랑하고, 한 사람을 세우며, 다음 세대를 준비합니다.': {
-      en: 'Loving one person, building one person up, and preparing the next generation.',
-      km: 'ស្រឡាញមនុស្សម្នាក់ លើកស្ទួយមនុស្សម្នាក់ និងរៀបចំសម្រាប់ជំនាន់បន្ទាប់។'
-    },
-    '안녕하세요': { en: 'Hello', km: 'សួស្តី' },
-    '홍성화 선교사는?': { en: 'Who is Missionary Hong Sung Hwa?', km: 'តើអ្នកផ្សព្វផ្សាយសាសនា Hong Sung Hwa ជានរណា?' },
-    '왜 캄보디아인가요?': { en: 'Why Cambodia?', km: 'ហេតុអ្វីកម្ពុជា?' },
-    '선교는 왜 필요한가요?': { en: 'Why is mission needed?', km: 'ហេតុអ្វីត្រូវការបេសកកម្ម?' },
-    '왜 신학교 사역인가요?': { en: 'Why seminary ministry?', km: 'ហេតុអ្វីសេវាកម្មសាលាទេវវិទ្យា?' },
-    '어떻게 후원할 수 있나요?': { en: 'How can I support you?', km: 'តើខ្ញុំអាចគាំទ្របានយ៉ាងដូចម្តេច?' },
-    '사역 소개': { en: 'Our Ministry', km: 'អំពីព័ន្ធកិច្ចរបស់យើង' },
-    '동역하기': { en: 'Partner with Us', km: 'ចូលរួមជាដៃគូ' },
-    '후원요청을 위한 첫 발걸음, 떨리는 마음으로 출발합니다': { en: 'Taking the First Step to Invite Support, We Set Out with Trembling Hearts', km: 'ជំហានដំបូងដើម្បីអញ្ជើញការគាំទ្រ យើងចេញដំណើរដោយចិត្តរំភើប' },
-    '선교 후원 모집을 위한 첫 방문, 떨리는 마음을 담은 출정식 쇼츠 영상입니다.': { en: 'A short video of our first visit to invite mission support, capturing our nervous and hopeful hearts.', km: 'វីដេអូខ្លីពីដំណើរទស្សនកិច្ចដំបូងដើម្បីអញ្ជើញការគាំទ្របេសកកម្ម ដែលបង្ហាញពីចិត្តរំភើបរបស់យើង។' },
-    '후원 안내': { en: 'Support Us', km: 'ការគាំទ្រ' },
-    '🇰🇭 동역자 초청': { en: '🇰🇭 Invitation to Partner', km: '🇰🇭 អញ្ជើញចូលរួមជាដៃគូ' },
-    '캄보디아 선교에 함께해주세요': { en: 'Please Join Us in Mission to Cambodia', km: 'សូមចូលរួមជាមួយយើងក្នុងបេសកកម្មនៅកម្ពុជា' },
-    '동역 안내': { en: 'Ways to Partner', km: 'វិធីចូលរួមជាដៃគូ' },
-    '정기후원': { en: 'Monthly Support', km: 'ការគាំទ្រប្រចាំខែ' },
-    '캄보디아 선교의 든든한 동역자': { en: 'A Strong Partner in Mission to Cambodia', km: 'ដៃគូដ៏រឹងមាំក្នុងបេសកកម្មនៅកម្ពុជា' },
-    '정기후원하기': { en: 'Give Monthly', km: 'គាំទ្រប្រចាំខែ' },
-    '일시후원': { en: 'One-Time Support', km: 'ការគាំទ្រម្តង' },
-    '마음을 담아 보내는 곳': { en: 'A Place to Give from the Heart', km: 'កន្លែងផ្តល់ដោយបេះដូង' },
-    '계좌번호 복사하기': { en: 'Copy Account Number', km: 'ចម្លងលេខគណនី' },
-    '사역 안내 보기 →': { en: 'View Ministry →', km: 'មើលអំពីព័ន្ធកិច្ច →' },
-    '선교는 한 사람이 홀로 떠나는 길이 아니라, 기도하는 사람과 보내는 사람, 그리고 현장에서 섬기는 사람이 함께 걸어가는 길이라고 믿습니다.': { en: 'I believe mission is not a journey one person takes alone, but a journey walked together by those who pray, those who send, and those who serve in the field.', km: 'I believe mission is not a journey one person takes alone, but a journey walked together by those who pray, those who send, and those who serve in the field.' },
-    '저희 가족은 캄보디아로 파송받아 복음과 교육, 다음 세대를 세우는 사역을 시작하려 합니다. 그 여정에 동행해 주실 동역자가 필요합니다.': { en: 'Our family is being sent to Cambodia to begin a ministry of the gospel, education, and raising up the next generation. We need partners who will walk with us on this journey.', km: 'Our family is being sent to Cambodia to begin a ministry of the gospel, education, and raising up the next generation. We need partners who will walk with us on this journey.' },
-    '매월의 작은 후원이 사역을 지속하고 사람을 세워가는 힘이 됩니다.': { en: 'A small monthly gift helps sustain the ministry and build people up.', km: 'A small monthly gift helps sustain the ministry and build people up.' },
-    '미션펀드를 통해 간편하게': { en: 'Simply through MissionFund', km: 'Simply through MissionFund' },
-    'CMS 자동이체': { en: 'Automatic CMS Transfer', km: 'Automatic CMS Transfer' },
-    '정기후원이 아니더라도 마음이 감동될 때 언제든 힘을 보태주실 수 있습니다.': { en: 'Even if you do not give monthly, you can support the ministry whenever your heart is moved to do so.', km: 'Even if you do not give monthly, you can support the ministry whenever your heart is moved to do so.' },
-    '카카오뱅크': { en: 'KakaoBank', km: 'KakaoBank' },
-    '먼저 저희가 어떤 사역을 하고 있는지 궁금하신가요?': { en: 'Would you like to know more about the ministry we are preparing for?', km: 'Would you like to know more about the ministry we are preparing for?' },
-    '📚 후원금은 이렇게 사용됩니다': { en: '📚 How Your Support Will Be Used', km: '📚 How Your Support Will Be Used' },
-    '신학교와 교육': { en: 'Seminary & Education', km: 'Seminary & Education' },
-    '현지 목회자와 사역자를 세우고 말씀을 가르치는 사역': { en: 'Training local pastors and ministry leaders and teaching the Word', km: 'Training local pastors and ministry leaders and teaching the Word' },
-    '현지 사역': { en: 'Local Ministry', km: 'Local Ministry' },
-    '현지 교회와 공동체를 섬기며 복음을 전하는 사역': { en: 'Serving local churches and communities and sharing the gospel', km: 'Serving local churches and communities and sharing the gospel' },
-    '선교사 가정': { en: 'Missionary Family', km: 'Missionary Family' },
-    '현지에서 생활하며 사역을 지속하기 위한 생활비와 정착 비용': { en: 'Living and settlement costs needed to live locally and sustain the ministry', km: 'Living and settlement costs needed to live locally and sustain the ministry' },
-    '현장 사역': { en: 'Field Ministry', km: 'Field Ministry' },
-    '사역지를 오가며 사람을 만나고 섬기는 데 필요한 비용': { en: 'Costs needed to travel to ministry locations, meet people, and serve them', km: 'Costs needed to travel to ministry locations, meet people, and serve them' },
-    '후원금이 실제로 어떻게 사용되었는지는 사역 보고와 기도편지를 통해 분기별로 계속 나누겠습니다.': { en: 'We will continue to share quarterly, through ministry reports and prayer letters, how your support has actually been used.', km: 'We will continue to share quarterly, through ministry reports and prayer letters, how your support has actually been used.' },
-    '🇰🇭 우리가 가려는 길': { en: '🇰🇭 The Road We Are Walking', km: '🇰🇭 The Road We Are Walking' },
-    '사람을 세우는 선교를 꿈꿉니다.': { en: 'We dream of a mission that builds people up.', km: 'We dream of a mission that builds people up.' },
-    '신학교와 교육, 상담과 독서 모임 등을 통해 현지의 사람들이 복음을 배우고 살아내며 또 다른 사람과 다음 세대를 세워갈 수 있도록 돕고자 합니다.': { en: 'Through seminary and education, counseling, reading groups, and more, we hope to help local people learn and live out the gospel and raise up others and the next generation.', km: 'Through seminary and education, counseling, reading groups, and more, we hope to help local people learn and live out the gospel and raise up others and the next generation.' },
-    '현지인과 나란히 배우고, 한마음으로 예배하며, 서로를 세워가는 선교. 그것이 저희가 캄보디아에서 걸어가고 싶은 길입니다.': { en: 'A mission where we learn side by side with local people, worship together, and build one another up. That is the road we want to walk in Cambodia.', km: 'A mission where we learn side by side with local people, worship together, and build one another up. That is the road we want to walk in Cambodia.' },
-    '🙏 함께해주세요': { en: '🙏 Join Us', km: '🙏 Join Us' },
-    '기도와 마음으로 동참해 주세요.': { en: 'Please join us through prayer and your heart.', km: 'Please join us through prayer and your heart.' },
-    '캄보디아에서 시작될 사역과 저희 가족의 여정을 위해 기도해 주시면 감사하겠습니다. 뜻을 모아주시는 모든 분들께 진심으로 감사드립니다.': { en: 'We would be grateful if you would pray for the ministry that will begin in Cambodia and for our family’s journey. We sincerely thank everyone who joins us in this mission.', km: 'We would be grateful if you would pray for the ministry that will begin in Cambodia and for our family’s journey. We sincerely thank everyone who joins us in this mission.' },
-    '후원요청을 위한 첫 발걸음, 떨리는 마음으로 출발합니다': { en: 'Taking the First Step to Invite Support, We Set Out with Trembling Hearts', km: 'Taking the First Step to Invite Support, We Set Out with Trembling Hearts' },
-    '선교 후원 모집을 위한 첫 방문, 떨리는 마음을 담은 출정식 쇼츠 영상입니다.': { en: 'A short video of our first visit to invite mission support, capturing our nervous and hopeful hearts.', km: 'A short video of our first visit to invite mission support, capturing our nervous and hopeful hearts.' },
-  };
-
-  function applyFixedTextTranslations(lang, root = document.body) {
-    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
-      acceptNode(node) {
-        const tag = node.parentElement ? node.parentElement.tagName : '';
-        if (tag === 'SCRIPT' || tag === 'STYLE') return NodeFilter.FILTER_REJECT;
-        if (!node.nodeValue || !node.nodeValue.trim()) return NodeFilter.FILTER_REJECT;
-        if (node.parentElement && node.parentElement.closest('[data-i18n-skip]')) return NodeFilter.FILTER_REJECT;
-        return NodeFilter.FILTER_ACCEPT;
-      }
-    });
-
-    const nodes = [];
-    let n;
-    while ((n = walker.nextNode())) nodes.push(n);
-
-    nodes.forEach(node => {
-      const original = node.__originalKo || node.nodeValue;
-      const key = original.trim();
-      const t = FIXED_TEXT_TRANSLATIONS[key];
-      if (!t) return;
-
-      node.__originalKo = original;
-      const leading = original.match(/^\s*/)[0];
-      const trailing = original.match(/\s*$/)[0];
-
-      node.nodeValue = lang === 'ko'
-        ? original
-        : leading + (t[lang] || original.trim()) + trailing;
-    });
-  }
-
   function uiText(key) {
     const t = UI_TEXT[key];
     if (!t) return '';
@@ -4013,14 +3886,14 @@
     // (카테고리가 끝나면 자연스럽게 다음 카테고리로, 맨 끝 글에서는 다시 처음 글로 순환)
     const { prev, next } = getPrevNextArticles(tmplPrefix, idx);
     const navItems = [
-      prev ? { r: prev, label: uiText('previousStory') } : null,
-      next ? { r: next, label: uiText('nextStory') } : null,
+      prev ? { r: prev, label: '이전 이야기' } : null,
+      next ? { r: next, label: '다음 이야기' } : null,
     ].filter(Boolean);
     if (navItems.length) {
       const relWrap = document.createElement('div');
       relWrap.className = 'mt-10 pt-8 border-t border-ink-900/10 no-print';
       relWrap.innerHTML = `
-        <p class="text-center text-xs font-bold text-ink-400 tracking-wide uppercase mb-5">${uiText('relatedStories')}</p>
+        <p class="text-center text-xs font-bold text-ink-400 tracking-wide uppercase mb-5">이어지는 이야기</p>
         <div class="grid grid-cols-1 ${navItems.length > 1 ? 'sm:grid-cols-2' : ''} gap-4"></div>`;
       const relGrid = relWrap.querySelector('.grid');
       navItems.forEach(({ r, label }) => {
@@ -4061,7 +3934,7 @@
     donateWrap.innerHTML = `
       <a href="javascript:void(0)" id="articleDonateBtn"
         class="inline-flex items-center gap-2 text-sm font-semibold bg-ember text-white px-6 py-3.5 rounded-full shadow-sm hover:opacity-90 transition-opacity">
-        ${uiText('partner')}
+        동역하기
       </a>`;
     modalBody.appendChild(donateWrap);
     donateWrap.querySelector('#articleDonateBtn').addEventListener('click', () => {
@@ -4724,9 +4597,6 @@
   }
 
   const galleryLightboxRelatedStory = document.getElementById('galleryLightboxRelatedStory');
-  function updateGalleryRelatedStoryLabel() {
-    if (galleryLightboxRelatedStory) galleryLightboxRelatedStory.textContent = '📖 ' + uiText('galleryRelated');
-  }
 
   // ⭐ 신규: 사진/영상과 연결된 글이 있으면 "이 사진과 관련된 이야기 보기" 버튼을 보여줌
   // (이전글/다음글 개념이 아니라, 이 사진첩과 연결된 글 딱 하나만 보여줌)
@@ -4741,7 +4611,6 @@
       return;
     }
     galleryLightboxRelatedStory.classList.remove('hidden');
-    updateGalleryRelatedStoryLabel();
     galleryLightboxRelatedStory.onclick = () => {
       closeGalleryLightbox();
       closeOverlay('galleryOverlay');
