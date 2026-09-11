@@ -1102,7 +1102,7 @@
 <div class="max-w-4xl mx-auto">
 
 <!-- ⭐ "홍성화 선교사는" 보기 — 메인의 "처음 오셨나요? →"를 눌렀을 때만 보입니다 -->
-<div id="aboutStoryView">
+<div class="hidden" id="aboutStoryView">
 <div class="max-w-3xl mx-auto">
 
 <div class="reveal text-left mb-10 sm:mb-14">
@@ -4251,6 +4251,11 @@
       if (prettyOverlay) {
         history.replaceState({ overlay: prettyOverlay, detail: null }, '', location.pathname);
         openOverlay(prettyOverlay);
+        // ⭐ 수정: /about/ 로 바로 들어왔을 때는 반드시 "사역 소개" 화면을 보여줍니다.
+        // (탭 버튼 기본 활성 상태와 실제 내용이 어긋나던 문제 수정)
+        if (prettyOverlay === 'aboutOverlay') {
+          switchAboutView('ministry');
+        }
       }
       return;
     }
