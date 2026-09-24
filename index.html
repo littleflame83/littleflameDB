@@ -433,9 +433,9 @@
             🌐 <span id="langBtnLabel">한국어</span>
 </button>
 <div class="hidden absolute right-0 mt-2 w-36 bg-white rounded-2xl shadow-soft border border-ink-900/5 py-1.5 z-50" id="langMenu">
-<button class="w-full text-left px-4 py-2 text-sm hover:bg-warm-bg text-ink-800" onclick="setLang('ko')" type="button">🇰🇷 한국어</button>
-<button class="w-full text-left px-4 py-2 text-sm hover:bg-warm-bg text-ink-800" onclick="setLang('en')" type="button">🇺🇸 English</button>
-<button class="w-full text-left px-4 py-2 text-sm hover:bg-warm-bg text-ink-800" onclick="setLang('km')" type="button">🇰🇭 ខ្មែរ</button>
+<button class="w-full text-left px-4 py-2 text-sm hover:bg-warm-bg text-ink-800" onclick="setLang('ko')" type="button">🇰🇷 <span id="langItemKo">한국어</span></button>
+<button class="w-full text-left px-4 py-2 text-sm hover:bg-warm-bg text-ink-800" onclick="setLang('en')" type="button">🇺🇸 <span id="langItemEn">영어</span></button>
+<button class="w-full text-left px-4 py-2 text-sm hover:bg-warm-bg text-ink-800" onclick="setLang('km')" type="button">🇰🇭 <span id="langItemKm">크메르어</span></button>
 </div>
 </div>
 <a class="hidden sm:inline-flex items-center gap-1.5 bg-ember hover:bg-ember-dark text-white text-sm font-semibold px-5 py-2.5 rounded-full shadow-soft transition-colors" href="javascript:void(0)" id="nav-donate-btn" onclick="openOverlay('supportOverlay')">
@@ -3253,6 +3253,13 @@
     // 두는 경우가 많아서, 메뉴처럼 사전에 정해둔 번역으로 고정합니다.
     'aboutTabStory':    { en: 'About Me',         km: 'អំពីខ្ញុំ' },
     'aboutTabMinistry': { en: 'Our Ministry',     km: 'អំពីព័ន្ធកិច្ចរបស់យើង' },
+    // ⭐ 수정: 언어 드롭다운 메뉴 항목("한국어/영어/크메르어") 자체를
+    // 현재 선택된 언어에 맞춰 번역합니다. 예전엔 이 세 글자가 항상
+    // "한국어 / English / ខ្មែរ"로 고정돼 있어서, 영어로 바꿔도
+    // 메뉴 안에는 "한국어"가 그대로 남아있는 문제가 있었습니다.
+    'langItemKo': { en: 'Korean', km: 'ភាសាកូរ៉េ' },
+    'langItemEn': { en: 'English', km: 'ភាសាអង់គ្លេស' },
+    'langItemKm': { en: 'Khmer', km: 'ភាសាខ្មែរ' },
   };
 
   function applyNavTranslations(lang) {
